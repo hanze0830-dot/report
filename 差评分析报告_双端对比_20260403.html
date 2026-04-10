@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品差评周报（分双端）| 2026-04-03</title>
+<style>
+  :root {
+    --red: #ef4444; --red-bg: #fef2f2; --red-text: #dc2626;
+    --orange: #f97316; --orange-bg: #fff7ed; --orange-text: #ea580c;
+    --yellow: #eab308; --yellow-bg: #fefce8; --yellow-text: #ca8a04;
+    --green: #22c55e; --green-bg: #f0fdf4; --green-text: #16a34a;
+    --blue: #3b82f6; --blue-bg: #eff6ff; --blue-text: #2563eb;
+    --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+    --gray-300: #d1d5db; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+    --android: #3ddc84; --android-dark: #1b8a4a;
+    --ios: #007aff; --ios-dark: #0055b3;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--gray-50); color: var(--gray-900); line-height:1.6; padding:32px;
+  }
+  .container { max-width:1200px; margin:0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color:#fff; border-radius:16px; padding:36px 40px; margin-bottom:24px;
+  }
+  .header h1 { font-size:26px; font-weight:700; }
+  .header .subtitle { font-size:14px; color:#94a3b8; margin-top:4px; }
+
+  /* Platform overview row */
+  .platform-overview {
+    display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:24px;
+  }
+  .platform-card {
+    background:#fff; border-radius:14px; padding:24px 28px;
+    border:1px solid var(--gray-200); box-shadow:0 1px 3px rgba(0,0,0,.05);
+    position:relative; overflow:hidden;
+  }
+  .platform-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  }
+  .platform-card.android::before { background:var(--android); }
+  .platform-card.ios::before { background:var(--ios); }
+  .platform-label {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:13px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+    margin-bottom:12px; padding:3px 10px; border-radius:6px;
+  }
+  .platform-label.android { background:#e8faf0; color:var(--android-dark); }
+  .platform-label.ios { background:#e0f0ff; color:var(--ios-dark); }
+  .platform-stats { display:flex; gap:28px; }
+  .platform-stat .val { font-size:28px; font-weight:700; }
+  .platform-stat .label { font-size:12px; color:var(--gray-500); }
+  .platform-stat .change { font-size:13px; font-weight:600; margin-top:2px; }
+  .up { color:var(--red); } .down { color:var(--green); }
+
+  /* Alert */
+  .alert {
+    background:var(--red-bg); border:1px solid #fecaca; border-radius:12px;
+    padding:18px 24px; margin-bottom:24px;
+  }
+  .alert-title { font-weight:700; color:var(--red); font-size:15px; margin-bottom:6px; }
+  .alert-body { font-size:13px; color:#991b1b; line-height:1.75; }
+
+  /* Card */
+  .card {
+    background:#fff; border-radius:14px; padding:28px 32px; margin-bottom:22px;
+    box-shadow:0 1px 3px rgba(0,0,0,.05); border:1px solid var(--gray-200);
+  }
+  .card h2 { font-size:17px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .card .desc { font-size:13px; color:var(--gray-500); margin-bottom:18px; }
+
+  /* Dual panel */
+  .dual-panel { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-bottom:22px; }
+  .panel {
+    background:#fff; border-radius:14px; padding:24px 28px;
+    border:1px solid var(--gray-200); box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .panel h2 { font-size:16px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .panel .desc { font-size:12px; color:var(--gray-500); margin-bottom:14px; }
+
+  /* Table */
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th {
+    text-align:left; font-weight:600; color:var(--gray-500); font-size:11px;
+    text-transform:uppercase; letter-spacing:.5px; padding:9px 10px;
+    border-bottom:2px solid var(--gray-200);
+  }
+  td { padding:9px 10px; border-bottom:1px solid var(--gray-100); }
+  tr:hover td { background:var(--gray-50); }
+  .tag-name { font-weight:600; max-width:180px; }
+  .badge {
+    display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700;
+  }
+  .badge-red { background:var(--red-bg); color:var(--red-text); }
+  .badge-orange { background:var(--orange-bg); color:var(--orange-text); }
+  .badge-yellow { background:var(--yellow-bg); color:var(--yellow-text); }
+  .badge-green { background:var(--green-bg); color:var(--green-text); }
+  .badge-blue { background:var(--blue-bg); color:var(--blue-text); }
+
+  /* Spark bar */
+  .spark-row { display:flex; align-items:end; gap:2px; height:28px; }
+  .spark-bar { width:7px; border-radius:2px 2px 0 0; background:#cbd5e1; min-height:2px; }
+  .spark-bar.a-latest { background:var(--android-dark); }
+  .spark-bar.i-latest { background:var(--ios-dark); }
+
+  /* Cluster grid */
+  .cluster-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .cluster-item {
+    background:var(--gray-50); border-radius:10px; padding:16px 20px; border:1px solid var(--gray-100);
+  }
+  .cluster-item h3 { font-size:14px; font-weight:700; margin-bottom:8px; }
+  .cluster-item ul { font-size:12.5px; color:var(--gray-700); padding-left:16px; }
+  .cluster-item li { margin-bottom:3px; }
+  .cluster-tag { font-weight:600; }
+  .cluster-stat { color:var(--gray-500); font-size:11.5px; }
+
+  /* Comparison highlight */
+  .compare-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:22px; }
+  .compare-box {
+    background:#fff; border-radius:12px; padding:18px 22px;
+    border:1px solid var(--gray-200); text-align:center;
+  }
+  .compare-box .val { font-size:24px; font-weight:700; }
+  .compare-box .label { font-size:12px; color:var(--gray-500); margin-top:2px; }
+
+  /* Footer */
+  .footer {
+    text-align:center; font-size:12px; color:var(--gray-500);
+    margin-top:28px; padding:16px 0; border-top:1px solid var(--gray-200);
+  }
+
+  /* Insight callout */
+  .insight {
+    background:linear-gradient(135deg,#eff6ff,#f0f9ff); border:1px solid #bfdbfe;
+    border-radius:12px; padding:18px 24px; margin-bottom:22px;
+  }
+  .insight-title { font-weight:700; color:var(--blue-text); font-size:15px; margin-bottom:6px; }
+  .insight-body { font-size:13px; color:#1e3a5f; line-height:1.75; }
+  .insight-body strong { color:var(--blue-text); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>产品差评三级分类 &mdash; 双端对比周报</h1>
+    <div class="subtitle">数据周期: 2026-04-03（最新周）| 对比基准: 前4周均值 (03-06 ~ 03-27) &amp; 环比 (03-27)</div>
+  </div>
+
+  <!-- Platform Overview -->
+  <div class="platform-overview">
+    <div class="platform-card android">
+      <div class="platform-label android">ANDROID</div>
+      <div class="platform-stats">
+        <div class="platform-stat">
+          <div class="val">21,024</div>
+          <div class="label">本周差评</div>
+          <div class="change up">&#9650; +14.7% 环比</div>
+        </div>
+        <div class="platform-stat">
+          <div class="val">18,334</div>
+          <div class="label">上周差评</div>
+        </div>
+        <div class="platform-stat">
+          <div class="val">82.4%</div>
+          <div class="label">占总量比</div>
+        </div>
+      </div>
+    </div>
+    <div class="platform-card ios">
+      <div class="platform-label ios">iOS</div>
+      <div class="platform-stats">
+        <div class="platform-stat">
+          <div class="val">4,488</div>
+          <div class="label">本周差评</div>
+          <div class="change down">&#9660; -11.8% 环比</div>
+        </div>
+        <div class="platform-stat">
+          <div class="val">5,091</div>
+          <div class="label">上周差评</div>
+        </div>
+        <div class="platform-stat">
+          <div class="val">17.6%</div>
+          <div class="label">占总量比</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Insight -->
+  <div class="insight">
+    <div class="insight-title">&#128270; 关键发现：双端问题高度分化</div>
+    <div class="insight-body">
+      本周差评总量 25,512 条。<strong>Android 端环比飙升 +14.7%</strong>，增量几乎全部集中在「性能/广告加载」类标签，疑似版本回归或广告 SDK 异常；<strong>iOS 端环比下降 -11.8%</strong>，整体表现平稳，唯一异常是<strong>「翻译质量差」飙升 +202%</strong>。两端问题根因不同，需分端排查。
+    </div>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert">
+    <div class="alert-title">&#9888; P0 预警：Android 性能类标签集体爆发</div>
+    <div class="alert-body">
+      Android 端 6 个性能相关标签同步飙升：<strong>广告卡顿加载失败 +215%</strong>、应用启动慢 +130%、剧集加载慢 +87%、广告不加载 +84%、播放卡顿 +83%、卡顿现象频繁 +79%。<br>
+      iOS 端这些标签无显著异常 &rarr; <strong>高度指向 Android 端特定版本或 SDK 变更</strong>，建议立即核查近期 Android 发版记录与广告 SDK 升级日志。
+    </div>
+  </div>
+
+  <!-- ============ ANDROID Section ============ -->
+  <div class="dual-panel">
+    <!-- Android Panel -->
+    <div class="panel">
+      <h2><span style="color:var(--android-dark);">&#9679;</span> Android 大幅增长 TOP 15</h2>
+      <div class="desc">本周 &ge;30 条 &amp; vs 4周均值增幅 &gt;25%</div>
+      <table>
+        <thead>
+          <tr>
+            <th>标签</th>
+            <th>4周均值</th>
+            <th>本周</th>
+            <th>增幅</th>
+            <th>趋势</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tag-name">广告卡顿加载失败</td>
+            <td>148</td>
+            <td><strong>467</strong></td>
+            <td><span class="badge badge-red">+215%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:24%"></div><div class="spark-bar" style="height:44%"></div><div class="spark-bar" style="height:36%"></div><div class="spark-bar" style="height:39%"></div><div class="spark-bar" style="height:32%"></div><div class="spark-bar" style="height:33%"></div><div class="spark-bar" style="height:30%"></div><div class="spark-bar" style="height:27%"></div><div class="spark-bar" style="height:37%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">应用启动慢</td>
+            <td>80</td>
+            <td><strong>184</strong></td>
+            <td><span class="badge badge-red">+130%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:24%"></div><div class="spark-bar" style="height:52%"></div><div class="spark-bar" style="height:47%"></div><div class="spark-bar" style="height:47%"></div><div class="spark-bar" style="height:28%"></div><div class="spark-bar" style="height:44%"></div><div class="spark-bar" style="height:36%"></div><div class="spark-bar" style="height:41%"></div><div class="spark-bar" style="height:53%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">电量消耗快</td>
+            <td>35</td>
+            <td><strong>70</strong></td>
+            <td><span class="badge badge-red">+100%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:13%"></div><div class="spark-bar" style="height:19%"></div><div class="spark-bar" style="height:40%"></div><div class="spark-bar" style="height:26%"></div><div class="spark-bar" style="height:37%"></div><div class="spark-bar" style="height:29%"></div><div class="spark-bar" style="height:39%"></div><div class="spark-bar" style="height:41%"></div><div class="spark-bar" style="height:91%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">剧集加载慢</td>
+            <td>285</td>
+            <td><strong>533</strong></td>
+            <td><span class="badge badge-orange">+87%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:37%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:55%"></div><div class="spark-bar" style="height:59%"></div><div class="spark-bar" style="height:54%"></div><div class="spark-bar" style="height:47%"></div><div class="spark-bar" style="height:53%"></div><div class="spark-bar" style="height:51%"></div><div class="spark-bar" style="height:63%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">广告不加载</td>
+            <td>354</td>
+            <td><strong>652</strong></td>
+            <td><span class="badge badge-orange">+84%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:33%"></div><div class="spark-bar" style="height:54%"></div><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:57%"></div><div class="spark-bar" style="height:43%"></div><div class="spark-bar" style="height:48%"></div><div class="spark-bar" style="height:52%"></div><div class="spark-bar" style="height:49%"></div><div class="spark-bar" style="height:68%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">播放卡顿</td>
+            <td>282</td>
+            <td><strong>516</strong></td>
+            <td><span class="badge badge-orange">+83%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:48%"></div><div class="spark-bar" style="height:76%"></div><div class="spark-bar" style="height:66%"></div><div class="spark-bar" style="height:67%"></div><div class="spark-bar" style="height:46%"></div><div class="spark-bar" style="height:52%"></div><div class="spark-bar" style="height:52%"></div><div class="spark-bar" style="height:55%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">卡顿现象频繁</td>
+            <td>48</td>
+            <td><strong>85</strong></td>
+            <td><span class="badge badge-orange">+79%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:40%"></div><div class="spark-bar" style="height:54%"></div><div class="spark-bar" style="height:59%"></div><div class="spark-bar" style="height:58%"></div><div class="spark-bar" style="height:45%"></div><div class="spark-bar" style="height:61%"></div><div class="spark-bar" style="height:44%"></div><div class="spark-bar" style="height:73%"></div><div class="spark-bar" style="height:46%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">支付过程复杂</td>
+            <td>26</td>
+            <td><strong>46</strong></td>
+            <td><span class="badge badge-orange">+77%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:30%"></div><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:70%"></div><div class="spark-bar" style="height:33%"></div><div class="spark-bar" style="height:43%"></div><div class="spark-bar" style="height:41%"></div><div class="spark-bar" style="height:80%"></div><div class="spark-bar" style="height:61%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">翻译质量差</td>
+            <td>42</td>
+            <td><strong>70</strong></td>
+            <td><span class="badge badge-orange">+69%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:40%"></div><div class="spark-bar" style="height:57%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:67%"></div><div class="spark-bar" style="height:46%"></div><div class="spark-bar" style="height:74%"></div><div class="spark-bar" style="height:51%"></div><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:61%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">UI：信息太多</td>
+            <td>400</td>
+            <td><strong>673</strong></td>
+            <td><span class="badge badge-orange">+68%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:22%"></div><div class="spark-bar" style="height:35%"></div><div class="spark-bar" style="height:35%"></div><div class="spark-bar" style="height:36%"></div><div class="spark-bar" style="height:29%"></div><div class="spark-bar" style="height:42%"></div><div class="spark-bar" style="height:42%"></div><div class="spark-bar" style="height:58%"></div><div class="spark-bar" style="height:96%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">UI：文字太小看不清</td>
+            <td>99</td>
+            <td><strong>163</strong></td>
+            <td><span class="badge badge-orange">+64%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:19%"></div><div class="spark-bar" style="height:40%"></div><div class="spark-bar" style="height:38%"></div><div class="spark-bar" style="height:37%"></div><div class="spark-bar" style="height:30%"></div><div class="spark-bar" style="height:45%"></div><div class="spark-bar" style="height:45%"></div><div class="spark-bar" style="height:56%"></div><div class="spark-bar" style="height:98%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">推送干扰太多</td>
+            <td>28</td>
+            <td><strong>45</strong></td>
+            <td><span class="badge badge-orange">+64%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:38%"></div><div class="spark-bar" style="height:69%"></div><div class="spark-bar" style="height:58%"></div><div class="spark-bar" style="height:49%"></div><div class="spark-bar" style="height:49%"></div><div class="spark-bar" style="height:84%"></div><div class="spark-bar" style="height:40%"></div><div class="spark-bar" style="height:47%"></div><div class="spark-bar" style="height:73%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">画质不高</td>
+            <td>43</td>
+            <td><strong>66</strong></td>
+            <td><span class="badge badge-yellow">+54%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:29%"></div><div class="spark-bar" style="height:52%"></div><div class="spark-bar" style="height:48%"></div><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:80%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">新剧更新迟缓</td>
+            <td>245</td>
+            <td><strong>364</strong></td>
+            <td><span class="badge badge-yellow">+48%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:47%"></div><div class="spark-bar" style="height:77%"></div><div class="spark-bar" style="height:72%"></div><div class="spark-bar" style="height:79%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:72%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:73%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">应用崩溃闪退</td>
+            <td>276</td>
+            <td><strong>386</strong></td>
+            <td><span class="badge badge-yellow">+40%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:56%"></div><div class="spark-bar" style="height:87%"></div><div class="spark-bar" style="height:80%"></div><div class="spark-bar" style="height:75%"></div><div class="spark-bar" style="height:58%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:70%"></div><div class="spark-bar" style="height:70%"></div><div class="spark-bar" style="height:81%"></div><div class="spark-bar a-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- iOS Panel -->
+    <div class="panel">
+      <h2><span style="color:var(--ios-dark);">&#9679;</span> iOS 大幅增长 TOP</h2>
+      <div class="desc">本周 &ge;15 条 &amp; vs 4周均值增幅 &gt;25%</div>
+      <table>
+        <thead>
+          <tr>
+            <th>标签</th>
+            <th>4周均值</th>
+            <th>本周</th>
+            <th>增幅</th>
+            <th>趋势</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tag-name">翻译质量差</td>
+            <td>21</td>
+            <td><strong>62</strong></td>
+            <td><span class="badge badge-red">+202%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:26%"></div><div class="spark-bar" style="height:53%"></div><div class="spark-bar" style="height:52%"></div><div class="spark-bar" style="height:42%"></div><div class="spark-bar" style="height:23%"></div><div class="spark-bar" style="height:21%"></div><div class="spark-bar" style="height:29%"></div><div class="spark-bar" style="height:29%"></div><div class="spark-bar" style="height:53%"></div><div class="spark-bar i-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">上新内容少</td>
+            <td>16</td>
+            <td><strong>26</strong></td>
+            <td><span class="badge badge-orange">+60%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:38%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar" style="height:88%"></div><div class="spark-bar" style="height:62%"></div><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:88%"></div><div class="spark-bar" style="height:46%"></div><div class="spark-bar" style="height:50%"></div><div class="spark-bar" style="height:65%"></div><div class="spark-bar i-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">付费后金币消失</td>
+            <td>42</td>
+            <td><strong>58</strong></td>
+            <td><span class="badge badge-yellow">+37%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:33%"></div><div class="spark-bar" style="height:90%"></div><div class="spark-bar" style="height:72%"></div><div class="spark-bar" style="height:84%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:72%"></div><div class="spark-bar" style="height:71%"></div><div class="spark-bar" style="height:71%"></div><div class="spark-bar" style="height:78%"></div><div class="spark-bar i-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">应用启动慢</td>
+            <td>18</td>
+            <td><strong>24</strong></td>
+            <td><span class="badge badge-yellow">+35%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:39%"></div><div class="spark-bar" style="height:54%"></div><div class="spark-bar" style="height:61%"></div><div class="spark-bar" style="height:43%"></div><div class="spark-bar" style="height:43%"></div><div class="spark-bar" style="height:57%"></div><div class="spark-bar" style="height:61%"></div><div class="spark-bar" style="height:36%"></div><div class="spark-bar i-latest" style="height:100%"></div><div class="spark-bar" style="height:86%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">无法取消订阅</td>
+            <td>25</td>
+            <td><strong>33</strong></td>
+            <td><span class="badge badge-yellow">+33%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:43%"></div><div class="spark-bar" style="height:83%"></div><div class="spark-bar" style="height:100%"></div><div class="spark-bar" style="height:57%"></div><div class="spark-bar" style="height:83%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:54%"></div><div class="spark-bar" style="height:86%"></div><div class="spark-bar i-latest" style="height:94%"></div>
+            </div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">卡顿现象频繁</td>
+            <td>12</td>
+            <td><strong>15</strong></td>
+            <td><span class="badge badge-yellow">+28%</span></td>
+            <td><div class="spark-row">
+              <div class="spark-bar" style="height:47%"></div><div class="spark-bar" style="height:47%"></div><div class="spark-bar" style="height:47%"></div><div class="spark-bar" style="height:87%"></div><div class="spark-bar" style="height:53%"></div><div class="spark-bar" style="height:60%"></div><div class="spark-bar" style="height:87%"></div><div class="spark-bar" style="height:80%"></div><div class="spark-bar" style="height:87%"></div><div class="spark-bar i-latest" style="height:100%"></div>
+            </div></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- iOS Insight -->
+      <div style="margin-top:20px; background:#f0f9ff; border-radius:10px; padding:16px 20px; border:1px solid #bfdbfe;">
+        <div style="font-weight:700; color:var(--ios-dark); font-size:13px; margin-bottom:6px;">iOS 端小结</div>
+        <div style="font-size:12.5px; color:#1e3a5f; line-height:1.7;">
+          iOS 端本周差评总量<strong>环比下降 11.8%</strong>，整体表现平稳。唯一显著异常：<br>
+          &bull; <strong>翻译质量差 +202%</strong>（21&rarr;62），可能与近期新上线内容的语种翻译质量相关<br>
+          &bull; 性能类标签未出现 Android 端那样的群体性爆发<br>
+          &bull; 「付费后金币消失」小幅上升 +37%，需关注支付链路稳定性
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cross-platform Comparison -->
+  <div class="card">
+    <h2>&#128260; 双端交叉对比：同一标签的表现差异</h2>
+    <div class="desc">对比同一标签在 Android / iOS 的增幅差异，识别平台特有问题</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:25%">标签</th>
+          <th style="width:12%">Android 本周</th>
+          <th style="width:12%">Android 增幅</th>
+          <th style="width:12%">iOS 本周</th>
+          <th style="width:12%">iOS 增幅</th>
+          <th style="width:27%">判定</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tag-name">广告卡顿加载失败</td>
+          <td>467</td>
+          <td class="up"><strong>+215%</strong></td>
+          <td>4</td>
+          <td style="color:var(--gray-500);">-29%</td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">广告不加载</td>
+          <td>652</td>
+          <td class="up"><strong>+84%</strong></td>
+          <td>28</td>
+          <td style="color:var(--gray-500);">-16%</td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">播放卡顿</td>
+          <td>516</td>
+          <td class="up"><strong>+83%</strong></td>
+          <td>89</td>
+          <td style="color:var(--gray-500);">+1%</td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">剧集加载慢</td>
+          <td>533</td>
+          <td class="up"><strong>+87%</strong></td>
+          <td>55</td>
+          <td style="color:var(--gray-500);">-15%</td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">应用启动慢</td>
+          <td>184</td>
+          <td class="up"><strong>+130%</strong></td>
+          <td>24</td>
+          <td class="up">+35%</td>
+          <td><span class="badge badge-orange">Android 为主，iOS 轻微</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">翻译质量差</td>
+          <td>70</td>
+          <td class="up">+69%</td>
+          <td>62</td>
+          <td class="up"><strong>+202%</strong></td>
+          <td><span class="badge badge-blue">双端均上升，iOS 更突出</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">UI：信息太多</td>
+          <td>673</td>
+          <td class="up"><strong>+68%</strong></td>
+          <td>124</td>
+          <td class="up">+21%</td>
+          <td><span class="badge badge-orange">Android 为主</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">电量消耗快</td>
+          <td>70</td>
+          <td class="up"><strong>+100%</strong></td>
+          <td>8</td>
+          <td style="color:var(--gray-500);">+18%</td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">应用崩溃闪退</td>
+          <td>386</td>
+          <td class="up"><strong>+40%</strong></td>
+          <td>50</td>
+          <td style="color:var(--gray-500);">-7%</td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">付费后金币消失</td>
+          <td>147</td>
+          <td style="color:var(--gray-500);">+1%</td>
+          <td>58</td>
+          <td class="up"><strong>+37%</strong></td>
+          <td><span class="badge badge-blue">iOS 独有上升</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Problem Clusters -->
+  <div class="card">
+    <h2>&#128269; 问题聚类 &amp; 根因推断</h2>
+    <div class="desc">按问题域归类增长标签，辅助定位根因</div>
+    <div class="cluster-grid">
+      <div class="cluster-item" style="border-left:4px solid #dc2626;">
+        <h3 style="color:#dc2626;">Android 性能危机 (P0)</h3>
+        <p style="font-size:12px;color:#991b1b;margin-bottom:10px;">
+          7 个标签同步飙升，高度指向 Android 端系统性性能劣化（版本回归 / SDK 更新）
+        </p>
+        <ul>
+          <li><span class="cluster-tag">广告卡顿加载失败</span> <span class="cluster-stat">467 (+215%)</span></li>
+          <li><span class="cluster-tag">应用启动慢</span> <span class="cluster-stat">184 (+130%)</span></li>
+          <li><span class="cluster-tag">电量消耗快</span> <span class="cluster-stat">70 (+100%)</span></li>
+          <li><span class="cluster-tag">剧集加载慢</span> <span class="cluster-stat">533 (+87%)</span></li>
+          <li><span class="cluster-tag">广告不加载</span> <span class="cluster-stat">652 (+84%)</span></li>
+          <li><span class="cluster-tag">播放卡顿</span> <span class="cluster-stat">516 (+83%)</span></li>
+          <li><span class="cluster-tag">应用崩溃闪退</span> <span class="cluster-stat">386 (+40%)</span></li>
+        </ul>
+      </div>
+      <div class="cluster-item" style="border-left:4px solid #ea580c;">
+        <h3 style="color:#ea580c;">翻译/本地化 (P1, 双端)</h3>
+        <p style="font-size:12px;color:#9a3412;margin-bottom:10px;">
+          翻译质量差在双端同步飙升，iOS 更突出，可能与近期批量上线新语种内容有关
+        </p>
+        <ul>
+          <li><span class="cluster-tag">翻译质量差 (Android)</span> <span class="cluster-stat">70 (+69%)</span></li>
+          <li><span class="cluster-tag">翻译质量差 (iOS)</span> <span class="cluster-stat">62 (+202%)</span></li>
+        </ul>
+      </div>
+      <div class="cluster-item" style="border-left:4px solid #ca8a04;">
+        <h3 style="color:#ca8a04;">Android UI 体验 (P2)</h3>
+        <p style="font-size:12px;color:#854d0e;margin-bottom:10px;">
+          近 3 周持续走高，03-20 起加速上升，可能与近期 UI 改版相关
+        </p>
+        <ul>
+          <li><span class="cluster-tag">UI：信息太多</span> <span class="cluster-stat">673 (+68%)</span></li>
+          <li><span class="cluster-tag">UI：文字太小看不清</span> <span class="cluster-stat">163 (+64%)</span></li>
+          <li><span class="cluster-tag">推送干扰太多</span> <span class="cluster-stat">45 (+64%)</span></li>
+        </ul>
+      </div>
+      <div class="cluster-item" style="border-left:4px solid #2563eb;">
+        <h3 style="color:#2563eb;">iOS 付费/订阅 (P2)</h3>
+        <p style="font-size:12px;color:#1e40af;margin-bottom:10px;">
+          iOS 端支付和订阅类问题小幅上升，需关注
+        </p>
+        <ul>
+          <li><span class="cluster-tag">付费后金币消失</span> <span class="cluster-stat">58 (+37%)</span></li>
+          <li><span class="cluster-tag">无法取消订阅</span> <span class="cluster-stat">33 (+33%)</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Items -->
+  <div class="card">
+    <h2>&#128161; 建议 Action Items</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:6%">级别</th>
+          <th style="width:8%">端</th>
+          <th style="width:16%">问题域</th>
+          <th style="width:42%">建议动作</th>
+          <th style="width:14%">负责方</th>
+          <th style="width:14%">核心依据</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-red">P0</span></td>
+          <td><span class="badge" style="background:#e8faf0;color:var(--android-dark);">Android</span></td>
+          <td class="tag-name">性能/广告加载</td>
+          <td>紧急排查近期 Android 发版 &amp; 广告 SDK 变更；对比 APM 数据（冷启动、帧率、网络延迟、crash rate）；按机型/系统版本拆分分析</td>
+          <td>技术 / 广告SDK</td>
+          <td>7 项标签 +40~215%</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-red">P0</span></td>
+          <td><span class="badge" style="background:#e8faf0;color:var(--android-dark);">Android</span></td>
+          <td class="tag-name">电量消耗</td>
+          <td>检查是否因广告加载重试 / 后台进程异常导致 CPU 占用飙升，与性能问题可能同根因</td>
+          <td>技术</td>
+          <td>电量消耗快 +100%</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-orange">P1</span></td>
+          <td><span class="badge" style="background:#f3f4f6;color:var(--gray-700);">双端</span></td>
+          <td class="tag-name">翻译质量</td>
+          <td>Review 近期上线内容语种分布及翻译供应商，iOS 端尤为突出（+202%），可能是特定语种批量上线导致</td>
+          <td>本地化团队</td>
+          <td>双端均翻倍+</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-yellow">P2</span></td>
+          <td><span class="badge" style="background:#e8faf0;color:var(--android-dark);">Android</span></td>
+          <td class="tag-name">UI 信息密度</td>
+          <td>审计 03-20 以来新增弹窗 / 挂件 / 入口位调整；评估信息降噪方案</td>
+          <td>产品 / 设计</td>
+          <td>连续 3 周上升</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-yellow">P2</span></td>
+          <td><span class="badge" style="background:#e0f0ff;color:var(--ios-dark);">iOS</span></td>
+          <td class="tag-name">付费/金币异常</td>
+          <td>检查 iOS 支付回调链路及金币到账逻辑，排查是否存在丢单</td>
+          <td>支付 / 后端</td>
+          <td>金币消失 +37%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    数据来源：产品差评三级分类-410-分双端.xlsx &nbsp;|&nbsp; 分析周期：2026-01-30 ~ 2026-04-03（10周）&nbsp;|&nbsp; 生成时间：2026-04-10
+  </div>
+
+</div>
+</body>
+</html>
