@@ -131,8 +131,8 @@
     transform: translateY(4px);
     transition: all 0.2s ease;
     pointer-events: none;
-    min-width: 260px;
-    max-width: 340px;
+    min-width: 280px;
+    max-width: 380px;
     padding: 14px 16px;
     border-radius: 10px;
     backdrop-filter: blur(20px);
@@ -645,13 +645,21 @@
               <span class="tip-name">卡片外观样式</span>
             </div>
             <div class="tip-divider"></div>
+            <div class="tip-row"><span class="label">卡片圆角</span><span class="value">~20pt（锁屏）/ ~13pt（通知中心）</span></div>
+            <div class="tip-row"><span class="label">卡片内边距</span><span class="value">~24pt 左右 / ~28pt 上</span></div>
+            <div class="tip-row"><span class="label">背景渲染</span><span class="value">从封面图自动取色 + 毛玻璃</span></div>
+            <div class="tip-row"><span class="label">卡片宽度</span><span class="value">屏幕宽度 - 系统边距（~16pt 两侧）</span></div>
+            <div class="tip-row"><span class="label">显示位置</span><span class="value">锁屏中部 / 通知中心顶部 / 灵动岛</span></div>
+            <div class="tip-divider"></div>
             <ul class="tip-list">
               <li class="no">卡片整体布局 — 系统固定</li>
               <li class="no">背景色 / 毛玻璃 — 系统自动从封面图取色</li>
               <li class="no">字体 / 字号 / 颜色 — 跟随系统主题</li>
-              <li class="no">圆角 / 间距 — 系统 UI 规范</li>
+              <li class="no">圆角 / 内外间距 — 系统 UI 规范</li>
+              <li class="no">卡片宽度 / 高度 — 系统自动计算</li>
+              <li class="no">显示位置 — 系统固定（不可移动）</li>
             </ul>
-            <div class="tip-desc">iOS 的 Now Playing 控件外观完全由系统控制，开发者只能填充内容数据。</div>
+            <div class="tip-desc"><strong>UI 设计建议：</strong>iOS 的 Now Playing 控件外观完全由系统控制，开发者只能填充内容数据。间接影响外观的唯一方式是通过封面图 — 系统会从中提取主色调作为背景色，因此封面图的配色直接决定了卡片的视觉风格。</div>
           </div>
         </div>
 
@@ -670,12 +678,19 @@
               <div class="tip-divider"></div>
               <div class="tip-row"><span class="label">API 字段</span><span class="value">MPMediaItemPropertyArtwork</span></div>
               <div class="tip-row"><span class="label">类型</span><span class="value">UIImage / MPMediaItemArtwork</span></div>
+              <div class="tip-row"><span class="label">建议输入尺寸</span><span class="value">600x600 px 以上</span></div>
+              <div class="tip-row"><span class="label">显示比例</span><span class="value">1:1 正方形</span></div>
+              <div class="tip-row"><span class="label">显示尺寸（锁屏）</span><span class="value">约 64x64 pt（通知）/ 全屏宽（锁屏大图）</span></div>
+              <div class="tip-divider"></div>
               <ul class="tip-list">
-                <li class="yes">可设置任意图片</li>
-                <li class="yes">建议尺寸 600x600 以上</li>
-                <li class="no">不可控制圆角和裁切方式</li>
+                <li class="yes">图片内容 — 完全自定义</li>
+                <li class="no">显示位置 — 系统固定（左侧 / 锁屏居中）</li>
+                <li class="no">显示大小 — 系统固定，不可调整</li>
+                <li class="no">圆角半径 — 系统固定（约 8pt）</li>
+                <li class="no">裁切方式 — 居中裁切，不可控制</li>
+                <li class="no">边框 / 阴影 — 系统自动处理</li>
               </ul>
-              <div class="tip-desc">封面图是视觉冲击力最强的元素，建议使用剧集海报。系统会自动从封面图提取背景色。</div>
+              <div class="tip-desc"><strong>UI 设计建议：</strong>使用 1:1 正方形构图，主体内容居中，避免重要信息靠边（会被圆角裁切）。图片会被用于提取卡片背景色，选择色彩鲜明的剧集海报效果最佳。</div>
             </div>
           </div>
 
@@ -692,11 +707,22 @@
                 <div class="tip-divider"></div>
                 <div class="tip-row"><span class="label">API 字段</span><span class="value">MPMediaItemPropertyTitle</span></div>
                 <div class="tip-row"><span class="label">类型</span><span class="value">String</span></div>
+                <div class="tip-row"><span class="label">系统字体</span><span class="value">SF Pro Display Semibold</span></div>
+                <div class="tip-row"><span class="label">系统字号</span><span class="value">~16pt（通知）/ ~22pt（锁屏大图）</span></div>
+                <div class="tip-row"><span class="label">字体颜色</span><span class="value">白色，系统自动适配背景</span></div>
+                <div class="tip-row"><span class="label">最大行数</span><span class="value">1 行</span></div>
+                <div class="tip-row"><span class="label">截断方式</span><span class="value">尾部省略号（...）</span></div>
+                <div class="tip-row"><span class="label">位置</span><span class="value">封面图右侧，顶部对齐</span></div>
+                <div class="tip-divider"></div>
                 <ul class="tip-list">
-                  <li class="yes">文字内容完全自定义</li>
-                  <li class="no">字体、字号、颜色由系统决定</li>
-                  <li class="no">超长文本自动截断，无法控制</li>
+                  <li class="yes">文字内容 — 完全自定义</li>
+                  <li class="no">字体 / 字号 / 字重 — 系统固定</li>
+                  <li class="no">字体颜色 — 系统自适应（基于背景色）</li>
+                  <li class="no">显示位置 — 系统固定</li>
+                  <li class="no">最大行数 — 系统固定 1 行</li>
+                  <li class="no">截断方式 — 系统固定，不可控制</li>
                 </ul>
+                <div class="tip-desc"><strong>UI 设计建议：</strong>标题建议控制在 15 个中文字符以内（约 30 英文字符），避免被截断。格式推荐"剧名 + 集数"，如"霸总爱上我 第12集"。</div>
               </div>
             </div>
             <!-- Artist -->
@@ -710,11 +736,23 @@
                 </div>
                 <div class="tip-divider"></div>
                 <div class="tip-row"><span class="label">API 字段</span><span class="value">MPMediaItemPropertyArtist</span></div>
+                <div class="tip-row"><span class="label">类型</span><span class="value">String</span></div>
+                <div class="tip-row"><span class="label">系统字体</span><span class="value">SF Pro Text Regular</span></div>
+                <div class="tip-row"><span class="label">系统字号</span><span class="value">~13pt</span></div>
+                <div class="tip-row"><span class="label">字体颜色</span><span class="value">浅灰色（系统自适应）</span></div>
+                <div class="tip-row"><span class="label">最大行数</span><span class="value">1 行</span></div>
+                <div class="tip-row"><span class="label">截断方式</span><span class="value">尾部省略号（...）</span></div>
+                <div class="tip-row"><span class="label">位置</span><span class="value">标题下方，左对齐</span></div>
+                <div class="tip-row"><span class="label">与标题间距</span><span class="value">~3pt</span></div>
+                <div class="tip-divider"></div>
                 <ul class="tip-list">
-                  <li class="yes">文字内容完全自定义</li>
-                  <li class="no">样式由系统控制</li>
+                  <li class="yes">文字内容 — 完全自定义</li>
+                  <li class="no">字体 / 字号 — 系统固定</li>
+                  <li class="no">字体颜色 — 系统自适应</li>
+                  <li class="no">显示位置 — 系统固定（标题下方）</li>
+                  <li class="no">最大行数 — 系统固定 1 行</li>
                 </ul>
-                <div class="tip-desc">建议放 App 名或频道名。</div>
+                <div class="tip-desc"><strong>UI 设计建议：</strong>建议放 App 名称"DramaBox"，也可放频道名或作者名。保持简短，10 字以内为佳。</div>
               </div>
             </div>
             <!-- Album -->
@@ -728,11 +766,21 @@
                 </div>
                 <div class="tip-divider"></div>
                 <div class="tip-row"><span class="label">API 字段</span><span class="value">MPMediaItemPropertyAlbumTitle</span></div>
+                <div class="tip-row"><span class="label">类型</span><span class="value">String</span></div>
+                <div class="tip-row"><span class="label">系统字体</span><span class="value">SF Pro Text Regular</span></div>
+                <div class="tip-row"><span class="label">系统字号</span><span class="value">~12pt</span></div>
+                <div class="tip-row"><span class="label">字体颜色</span><span class="value">深灰色（系统自适应）</span></div>
+                <div class="tip-row"><span class="label">最大行数</span><span class="value">1 行</span></div>
+                <div class="tip-row"><span class="label">位置</span><span class="value">副标题下方，左对齐</span></div>
+                <div class="tip-row"><span class="label">可见性</span><span class="value">锁屏大图模式显示，通知中心可能隐藏</span></div>
+                <div class="tip-divider"></div>
                 <ul class="tip-list">
-                  <li class="yes">文字内容完全自定义</li>
-                  <li class="no">样式由系统控制</li>
+                  <li class="yes">文字内容 — 完全自定义</li>
+                  <li class="no">字体 / 字号 — 系统固定</li>
+                  <li class="no">显示位置 — 系统固定</li>
+                  <li class="no">是否显示 — 不同场景系统自动判断</li>
                 </ul>
-                <div class="tip-desc">可放分类信息或剧情 hook 文案。</div>
+                <div class="tip-desc"><strong>UI 设计建议：</strong>可放分类标签"热门短剧"、剧情 hook 文案"他终于说出了真相..."或合集名。注意该字段在通知中心小卡片中可能不显示，重要信息应放在标题或副标题中。</div>
               </div>
             </div>
           </div>
@@ -758,15 +806,26 @@
               <span class="tip-name">播放进度 / 时长</span>
             </div>
             <div class="tip-divider"></div>
-            <div class="tip-row"><span class="label">当前进度</span><span class="value">ElapsedPlaybackTime</span></div>
-            <div class="tip-row"><span class="label">总时长</span><span class="value">PlaybackDuration</span></div>
-            <div class="tip-row"><span class="label">播放速率</span><span class="value">PlaybackRate</span></div>
+            <div class="tip-row"><span class="label">当前进度</span><span class="value">MPNowPlayingInfoPropertyElapsedPlaybackTime</span></div>
+            <div class="tip-row"><span class="label">总时长</span><span class="value">MPMediaItemPropertyPlaybackDuration</span></div>
+            <div class="tip-row"><span class="label">播放速率</span><span class="value">MPNowPlayingInfoPropertyPlaybackRate</span></div>
+            <div class="tip-row"><span class="label">进度条高度</span><span class="value">~4pt，系统固定</span></div>
+            <div class="tip-row"><span class="label">进度条颜色</span><span class="value">白色填充 + 灰色背景轨道</span></div>
+            <div class="tip-row"><span class="label">拖拽点</span><span class="value">圆形 ~10pt，系统固定</span></div>
+            <div class="tip-row"><span class="label">时间文字</span><span class="value">11pt，灰色，左右分布</span></div>
+            <div class="tip-row"><span class="label">时间格式</span><span class="value">M:SS（系统自动格式化）</span></div>
+            <div class="tip-row"><span class="label">位置</span><span class="value">文字区域下方，全宽</span></div>
+            <div class="tip-divider"></div>
             <ul class="tip-list">
-              <li class="yes">进度数值可自定义</li>
-              <li class="yes">播放速率可自定义</li>
-              <li class="no">进度条样式（颜色、粗细）系统固定</li>
-              <li class="no">时间显示格式系统固定</li>
+              <li class="yes">进度数值 — 完全自定义</li>
+              <li class="yes">播放速率 — 完全自定义</li>
+              <li class="yes">总时长 — 完全自定义</li>
+              <li class="no">进度条样式（颜色、粗细）— 系统固定</li>
+              <li class="no">拖拽点样式 — 系统固定</li>
+              <li class="no">时间显示格式 — 系统固定</li>
+              <li class="no">进度条位置 — 系统固定</li>
             </ul>
+            <div class="tip-desc"><strong>UI 设计建议：</strong>确保及时更新进度值（每秒同步），设定正确的 playbackRate 让系统自动插值。短剧通常 1-3 分钟一集，进度条可有效提示用户观看进程。</div>
           </div>
         </div>
 
@@ -787,15 +846,23 @@
             </div>
             <div class="tip-divider"></div>
             <div style="font-size:11px; color:#999; margin-bottom:6px;">通过 MPRemoteCommandCenter 控制</div>
+            <div class="tip-row"><span class="label">按钮区域宽度</span><span class="value">全宽，水平居中排列</span></div>
+            <div class="tip-row"><span class="label">按钮尺寸</span><span class="value">主按钮 ~36pt / 副按钮 ~26pt / 次按钮 ~20pt</span></div>
+            <div class="tip-row"><span class="label">按钮间距</span><span class="value">~32pt，系统固定</span></div>
+            <div class="tip-row"><span class="label">图标风格</span><span class="value">SF Symbols 系统图标</span></div>
+            <div class="tip-row"><span class="label">图标颜色</span><span class="value">白色，系统自适应背景</span></div>
+            <div class="tip-row"><span class="label">可用按钮</span><span class="value">播放/暂停、上/下一曲、快进/退、喜欢</span></div>
+            <div class="tip-divider"></div>
             <ul class="tip-list">
               <li class="yes">选择启用/禁用哪些按钮</li>
               <li class="yes">按钮点击行为（回调自定义）</li>
               <li class="yes">快进/快退秒数（preferredIntervals）</li>
-              <li class="yes">喜欢/收藏按钮（likeCommand）</li>
-              <li class="no">按钮图标样式 — 系统标准图标</li>
-              <li class="no">按钮布局排列 — 系统固定</li>
-              <li class="no">按钮大小/颜色 — 系统固定</li>
+              <li class="yes">喜欢/收藏状态（likeCommand / dislikeCommand）</li>
+              <li class="no">按钮图标样式 — 系统标准 SF Symbols</li>
+              <li class="no">按钮布局排列 — 系统固定（水平居中）</li>
+              <li class="no">按钮大小 / 颜色 / 间距 — 系统固定</li>
             </ul>
+            <div class="tip-desc"><strong>UI 设计建议：</strong>短剧场景建议启用：上一集 ⏮ / 播放暂停 ⏸ / 下一集 ⏭ + 可选快进 ⏩。iOS 不支持自定义图标，无法加入业务按钮（如剧集列表），需通过 App 内实现。</div>
           </div>
         </div>
 
@@ -843,13 +910,21 @@
               <span class="tip-name">卡片外观样式</span>
             </div>
             <div class="tip-divider"></div>
+            <div class="tip-row"><span class="label">卡片圆角</span><span class="value">~16dp（Android 12+，系统固定）</span></div>
+            <div class="tip-row"><span class="label">卡片内边距</span><span class="value">~16dp，系统固定</span></div>
+            <div class="tip-row"><span class="label">背景色 API</span><span class="value">Notification.Builder.setColor()</span></div>
+            <div class="tip-row"><span class="label">背景渲染</span><span class="value">系统取色 / 可手动覆盖主色</span></div>
+            <div class="tip-row"><span class="label">卡片宽度</span><span class="value">通知栏全宽 - 系统边距</span></div>
+            <div class="tip-row"><span class="label">显示位置</span><span class="value">通知面板顶部（媒体通知优先级最高）</span></div>
+            <div class="tip-divider"></div>
             <ul class="tip-list">
-              <li class="partial">背景色 — 系统从封面取色，可手动覆盖</li>
+              <li class="partial">背景色 — 系统从封面取色，可通过 setColor() 手动覆盖</li>
               <li class="no">卡片布局结构 — 系统固定</li>
-              <li class="no">字体 / 字号 — 跟随系统主题</li>
+              <li class="no">字体 / 字号 — 跟随系统 Material Design 规范</li>
               <li class="no">圆角 / 间距 — 跟随系统 UI 规范</li>
+              <li class="no">卡片宽度 / 高度 — 系统自动计算</li>
             </ul>
-            <div class="tip-desc">Android 的背景色可通过 setColor() 手动指定，比 iOS 多了一定的控制权。但整体卡片结构仍由系统决定。</div>
+            <div class="tip-desc"><strong>UI 设计建议：</strong>Android 比 iOS 多了背景色控制权，可通过 setColor() 指定品牌色（如 DramaBox 红 #E74C3C），让卡片在通知面板中更具辨识度。Android 12+ 的 Media Player 样式更大更突出，是品牌曝光的好位置。</div>
           </div>
         </div>
 
@@ -866,13 +941,20 @@
               <span class="tip-name">通知头部</span>
             </div>
             <div class="tip-divider"></div>
+            <div class="tip-row"><span class="label">App 图标尺寸</span><span class="value">~14dp（小图标，单色）</span></div>
+            <div class="tip-row"><span class="label">图标来源</span><span class="value">AndroidManifest smallIcon</span></div>
+            <div class="tip-row"><span class="label">App 名称字号</span><span class="value">~11sp，系统固定</span></div>
+            <div class="tip-row"><span class="label">时间戳</span><span class="value">系统自动，格式如"刚刚""5分钟前"</span></div>
+            <div class="tip-row"><span class="label">排列方式</span><span class="value">图标 + 名称 + · + 时间，水平排列</span></div>
+            <div class="tip-row"><span class="label">位置</span><span class="value">卡片顶部，左对齐</span></div>
+            <div class="tip-divider"></div>
             <ul class="tip-list">
-              <li class="no">App 图标 — 取自 AndroidManifest</li>
-              <li class="no">App 名称 — 取自应用名</li>
+              <li class="no">App 图标 — 取自 AndroidManifest，不可动态修改</li>
+              <li class="no">App 名称 — 取自应用名，不可动态修改</li>
               <li class="no">时间戳 — 系统自动生成</li>
-              <li class="no">布局排列 — 系统固定</li>
+              <li class="no">布局排列 / 字号 / 颜色 — 系统固定</li>
             </ul>
-            <div class="tip-desc">通知头部完全由系统渲染，开发者无法修改其样式或布局。</div>
+            <div class="tip-desc"><strong>UI 设计建议：</strong>通知头部完全由系统渲染。唯一可影响的是 smallIcon 的设计（需在打包时设定），建议使用简洁的品牌轮廓图标，因为系统会将其渲染为单色。</div>
           </div>
         </div>
 
@@ -891,12 +973,21 @@
               </div>
               <div class="tip-divider"></div>
               <div class="tip-row"><span class="label">API</span><span class="value">setLargeIcon(Bitmap)</span></div>
+              <div class="tip-row"><span class="label">类型</span><span class="value">Bitmap</span></div>
+              <div class="tip-row"><span class="label">建议输入尺寸</span><span class="value">512x512 px 以上</span></div>
+              <div class="tip-row"><span class="label">显示比例</span><span class="value">1:1 正方形</span></div>
+              <div class="tip-row"><span class="label">显示尺寸</span><span class="value">~56dp（折叠态）/ ~128dp（展开态）</span></div>
+              <div class="tip-row"><span class="label">圆角</span><span class="value">~8dp（Android 12+ 系统固定）</span></div>
+              <div class="tip-row"><span class="label">位置</span><span class="value">折叠态：左侧；展开态：右侧</span></div>
+              <div class="tip-divider"></div>
               <ul class="tip-list">
-                <li class="yes">可设置任意 Bitmap 图片</li>
-                <li class="yes">建议用剧集海报</li>
-                <li class="no">裁切方式由系统决定</li>
+                <li class="yes">图片内容 — 完全自定义（任意 Bitmap）</li>
+                <li class="no">显示位置 — 系统固定（折叠左 / 展开右）</li>
+                <li class="no">显示大小 — 系统固定，不可调整</li>
+                <li class="no">圆角半径 — 系统固定（~8dp）</li>
+                <li class="no">裁切方式 — 居中裁切（centerCrop）</li>
               </ul>
-              <div class="tip-desc">封面图也会影响系统自动提取的背景色。</div>
+              <div class="tip-desc"><strong>UI 设计建议：</strong>使用 1:1 正方形构图，512px 以上保证清晰度。封面图会被系统用于提取通知背景色（Android 12+ Media Player），选择色彩鲜明、与品牌色协调的剧集海报效果最佳。避免纯白/纯黑封面。</div>
             </div>
           </div>
 
@@ -911,11 +1002,23 @@
                   <span class="tip-name">标题</span>
                 </div>
                 <div class="tip-divider"></div>
-                <div class="tip-row"><span class="label">API</span><span class="value">setContentTitle()</span></div>
+                <div class="tip-row"><span class="label">API</span><span class="value">Notification.Builder.setContentTitle()</span></div>
+                <div class="tip-row"><span class="label">类型</span><span class="value">CharSequence</span></div>
+                <div class="tip-row"><span class="label">系统字体</span><span class="value">Roboto Medium（Material Design）</span></div>
+                <div class="tip-row"><span class="label">系统字号</span><span class="value">~15sp</span></div>
+                <div class="tip-row"><span class="label">字体颜色</span><span class="value">系统自适应（深/浅主题）</span></div>
+                <div class="tip-row"><span class="label">最大行数</span><span class="value">1 行</span></div>
+                <div class="tip-row"><span class="label">截断方式</span><span class="value">尾部省略号（...）</span></div>
+                <div class="tip-row"><span class="label">位置</span><span class="value">封面右侧，顶部对齐</span></div>
+                <div class="tip-divider"></div>
                 <ul class="tip-list">
-                  <li class="yes">文字内容完全自定义</li>
-                  <li class="no">字体、字号、颜色由系统决定</li>
+                  <li class="yes">文字内容 — 完全自定义</li>
+                  <li class="no">字体 / 字号 / 字重 — 系统 Material 规范</li>
+                  <li class="no">字体颜色 — 系统自适应</li>
+                  <li class="no">显示位置 — 系统固定</li>
+                  <li class="no">最大行数 — 系统固定 1 行</li>
                 </ul>
+                <div class="tip-desc"><strong>UI 设计建议：</strong>同 iOS 建议，标题控制在 15 个中文字符以内。Android 展开态空间更大，但折叠态受限，建议优先保证折叠态可读性。</div>
               </div>
             </div>
             <!-- Subtitle -->
@@ -928,12 +1031,23 @@
                   <span class="tip-name">副标题</span>
                 </div>
                 <div class="tip-divider"></div>
-                <div class="tip-row"><span class="label">API</span><span class="value">setContentText()</span></div>
+                <div class="tip-row"><span class="label">API</span><span class="value">Notification.Builder.setContentText()</span></div>
+                <div class="tip-row"><span class="label">类型</span><span class="value">CharSequence</span></div>
+                <div class="tip-row"><span class="label">系统字体</span><span class="value">Roboto Regular</span></div>
+                <div class="tip-row"><span class="label">系统字号</span><span class="value">~13sp</span></div>
+                <div class="tip-row"><span class="label">字体颜色</span><span class="value">次级文字色（系统自适应）</span></div>
+                <div class="tip-row"><span class="label">最大行数</span><span class="value">1 行（折叠态）/ 2 行（展开态可能）</span></div>
+                <div class="tip-row"><span class="label">截断方式</span><span class="value">尾部省略号（...）</span></div>
+                <div class="tip-row"><span class="label">位置</span><span class="value">标题下方，左对齐</span></div>
+                <div class="tip-row"><span class="label">与标题间距</span><span class="value">~2dp</span></div>
+                <div class="tip-divider"></div>
                 <ul class="tip-list">
-                  <li class="yes">文字内容完全自定义</li>
-                  <li class="no">样式由系统控制</li>
+                  <li class="yes">文字内容 — 完全自定义</li>
+                  <li class="no">字体 / 字号 — 系统 Material 规范</li>
+                  <li class="no">显示位置 — 系统固定</li>
+                  <li class="no">最大行数 — 系统固定</li>
                 </ul>
-                <div class="tip-desc">建议放剧情 hook 文案，提升点击率。如"他终于说出了真相..."</div>
+                <div class="tip-desc"><strong>UI 设计建议：</strong>Android 副标题非常适合放剧情 hook 文案，如"他终于说出了真相..."，可有效提升用户点击回到 App 的转化率。也可用"DramaBox · 剧情文案"的格式兼顾品牌露出。</div>
               </div>
             </div>
           </div>
@@ -951,12 +1065,21 @@
               <span class="tip-name">进度条</span>
             </div>
             <div class="tip-divider"></div>
+            <div class="tip-row"><span class="label">进度 API</span><span class="value">MediaSession PlaybackState</span></div>
+            <div class="tip-row"><span class="label">进度条高度</span><span class="value">~3dp，系统固定</span></div>
+            <div class="tip-row"><span class="label">进度条颜色</span><span class="value">跟随 setColor() / 封面取色</span></div>
+            <div class="tip-row"><span class="label">背景轨道色</span><span class="value">半透明白，系统自适应</span></div>
+            <div class="tip-row"><span class="label">位置</span><span class="value">文字区域与按钮之间，全宽</span></div>
+            <div class="tip-row"><span class="label">可拖拽</span><span class="value">Android 13+ 支持用户拖拽 seek</span></div>
+            <div class="tip-divider"></div>
             <ul class="tip-list">
-              <li class="yes">进度数值 — 可自定义</li>
-              <li class="yes">进度条颜色 — 可通过主题色控制</li>
-              <li class="no">进度条高度、样式 — 系统固定</li>
+              <li class="yes">进度数值 — 完全可自定义</li>
+              <li class="yes">进度条颜色 — 可通过 setColor() 或封面色间接控制</li>
+              <li class="no">进度条高度 / 样式 — 系统固定</li>
+              <li class="no">进度条位置 — 系统固定</li>
+              <li class="no">拖拽交互样式 — 系统固定</li>
             </ul>
-            <div class="tip-desc">Android 的进度条颜色会跟随 setColor() 或从封面图取色。</div>
+            <div class="tip-desc"><strong>UI 设计建议：</strong>Android 的进度条颜色可与品牌色统一（通过 setColor），比 iOS 有更好的品牌一致性。Android 13+ 用户可直接在通知面板拖拽进度条进行 seek，确保 App 正确响应 seekTo 回调。</div>
           </div>
         </div>
 
@@ -977,14 +1100,23 @@
             </div>
             <div class="tip-divider"></div>
             <div style="font-size:11px; color:#999; margin-bottom:6px;">通过 addAction() + MediaStyle 配置</div>
+            <div class="tip-row"><span class="label">最大按钮数</span><span class="value">展开态 5 个 / 折叠态 3 个</span></div>
+            <div class="tip-row"><span class="label">按钮尺寸</span><span class="value">主按钮 ~44dp / 副按钮 ~36dp</span></div>
+            <div class="tip-row"><span class="label">图标来源</span><span class="value">自定义 drawable 资源</span></div>
+            <div class="tip-row"><span class="label">图标尺寸</span><span class="value">~24dp（建议提供矢量图）</span></div>
+            <div class="tip-row"><span class="label">图标颜色</span><span class="value">系统自适应（深/浅主题）</span></div>
+            <div class="tip-row"><span class="label">按钮间距</span><span class="value">均匀分布，系统自动计算</span></div>
+            <div class="tip-row"><span class="label">折叠态选择</span><span class="value">setShowActionsInCompactView()</span></div>
+            <div class="tip-divider"></div>
             <ul class="tip-list">
-              <li class="yes">按钮数量（最多 5 个，折叠态 3 个）</li>
-              <li class="yes">按钮图标 — 可使用自定义 drawable</li>
+              <li class="yes">按钮数量 — 自由配置（最多 5 个）</li>
+              <li class="yes">按钮图标 — 完全自定义（可使用业务图标）</li>
               <li class="yes">按钮点击行为 — PendingIntent 自定义</li>
               <li class="yes">折叠态显示哪几个 — setShowActionsInCompactView()</li>
-              <li class="no">按钮大小/间距 — 系统固定</li>
+              <li class="no">按钮大小 / 间距 — 系统固定</li>
+              <li class="no">按钮排列方式 — 水平均匀分布，系统固定</li>
             </ul>
-            <div class="tip-desc">相比 iOS，Android 允许完全自定义按钮图标，可以加入收藏、剧集列表等业务按钮。</div>
+            <div class="tip-desc"><strong>UI 设计建议：</strong>Android 最大优势是按钮图标可完全自定义。短剧场景建议：收藏♡ + 上一集 ⏮ + 播放/暂停 ⏸ + 下一集 ⏭ + 剧集列表☰。折叠态推荐只显示核心 3 个（上一集、播放、下一集）。图标建议使用 24dp 矢量图，风格统一。</div>
           </div>
         </div>
 
