@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品差评周报（分双端）| 2026-04-10</title>
+<style>
+  :root {
+    --brand-orange: #FF8A47;
+    --brand-coral: #FF6154;
+    --brand-pink: #FF2D6B;
+    --brand-hotpink: #FF1B5E;
+    --brand-gradient: linear-gradient(135deg, #FF8A47 0%, #FF5C55 40%, #FF2D6B 100%);
+    --brand-gradient-soft: linear-gradient(135deg, #FFF0EB 0%, #FFF0F3 50%, #FFE8EF 100%);
+    --brand-light: #FFF5F2;
+    --brand-lighter: #f9fafb;
+    --red: #ef4444; --red-bg: #fef2f2; --red-text: #dc2626;
+    --orange: #f97316; --orange-bg: #fff7ed; --orange-text: #ea580c;
+    --yellow: #eab308; --yellow-bg: #fefce8; --yellow-text: #ca8a04;
+    --green: #22c55e; --green-bg: #f0fdf4; --green-text: #16a34a;
+    --blue: #3b82f6; --blue-bg: #eff6ff; --blue-text: #2563eb;
+    --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+    --gray-300: #d1d5db; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+    --android: #34a853; --android-dark: #1e7e34;
+    --ios: #007aff; --ios-dark: #0056b3;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--gray-50); color: var(--gray-900); line-height:1.6; padding:32px;
+  }
+  .container { max-width:1200px; margin:0 auto; }
+  .brand-bar {
+    background: var(--brand-gradient);
+    border-radius:16px 16px 0 0;
+    padding:20px 40px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .brand-bar img {
+    width:48px; height:48px; border-radius:12px;
+    box-shadow: 0 2px 12px rgba(255,45,107,.3);
+  }
+  .brand-bar .brand-name {
+    font-size:22px; font-weight:800; color:#fff;
+    letter-spacing:.5px; text-shadow: 0 1px 4px rgba(0,0,0,.15);
+  }
+  .brand-bar .brand-divider {
+    width:1px; height:28px; background:rgba(255,255,255,.35); margin:0 4px;
+  }
+  .brand-bar .brand-report-type {
+    font-size:13px; color:rgba(255,255,255,.85); font-weight:500;
+  }
+  .header {
+    background: linear-gradient(135deg, #2D1B33 0%, #3D1F3E 50%, #4A1942 100%);
+    color:#fff; border-radius:0 0 16px 16px; padding:28px 40px 32px; margin-bottom:24px;
+  }
+  .header h1 { font-size:24px; font-weight:700; }
+  .header .subtitle { font-size:14px; color:rgba(255,255,255,.55); margin-top:4px; }
+  .header .meta { display:flex; gap:28px; margin-top:20px; }
+  .header .meta-item { text-align:center; }
+  .header .meta-val { font-size:28px; font-weight:700; }
+  .header .meta-val.up { color:#FF6B7A; }
+  .header .meta-val.down { color:#6BE09A; }
+  .header .meta-label { font-size:12px; color:rgba(255,255,255,.5); margin-top:2px; }
+  .platform-overview {
+    display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:24px;
+  }
+  .platform-card {
+    background:#fff; border-radius:14px; padding:24px 28px;
+    border:1px solid var(--gray-200); box-shadow:0 1px 3px rgba(0,0,0,.06);
+    position:relative; overflow:hidden;
+  }
+  .platform-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  }
+  .platform-card.android::before { background:var(--android); }
+  .platform-card.ios::before { background:var(--ios); }
+  .platform-label {
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:13px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+    margin-bottom:12px; padding:3px 10px; border-radius:6px;
+  }
+  .platform-label.android { background:#e8f5e9; color:var(--android-dark); }
+  .platform-label.ios { background:#e3f2fd; color:var(--ios-dark); }
+  .platform-stats { display:flex; gap:28px; }
+  .platform-stat .val { font-size:28px; font-weight:700; }
+  .platform-stat .label { font-size:12px; color:var(--gray-500); }
+  .platform-stat .change { font-size:13px; font-weight:600; margin-top:2px; }
+  .up { color:#dc2626; } .down { color:var(--green); }
+  .alert {
+    background:#fef2f2; border:1px solid #fecaca; border-radius:12px;
+    padding:18px 24px; margin-bottom:24px;
+  }
+  .alert-title { font-weight:700; color:#dc2626; font-size:15px; margin-bottom:6px; }
+  .alert-body { font-size:13px; color:#7f1d1d; line-height:1.75; }
+  .card {
+    background:#fff; border-radius:14px; padding:28px 32px; margin-bottom:22px;
+    box-shadow:0 1px 3px rgba(0,0,0,.05); border:1px solid var(--gray-200);
+  }
+  .card h2 { font-size:17px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px; color:var(--gray-900); }
+  .card .desc { font-size:13px; color:var(--gray-500); margin-bottom:18px; }
+  .dual-panel { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-bottom:22px; }
+  .panel {
+    background:#fff; border-radius:14px; padding:24px 28px;
+    border:1px solid var(--gray-200); box-shadow:0 1px 3px rgba(0,0,0,.05);
+  }
+  .panel h2 { font-size:16px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+  .panel .desc { font-size:12px; color:var(--gray-500); margin-bottom:14px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th {
+    text-align:left; font-weight:600; color:var(--gray-500); font-size:11px;
+    text-transform:uppercase; letter-spacing:.5px; padding:9px 10px;
+    border-bottom:2px solid var(--gray-200);
+  }
+  td { padding:9px 10px; border-bottom:1px solid var(--gray-100); }
+  tr:hover td { background:#f9fafb; }
+  .tag-name { font-weight:600; max-width:180px; }
+  .badge {
+    display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700;
+  }
+  .badge-red { background:var(--red-bg); color:var(--red-text); }
+  .badge-orange { background:var(--orange-bg); color:var(--orange-text); }
+  .badge-yellow { background:var(--yellow-bg); color:var(--yellow-text); }
+  .badge-green { background:var(--green-bg); color:var(--green-text); }
+  .badge-blue { background:var(--blue-bg); color:var(--blue-text); }
+  .spark-row { display:flex; align-items:end; gap:2px; height:28px; }
+  .spark-bar { width:7px; border-radius:2px 2px 0 0; background:#d1d5db; min-height:2px; }
+  .spark-bar.a-latest { background:var(--android); }
+  .spark-bar.i-latest { background:var(--ios); }
+  .cluster-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .cluster-item {
+    background:#f9fafb; border-radius:10px; padding:16px 20px; border:1px solid var(--gray-200);
+  }
+  .cluster-item h3 { font-size:14px; font-weight:700; margin-bottom:8px; }
+  .cluster-item ul { font-size:12.5px; color:var(--gray-700); padding-left:16px; }
+  .cluster-item li { margin-bottom:3px; }
+  .cluster-tag { font-weight:600; }
+  .cluster-stat { color:var(--gray-500); font-size:11.5px; }
+  .footer {
+    text-align:center; font-size:12px; color:var(--gray-500);
+    margin-top:28px; padding:16px 0; border-top:1px solid var(--gray-200);
+  }
+  .insight {
+    background:#eff6ff; border:1px solid #bfdbfe;
+    border-radius:12px; padding:18px 24px; margin-bottom:22px;
+  }
+  .insight-title { font-weight:700; color:#2563eb; font-size:15px; margin-bottom:6px; }
+  .insight-body { font-size:13px; color:#1e3a5f; line-height:1.75; }
+  .insight-body strong { color:#1d4ed8; }
+  .good-news {
+    background:var(--green-bg); border:1px solid #BBF7D0;
+    border-radius:12px; padding:18px 24px; margin-bottom:22px;
+  }
+  .good-news-title { font-weight:700; color:var(--green-text); font-size:15px; margin-bottom:6px; }
+  .good-news-body { font-size:13px; color:#14532d; line-height:1.75; }
+  .good-news-body strong { color:var(--green-text); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Brand Bar + Header -->
+  <div class="brand-bar">
+    <img src="dramabox_logo.png" alt="DramaBox Logo">
+    <div class="brand-name">DramaBox</div>
+    <div class="brand-divider"></div>
+    <div class="brand-report-type">Product Insights Report</div>
+  </div>
+  <div class="header">
+    <h1>产品差评三级分类 &mdash; 双端对比周报</h1>
+    <div class="subtitle">数据周期: 2026-04-10（最新周）| 对比基准: 前4周均值 (03-13 ~ 04-03) &amp; 环比 (04-03)</div>
+    <div class="meta">
+      <div class="meta-item">
+        <div class="meta-val down">22,262</div>
+        <div class="meta-label">本周差评总量</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-val down">&#9660; -12.7%</div>
+        <div class="meta-label">环比变化</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-val" style="color:rgba(255,255,255,.8)">8 周</div>
+        <div class="meta-label">覆盖周数</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform Overview -->
+  <div class="platform-overview">
+    <div class="platform-card android">
+      <div class="platform-label android">ANDROID</div>
+      <div class="platform-stats">
+        <div class="platform-stat">
+          <div class="val">18,180</div>
+          <div class="label">本周差评</div>
+          <div class="change down">&#9660; -13.5% 环比</div>
+        </div>
+        <div class="platform-stat">
+          <div class="val">21,024</div>
+          <div class="label">上周差评</div>
+        </div>
+        <div class="platform-stat">
+          <div class="val">81.7%</div>
+          <div class="label">占总量比</div>
+        </div>
+      </div>
+    </div>
+    <div class="platform-card ios">
+      <div class="platform-label ios">iOS</div>
+      <div class="platform-stats">
+        <div class="platform-stat">
+          <div class="val">4,082</div>
+          <div class="label">本周差评</div>
+          <div class="change down">&#9660; -9.0% 环比</div>
+        </div>
+        <div class="platform-stat">
+          <div class="val">4,488</div>
+          <div class="label">上周差评</div>
+        </div>
+        <div class="platform-stat">
+          <div class="val">18.3%</div>
+          <div class="label">占总量比</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Insight -->
+  <div class="insight">
+    <div class="insight-title">&#128270; 关键发现：双端差评总量环比回落，但广告/性能问题仍居高位</div>
+    <div class="insight-body">
+      本周差评总量 22,262 条，<strong>环比下降 12.7%</strong>，为近 4 周最低水平。Android 端下降 13.5%，iOS 端下降 9.0%。上周爆发的 Android 性能类问题虽有缓解，但<strong>广告卡顿加载失败仍维持在 4 周均值的 +96%</strong>，尚未恢复正常水位。新增关注：<strong>推送PUSH干扰太多（+71%）</strong>在 Android 端持续走高。
+    </div>
+  </div>
+
+  <!-- Good News -->
+  <div class="good-news">
+    <div class="good-news-title">&#9989; 积极信号：翻译质量差双端大幅回落</div>
+    <div class="good-news-body">
+      上周报告中重点关注的<strong>「翻译质量差」在双端同步大幅回落</strong>：Android -54.3% 环比（70&rarr;32），iOS -69.4% 环比（62&rarr;19）。上周的翻译质量冲高可能为短期波动，已自然修复。此外，Android 端<strong>「以为免费实际需要付费」下降 22.7%</strong>，付费认知问题持续改善。
+    </div>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert">
+    <div class="alert-title">&#9888; P0 预警：Android 广告/性能类标签仍远超均值</div>
+    <div class="alert-body">
+      虽然环比有所回落，但 Android 端多个标签仍显著高于 4 周均值：<strong>广告卡顿加载失败 +96%</strong>（445 vs 均值 227）、应用启动慢 +49%（157 vs 106）、广告无法关闭 +44%（148 vs 103）、卡顿现象频繁 +44%（80 vs 56）。<br>
+      上周建议的 Android 端排查若已启动，建议<strong>持续跟踪 APM 指标</strong>，确认性能恢复趋势是否稳定。若尚未排查，本周仍为高优事项。
+    </div>
+  </div>
+
+  <!-- ============ DUAL PANEL ============ -->
+  <div class="dual-panel">
+    <div class="panel">
+      <h2><span style="color:var(--android);">&#9679;</span> Android 增长 TOP（vs 4周均值）</h2>
+      <div class="desc">本周 &ge;20 条 &amp; vs 4周均值增幅 &gt;25%</div>
+      <table>
+        <thead>
+          <tr>
+            <th>标签</th>
+            <th>4周均值</th>
+            <th>本周</th>
+            <th>增幅</th>
+            <th>8周趋势</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tag-name">广告卡顿加载失败</td>
+            <td>226</td>
+            <td><strong>445</strong></td>
+            <td><span class="badge badge-orange">+96%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:28%"></div><div class="spark-bar " style="height:32%"></div><div class="spark-bar " style="height:33%"></div><div class="spark-bar " style="height:30%"></div><div class="spark-bar " style="height:27%"></div><div class="spark-bar " style="height:37%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar a-latest" style="height:95%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">推送PUSH干扰太多</td>
+            <td>29</td>
+            <td><strong>50</strong></td>
+            <td><span class="badge badge-orange">+71%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:28%"></div><div class="spark-bar " style="height:44%"></div><div class="spark-bar " style="height:76%"></div><div class="spark-bar " style="height:36%"></div><div class="spark-bar " style="height:42%"></div><div class="spark-bar " style="height:66%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar a-latest" style="height:100%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">看不懂</td>
+            <td>52</td>
+            <td><strong>78</strong></td>
+            <td><span class="badge badge-orange">+50%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:33%"></div><div class="spark-bar " style="height:37%"></div><div class="spark-bar " style="height:44%"></div><div class="spark-bar " style="height:41%"></div><div class="spark-bar " style="height:42%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar a-latest" style="height:99%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">应用启动慢</td>
+            <td>105</td>
+            <td><strong>157</strong></td>
+            <td><span class="badge badge-yellow">+48%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:33%"></div><div class="spark-bar " style="height:28%"></div><div class="spark-bar " style="height:44%"></div><div class="spark-bar " style="height:36%"></div><div class="spark-bar " style="height:41%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar a-latest" style="height:85%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">广告无法关闭</td>
+            <td>102</td>
+            <td><strong>148</strong></td>
+            <td><span class="badge badge-yellow">+44%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:40%"></div><div class="spark-bar " style="height:47%"></div><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:47%"></div><div class="spark-bar " style="height:61%"></div><div class="spark-bar " style="height:84%"></div><div class="spark-bar " style="height:85%"></div><div class="spark-bar a-latest" style="height:100%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">卡顿现象频繁</td>
+            <td>55</td>
+            <td><strong>80</strong></td>
+            <td><span class="badge badge-yellow">+44%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:36%"></div><div class="spark-bar " style="height:45%"></div><div class="spark-bar " style="height:61%"></div><div class="spark-bar " style="height:44%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar " style="height:46%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar a-latest" style="height:94%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">搜索结果不准确</td>
+            <td>27</td>
+            <td><strong>39</strong></td>
+            <td><span class="badge badge-yellow">+42%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:70%"></div><div class="spark-bar " style="height:82%"></div><div class="spark-bar " style="height:72%"></div><div class="spark-bar " style="height:30%"></div><div class="spark-bar " style="height:57%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:88%"></div><div class="spark-bar a-latest" style="height:98%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">广告不加载</td>
+            <td>439</td>
+            <td><strong>614</strong></td>
+            <td><span class="badge badge-yellow">+40%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:43%"></div><div class="spark-bar " style="height:43%"></div><div class="spark-bar " style="height:48%"></div><div class="spark-bar " style="height:52%"></div><div class="spark-bar " style="height:49%"></div><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar a-latest" style="height:94%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">播放卡顿</td>
+            <td>344</td>
+            <td><strong>471</strong></td>
+            <td><span class="badge badge-yellow">+37%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:47%"></div><div class="spark-bar " style="height:46%"></div><div class="spark-bar " style="height:52%"></div><div class="spark-bar " style="height:52%"></div><div class="spark-bar " style="height:55%"></div><div class="spark-bar " style="height:59%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar a-latest" style="height:91%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">剧集加载慢</td>
+            <td>355</td>
+            <td><strong>463</strong></td>
+            <td><span class="badge badge-yellow">+30%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:43%"></div><div class="spark-bar " style="height:54%"></div><div class="spark-bar " style="height:47%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:51%"></div><div class="spark-bar " style="height:62%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar a-latest" style="height:87%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">单个广告时间过长</td>
+            <td>399</td>
+            <td><strong>507</strong></td>
+            <td><span class="badge badge-yellow">+27%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:57%"></div><div class="spark-bar " style="height:70%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:67%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar " style="height:99%"></div><div class="spark-bar a-latest" style="height:100%"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- Android Insight -->
+      <div style="margin-top:20px; background:#f0fdf4; border-radius:10px; padding:16px 20px; border:1px solid #bbf7d0;">
+        <div style="font-weight:700; color:var(--android-dark); font-size:13px; margin-bottom:6px;">Android 端小结</div>
+        <div style="font-size:12.5px; color:#14532d; line-height:1.7;">
+          本周差评总量<strong>环比下降 13.5%</strong>，相较上周高点有明显回落。但核心问题仍在：<br>
+          &bull; <strong>广告卡顿加载失败 +96%</strong> vs 4 周均值（445 条），虽 WoW 微降 -4.7%，仍为最突出异常<br>
+          &bull; 性能类标签整体呈<strong>「见顶回落但未恢复」</strong>态势<br>
+          &bull; 新关注：<strong>推送PUSH干扰 +71%</strong>、广告无法关闭 +44%，用户干扰类投诉上升
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2><span style="color:var(--ios);">&#9679;</span> iOS 增长 TOP（vs 4周均值）</h2>
+      <div class="desc">本周 &ge;10 条 &amp; vs 4周均值增幅 &gt;25%</div>
+      <table>
+        <thead>
+          <tr>
+            <th>标签</th>
+            <th>4周均值</th>
+            <th>本周</th>
+            <th>增幅</th>
+            <th>8周趋势</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tag-name">题材同质化</td>
+            <td>5</td>
+            <td><strong>11</strong></td>
+            <td><span class="badge badge-red">+110%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:64%"></div><div class="spark-bar " style="height:64%"></div><div class="spark-bar " style="height:55%"></div><div class="spark-bar " style="height:18%"></div><div class="spark-bar " style="height:18%"></div><div class="spark-bar " style="height:82%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">电量消耗快</td>
+            <td>8</td>
+            <td><strong>17</strong></td>
+            <td><span class="badge badge-red">+106%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:29%"></div><div class="spark-bar " style="height:18%"></div><div class="spark-bar " style="height:12%"></div><div class="spark-bar " style="height:6%"></div><div class="spark-bar " style="height:65%"></div><div class="spark-bar " style="height:76%"></div><div class="spark-bar " style="height:47%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">广告卡顿加载失败</td>
+            <td>5</td>
+            <td><strong>10</strong></td>
+            <td><span class="badge badge-orange">+82%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:42%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:33%"></div><div class="spark-bar " style="height:33%"></div><div class="spark-bar " style="height:58%"></div><div class="spark-bar " style="height:58%"></div><div class="spark-bar " style="height:33%"></div><div class="spark-bar i-latest" style="height:83%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">自动续费价格大幅上涨未充分告知</td>
+            <td>12</td>
+            <td><strong>20</strong></td>
+            <td><span class="badge badge-orange">+60%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:45%"></div><div class="spark-bar " style="height:40%"></div><div class="spark-bar " style="height:45%"></div><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:75%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar " style="height:65%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">支付过程复杂/不顺畅</td>
+            <td>8</td>
+            <td><strong>11</strong></td>
+            <td><span class="badge badge-yellow">+29%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:27%"></div><div class="spark-bar " style="height:27%"></div><div class="spark-bar " style="height:82%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar " style="height:45%"></div><div class="spark-bar " style="height:91%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">时长太短</td>
+            <td>15</td>
+            <td><strong>19</strong></td>
+            <td><span class="badge badge-yellow">+27%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:43%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar " style="height:57%"></div><div class="spark-bar " style="height:62%"></div><div class="spark-bar " style="height:52%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar i-latest" style="height:90%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">内存占用大</td>
+            <td>8</td>
+            <td><strong>11</strong></td>
+            <td><span class="badge badge-yellow">+26%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:21%"></div><div class="spark-bar " style="height:43%"></div><div class="spark-bar " style="height:29%"></div><div class="spark-bar " style="height:21%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:57%"></div><div class="spark-bar i-latest" style="height:79%"></div></div></td>
+          </tr>
+          <tr>
+            <td class="tag-name">画质不高</td>
+            <td>12</td>
+            <td><strong>16</strong></td>
+            <td><span class="badge badge-yellow">+26%</span></td>
+            <td><div class="spark-row"><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar " style="height:69%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar " style="height:94%"></div><div class="spark-bar " style="height:75%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- iOS Insight -->
+      <div style="margin-top:20px; background:#eff6ff; border-radius:10px; padding:16px 20px; border:1px solid #bfdbfe;">
+        <div style="font-weight:700; color:var(--ios-dark); font-size:13px; margin-bottom:6px;">iOS 端小结</div>
+        <div style="font-size:12.5px; color:#1e3a5f; line-height:1.7;">
+          iOS 端本周差评总量<strong>环比下降 9.0%</strong>，整体表现平稳。注意项：<br>
+          &bull; <strong>电量消耗快 +106%</strong>（8&rarr;17，基数小但翻倍增长），需关注是否与版本更新相关<br>
+          &bull; <strong>自动续费价格大幅上涨 +60%</strong>（13&rarr;20），付费敏感度上升<br>
+          &bull; 上周高关注的翻译质量差已<strong>大幅回落 -69%</strong>，回归正常
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cross-platform Comparison -->
+  <div class="card">
+    <h2>&#128260; 双端交叉对比：同一标签的表现差异</h2>
+    <div class="desc">对比同一标签在 Android / iOS 的增幅差异（vs 4周均值），识别平台特有问题</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22%">标签</th>
+          <th style="width:11%">Android 本周</th>
+          <th style="width:11%">Android 增幅</th>
+          <th style="width:11%">iOS 本周</th>
+          <th style="width:11%">iOS 增幅</th>
+          <th style="width:34%">判定</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="tag-name">广告卡顿加载失败</td>
+          <td>445</td>
+          <td class="up"><strong>+96%</strong></td>
+          <td>10</td>
+          <td class="up"><strong>+82%</strong></td>
+          <td><span class="badge badge-red">双端均大幅上升</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">广告不加载</td>
+          <td>614</td>
+          <td class="up"><strong>+40%</strong></td>
+          <td>27</td>
+          <td style="color:var(--gray-500);"><strong>-15%</strong></td>
+          <td><span class="badge badge-orange">Android 为主</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">广告无法关闭</td>
+          <td>148</td>
+          <td class="up"><strong>+44%</strong></td>
+          <td>10</td>
+          <td style="color:var(--gray-500);"><strong>+11%</strong></td>
+          <td><span class="badge badge-orange">Android 为主</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">应用启动慢</td>
+          <td>157</td>
+          <td class="up"><strong>+48%</strong></td>
+          <td>13</td>
+          <td class="down"><strong>-34%</strong></td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">播放卡顿</td>
+          <td>471</td>
+          <td class="up"><strong>+37%</strong></td>
+          <td>102</td>
+          <td style="color:var(--gray-500);"><strong>+8%</strong></td>
+          <td><span class="badge badge-orange">Android 为主</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">剧集加载慢</td>
+          <td>463</td>
+          <td class="up"><strong>+30%</strong></td>
+          <td>67</td>
+          <td style="color:var(--gray-500);"><strong>+12%</strong></td>
+          <td><span class="badge badge-orange">Android 为主</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">卡顿现象频繁</td>
+          <td>80</td>
+          <td class="up"><strong>+44%</strong></td>
+          <td>7</td>
+          <td class="down"><strong>-47%</strong></td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">推送PUSH干扰太多</td>
+          <td>50</td>
+          <td class="up"><strong>+71%</strong></td>
+          <td>1</td>
+          <td class="down"><strong>-79%</strong></td>
+          <td><span class="badge badge-red">Android 独有问题</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">单个广告时间过长</td>
+          <td>507</td>
+          <td class="up"><strong>+27%</strong></td>
+          <td>115</td>
+          <td style="color:var(--gray-500);"><strong>-7%</strong></td>
+          <td><span class="badge badge-orange">Android 为主</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">电量消耗快</td>
+          <td>52</td>
+          <td style="color:var(--gray-500);"><strong>+10%</strong></td>
+          <td>17</td>
+          <td class="up"><strong>+106%</strong></td>
+          <td><span class="badge badge-blue">iOS 独有上升</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">翻译质量差</td>
+          <td>32</td>
+          <td class="down"><strong>-30%</strong></td>
+          <td>19</td>
+          <td class="down"><strong>-42%</strong></td>
+          <td><span class="badge badge-green">双端改善</span></td>
+        </tr>
+        <tr>
+          <td class="tag-name">自动续费价格大幅上涨未充分告知</td>
+          <td>19</td>
+          <td style="color:var(--gray-500);"><strong>-12%</strong></td>
+          <td>20</td>
+          <td class="up"><strong>+60%</strong></td>
+          <td><span class="badge badge-blue">iOS 独有上升</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Problem Clusters -->
+  <div class="card">
+    <h2>&#128269; 问题聚类 &amp; 根因推断</h2>
+    <div class="desc">按问题域归类增长标签，辅助定位根因</div>
+    <div class="cluster-grid">
+      <div class="cluster-item" style="border-left:4px solid #dc2626;">
+        <h3 style="color:#dc2626;">广告/性能持续异常 (P0, Android)</h3>
+        <p style="font-size:12px;color:#7f1d1d;margin-bottom:10px;">
+          上周爆发的性能问题本周有所回落但仍远高于均值，广告 SDK / 版本回归问题尚未根治
+        </p>
+        <ul>
+          <li><span class="cluster-tag">广告卡顿加载失败</span> <span class="cluster-stat">445 (+96%) &#8595;WoW</span></li>
+          <li><span class="cluster-tag">应用启动慢</span> <span class="cluster-stat">157 (+49%) &#8595;WoW</span></li>
+          <li><span class="cluster-tag">广告无法关闭</span> <span class="cluster-stat">148 (+44%) &#8593;WoW</span></li>
+          <li><span class="cluster-tag">卡顿现象频繁</span> <span class="cluster-stat">80 (+44%) &#8595;WoW</span></li>
+          <li><span class="cluster-tag">广告不加载</span> <span class="cluster-stat">614 (+40%) &#8595;WoW</span></li>
+          <li><span class="cluster-tag">播放卡顿</span> <span class="cluster-stat">471 (+37%) &#8595;WoW</span></li>
+          <li><span class="cluster-tag">剧集加载慢</span> <span class="cluster-stat">463 (+30%) &#8595;WoW</span></li>
+        </ul>
+      </div>
+      <div class="cluster-item" style="border-left:4px solid #f97316;">
+        <h3 style="color:#ea580c;">用户干扰/推送 (P1, Android)</h3>
+        <p style="font-size:12px;color:#7c2d12;margin-bottom:10px;">
+          推送干扰和广告体验问题在 Android 端持续走高，可能影响用户留存
+        </p>
+        <ul>
+          <li><span class="cluster-tag">推送PUSH干扰太多</span> <span class="cluster-stat">50 (+71%) &#8593;WoW</span></li>
+          <li><span class="cluster-tag">广告无法关闭</span> <span class="cluster-stat">148 (+44%) &#8593;WoW</span></li>
+          <li><span class="cluster-tag">单个广告时间过长</span> <span class="cluster-stat">507 (+27%) &#8593;WoW</span></li>
+        </ul>
+      </div>
+      <div class="cluster-item" style="border-left:4px solid #eab308;">
+        <h3 style="color:#ca8a04;">iOS 付费/续费敏感 (P2)</h3>
+        <p style="font-size:12px;color:#854d0e;margin-bottom:10px;">
+          iOS 端续费价格和电量消耗问题抬头，基数较小但增速显著
+        </p>
+        <ul>
+          <li><span class="cluster-tag">电量消耗快</span> <span class="cluster-stat">17 (+106%) &#8593;&#8593;WoW</span></li>
+          <li><span class="cluster-tag">自动续费价格大幅上涨</span> <span class="cluster-stat">20 (+60%) &#8593;WoW</span></li>
+          <li><span class="cluster-tag">题材同质化</span> <span class="cluster-stat">11 (+110%) &#8593;WoW</span></li>
+        </ul>
+      </div>
+      <div class="cluster-item" style="border-left:4px solid var(--green);">
+        <h3 style="color:var(--green-text);">积极改善项 &#10003;</h3>
+        <p style="font-size:12px;color:#14532d;margin-bottom:10px;">
+          上周高关注问题本周显著回落，表明部分问题为短期波动
+        </p>
+        <ul>
+          <li><span class="cluster-tag">翻译质量差 (Android)</span> <span class="cluster-stat">32 (-30%) &#8595;&#8595;WoW</span></li>
+          <li><span class="cluster-tag">翻译质量差 (iOS)</span> <span class="cluster-stat">19 (-42%) &#8595;&#8595;WoW</span></li>
+          <li><span class="cluster-tag">配音质量差 (iOS)</span> <span class="cluster-stat">11 (-62%) &#8595;&#8595;WoW</span></li>
+          <li><span class="cluster-tag">以为免费实际需要付费 (Android)</span> <span class="cluster-stat">1,831 (-19%) &#8595;WoW</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Items -->
+  <div class="card">
+    <h2>&#128161; 建议 Action Items</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:6%">级别</th>
+          <th style="width:8%">端</th>
+          <th style="width:16%">问题域</th>
+          <th style="width:42%">建议动作</th>
+          <th style="width:14%">负责方</th>
+          <th style="width:14%">核心依据</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-red">P0</span></td>
+          <td><span class="badge" style="background:#e8f5e9;color:var(--android-dark);">Android</span></td>
+          <td class="tag-name">广告/性能异常</td>
+          <td>跟进上周排查进展：广告 SDK 和版本回归是否已定位？本周数据呈见顶回落趋势，若已修复需确认灰度验证进度；若未排查，<strong>仍为最高优先级</strong></td>
+          <td>技术 / 广告SDK</td>
+          <td>广告卡顿 +96% vs 均值</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-orange">P1</span></td>
+          <td><span class="badge" style="background:#e8f5e9;color:var(--android-dark);">Android</span></td>
+          <td class="tag-name">推送/干扰体验</td>
+          <td>审计 Android 端 PUSH 策略（频次、时段、内容类型），结合广告无法关闭 +44%，评估近期是否调整了推送频率或广告交互方式</td>
+          <td>运营 / 产品</td>
+          <td>推送干扰 +71%</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-yellow">P2</span></td>
+          <td><span class="badge" style="background:#e3f2fd;color:var(--ios-dark);">iOS</span></td>
+          <td class="tag-name">续费价格/电量</td>
+          <td>核查 iOS 端近期是否有订阅价格调整或计费策略变更；电量消耗快虽基数小（17 条）但 WoW +113%，建议关注 iOS 新版本的后台活动</td>
+          <td>商业化 / 技术</td>
+          <td>续费涨价 +60%</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-yellow">P2</span></td>
+          <td><span class="badge" style="background:#f3f4f6;color:var(--gray-700);">双端</span></td>
+          <td class="tag-name">内容体验</td>
+          <td>Android 端「看不懂」+50%（78 条）、搜索结果不准确 +42%，建议排查是否有语种/地区推荐策略变更导致内容匹配度下降</td>
+          <td>内容 / 算法</td>
+          <td>看不懂 +50%</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-green">&#10003;</span></td>
+          <td><span class="badge" style="background:#f3f4f6;color:var(--gray-700);">双端</span></td>
+          <td class="tag-name">翻译质量（已改善）</td>
+          <td>上周标记的翻译质量差问题已自然回落至正常水位，可降低关注优先级。建议保持监控即可</td>
+          <td>本地化团队</td>
+          <td>双端 -42%~-54%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    数据来源：产品三级差评417.xlsx &nbsp;|&nbsp; 分析周期：2026-02-20 ~ 2026-04-10（8周）&nbsp;|&nbsp; 生成时间：2026-04-17
+  </div>
+
+</div>
+</body>
+</html>
