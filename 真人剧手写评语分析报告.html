@@ -206,22 +206,6 @@
   .action-list li .p1 { background: #ffebee; color: #c62828; }
   .action-list li .p2 { background: #fff3e0; color: #e65100; }
   .action-list li .p3 { background: #e3f2fd; color: #1565c0; }
-
-  /* Comparison box */
-  .compare-box {
-    background: linear-gradient(135deg, #ede7f6 0%, #e8eaf6 100%);
-    border: 1px solid #d1c4e9; border-radius: 12px;
-    padding: 20px 24px; margin-top: 16px;
-  }
-  .compare-box h3 { font-size: 15px; color: #4527a0; margin-bottom: 12px; font-weight: 700; }
-  .compare-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 13px;
-  }
-  .compare-row:last-child { border-bottom: none; }
-  .compare-row .dim { color: #616161; min-width: 140px; }
-  .compare-row .val-real { color: #2e7d32; font-weight: 700; min-width: 80px; text-align: center; }
-  .compare-row .val-ai { color: #c62828; font-weight: 700; min-width: 80px; text-align: center; }
 </style>
 </head>
 <body>
@@ -242,8 +226,8 @@
   <div class="alert">
     <h2>核心发现</h2>
     <p>
-      198 条手写评语中，<span class="hl-green">正面率 40.9%</span>，负面率 16.7%，整体口碑显著优于 AI 仿真人剧（正面率 28.1%）。<br/>
-      用户关注焦点从"AI 形态"转向<strong>演技表现（31.3%）和剧情/剧本质量（33.3%）</strong>，这是健康的内容评价结构。<br/>
+      198 条手写评语中，<span class="hl-green">正面率 40.9%</span>，负面率 16.7%。<br/>
+      用户关注焦点集中在<strong>演技表现（31.3%）和剧情/剧本质量（33.3%）</strong>，这是健康的内容评价结构。<br/>
       值得警惕的是，<span class="hl-red">霸凌/暴力内容</span>成为真人剧独有痛点（9.6%），部分剧集因此口碑严重受损。
     </p>
   </div>
@@ -297,12 +281,6 @@
         <h4>霸凌/暴力争议</h4>
         <div class="pct" style="color:#c62828;">9.6%</div>
         <div class="desc">19/198 条提及暴力问题</div>
-      </div>
-      <div class="issue-card">
-        <div class="icon">&#129302;</div>
-        <h4>AI 提及率</h4>
-        <div class="pct" style="color:#2e7d32;">4.0%</div>
-        <div class="desc">8/198 条主动提及 AI</div>
       </div>
       <div class="issue-card">
         <div class="icon">&#127908;</div>
@@ -548,7 +526,7 @@
 
     <!-- Issue 3: Violence -->
     <h3>3.3 霸凌/暴力内容争议（9.6% 评论提及）</h3>
-    <p style="font-size:13px; color:#616161; margin-bottom:12px;">这是真人剧区别于 AI 剧的独有痛点。Your Money Can't Crush My Dignity 尤为严重（47.4%）。</p>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">这是真人剧突出的内容痛点。Your Money Can't Crush My Dignity 尤为严重（47.4%）。</p>
     <div class="quote-grid">
       <div class="quote-card negative">
         "The beat down scene was far too long. What gives the right the show to depict such horrific violence toward women."
@@ -565,31 +543,6 @@
     </div>
     <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
       <strong>洞察：</strong>暴力/霸凌问题直接导致了 Your Money Can't Crush My Dignity <span class="hl-red">正面率为 0%、负面率 36.8%</span> 的极端数据。用户的愤怒不是"演得不好"，而是<strong>内容本身让人不适</strong>。这类内容风险远大于演技或剧情瑕疵。
-    </p>
-
-    <!-- Issue 4: AI comparison -->
-    <h3>3.4 用户主动对比 AI（4.0% 提及，但信号明确）</h3>
-    <p style="font-size:13px; color:#616161; margin-bottom:12px;">虽然只有 4% 提及 AI，但每一条都在表达同一个意思：真人优于 AI。</p>
-    <div class="quote-grid">
-      <div class="quote-card positive">
-        "Finally one with ACTUAL HUMANS!!!!"
-        <div class="source">— My Poor Rancher Wife</div>
-      </div>
-      <div class="quote-card positive">
-        "This is what I like... real actor. Keep it going... I love this... make more"
-        <div class="source">— Driven Hard</div>
-      </div>
-      <div class="quote-card positive">
-        "I love these types of stories not the AI ones I hate them"
-        <div class="source">— Your Money Can't Crush My Dignity</div>
-      </div>
-      <div class="quote-card positive">
-        "Thanks for having real actors. I hate the movies with AI actors."
-        <div class="source">— Fated to My Rival's Alpha Father</div>
-      </div>
-    </div>
-    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
-      <strong>洞察：</strong>用户在真人剧里主动提及 AI，全部是为了<span class="hl-green">表达对真人的肯定和对 AI 的排斥</span>。这说明 AI 仿真人剧的存在已经影响了用户对真人剧的感知——真人内容正在成为一种"正面差异化标签"。
     </p>
   </div>
 
@@ -623,7 +576,7 @@
         <div class="metric"><div class="v" style="color:#e65100;">20.5%</div><div class="l">手写负面率</div></div>
       </div>
       <div class="summary">
-        <strong>核心结论：</strong>男主 Ben Taylor 获高频点名好评，成为核心引流资产。负面反馈分两类：一是"剧本套路化"（banquet scenes / humiliation），二是配角演技过度（"villain performances were the worst"）。有用户明确表示"宁要好 AI 剧也不要烂真人宴会戏"，说明剧本质量若不过关，真人优势也会被消解。
+        <strong>核心结论：</strong>男主 Ben Taylor 获高频点名好评，成为核心引流资产。负面反馈分两类：一是"剧本套路化"（banquet scenes / humiliation），二是配角演技过度（"villain performances were the worst"）。剧本质量若不过关，好演员也无法兜住口碑。
       </div>
     </div>
 
@@ -638,7 +591,7 @@
         <div class="metric"><div class="v" style="color:#2e7d32;">10.3%</div><div class="l">手写负面率</div></div>
       </div>
       <div class="summary">
-        <strong>核心结论：</strong>男主角获得极高认可（"so good""made me change my mind about cancelling"），但<strong>女主选角是本剧最大争议</strong>——多位用户独立吐槽"not convincing""not right for this part""doesn't match"。这说明选角匹配度在真人剧中是比剧情更敏感的体验因素。另有 4 条评论（10.3%）主动提及"终于不是 AI"，反映出用户对真人内容的珍惜感。
+        <strong>核心结论：</strong>男主角获得极高认可（"so good""made me change my mind about cancelling"），但<strong>女主选角是本剧最大争议</strong>——多位用户独立吐槽"not convincing""not right for this part""doesn't match"。这说明选角匹配度是比剧情更敏感的体验因素。
       </div>
     </div>
 
@@ -668,7 +621,7 @@
         <div class="metric"><div class="v" style="color:#e65100;">20.8%</div><div class="l">手写负面率</div></div>
       </div>
       <div class="summary">
-        <strong>核心结论：</strong>男主获赞（"Travis was fantastic"），但反派角色的"fake Southern accent"成为最集中的吐槽点（20.8% 提及口音），这是真人剧中罕见的语音问题。女主也受到"consistently terrible in every role"的严厉批评。口音问题在此剧中的表现方式与 AI 剧不同——AI 剧是口音随机切换，真人剧是口音本身让人出戏。
+        <strong>核心结论：</strong>男主获赞（"Travis was fantastic"），但反派角色的"fake Southern accent"成为最集中的吐槽点（20.8% 提及口音）。女主也受到"consistently terrible in every role"的严厉批评。口音问题让人出戏，严重影响了观看体验。
       </div>
     </div>
 
@@ -707,7 +660,7 @@
 
     <h3>5.1 三大核心结论</h3>
     <div style="margin-top:12px; font-size:14px; line-height:2;">
-      <p><strong>1.</strong> <span class="hl-green">真人剧的口碑基线显著高于 AI 剧</span> — 正面率 40.9% vs 28.1%，且用户关注的是"内容本身"而非"形态"，这是健康的评价结构。</p>
+      <p><strong>1.</strong> <span class="hl-green">正面率 40.9%，口碑整体健康</span> — 用户关注的是"内容本身"而非"形态"，演技+剧情是核心评价维度，这是健康的评价结构。</p>
       <p><strong>2.</strong> <span class="hl-red">暴力/霸凌内容是真人剧的最大口碑杀手</span> — Your Money 正面率 0% 证明：极端暴力内容会完全抹杀好演技带来的正面价值。</p>
       <p><strong>3.</strong> <span class="hl-orange">选角匹配度 > 演技绝对值</span> — 用户更在意"这个演员适不适合这个角色"，而非"这个演员演技好不好"。男主普遍被认可，女主选角是最大变量。</p>
     </div>
@@ -727,16 +680,12 @@
         Driven Hard 的数据证明，女主选角失误可以让一部剧从"好剧"变成"凑合"。建议在选角阶段增加化学反应试镜（chemistry read）。
       </li>
       <li>
-        <strong>持续投入优质男演员作为核心引流资产</strong><span class="priority p2">P1</span><br/>
-        Ben Taylor、Greg Duffy 等男演员已形成粉丝效应（"whenever I see him I watch"）。保持核心演员的出镜频率是维持用户粘性的低成本方式。
+        <strong>持续投入优质演员作为核心引流资产</strong><span class="priority p2">P1</span><br/>
+        Ben Taylor、Greg Duffy 等演员已形成粉丝效应（"whenever I see him I watch"）。保持核心演员的出镜频率是维持用户粘性的低成本方式。
       </li>
       <li>
         <strong>控制反派角色的表演尺度</strong><span class="priority p3">P2</span><br/>
         多部剧的反派被吐槽"over-the-top""overact"。建议导演层面统一尺度，反派需要可信而非夸张。
-      </li>
-      <li>
-        <strong>利用真人优势做明确标签区分</strong><span class="priority p3">P2</span><br/>
-        用户已自发将"真人"当作品质背书。在内容推荐层面，可将"真人演员出演"作为正向标签露出，与 AI 内容做差异化。
       </li>
     </ul>
   </div>
