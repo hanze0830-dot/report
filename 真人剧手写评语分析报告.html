@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>真人剧手写评语深度分析报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    line-height: 1.7;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1160px; margin: 0 auto; }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1b3a4b 0%, #274c5e 50%, #3a6b7e 100%);
+    border-radius: 16px;
+    padding: 48px 40px;
+    color: #fff;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -15%;
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(255,193,7,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .header .meta { font-size: 13px; opacity: 0.7; margin-bottom: 12px; }
+  .header .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+
+  /* Alert */
+  .alert {
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+    border-left: 5px solid #4caf50;
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 12px rgba(76,175,80,0.08);
+  }
+  .alert h2 { font-size: 16px; color: #2e7d32; margin-bottom: 10px; }
+  .alert p { font-size: 14px; color: #33691e; line-height: 1.9; }
+  .hl-red { color: #c62828; font-weight: 700; }
+  .hl-orange { color: #e65100; font-weight: 700; }
+  .hl-green { color: #2e7d32; font-weight: 700; }
+  .hl-blue { color: #1565c0; font-weight: 700; }
+
+  /* Section */
+  .section {
+    background: #fff;
+    border-radius: 14px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+  }
+  .section h2 {
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 20px; padding-bottom: 12px;
+    border-bottom: 2px solid #f0f2f5;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section h2 .num {
+    background: #1a1a2e; color: #fff;
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .section h3 { font-size: 15px; font-weight: 700; color: #37474f; margin: 24px 0 12px; }
+
+  /* KPI row */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 16px; margin-bottom: 24px;
+  }
+  .kpi-card {
+    text-align: center; padding: 20px 12px;
+    background: #f8f9fc; border-radius: 12px; border: 1px solid #e8eaf0;
+  }
+  .kpi-card .value { font-size: 28px; font-weight: 800; }
+  .kpi-card .label { font-size: 11px; color: #757575; margin-top: 4px; }
+  .kpi-card.danger .value { color: #c62828; }
+  .kpi-card.warn .value { color: #e65100; }
+  .kpi-card.good .value { color: #2e7d32; }
+  .kpi-card.info .value { color: #1565c0; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    background: #f8f9fc; color: #5a5a7a; font-weight: 600;
+    padding: 12px 14px; text-align: left; border-bottom: 2px solid #e8eaf0;
+    white-space: nowrap;
+  }
+  tbody td { padding: 12px 14px; border-bottom: 1px solid #f0f2f5; }
+  tbody tr:hover { background: #f8f9fc; }
+
+  /* Bar chart inline */
+  .bar-cell { display: flex; align-items: center; gap: 8px; }
+  .bar-bg { background: #e8eaf0; border-radius: 4px; height: 18px; flex: 1; max-width: 140px; position: relative; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-fill.red { background: linear-gradient(90deg, #ef5350, #c62828); }
+  .bar-fill.orange { background: linear-gradient(90deg, #ffa726, #e65100); }
+  .bar-fill.green { background: linear-gradient(90deg, #66bb6a, #2e7d32); }
+  .bar-fill.blue { background: linear-gradient(90deg, #42a5f5, #1565c0); }
+  .bar-fill.teal { background: linear-gradient(90deg, #26c6da, #00838f); }
+  .bar-label { font-size: 12px; font-weight: 700; min-width: 42px; }
+
+  /* Tags */
+  .tag-green { display:inline-block; background:#e8f5e9; color:#2e7d32; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-red { display:inline-block; background:#ffebee; color:#c62828; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-orange { display:inline-block; background:#fff3e0; color:#e65100; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-blue { display:inline-block; background:#e3f2fd; color:#1565c0; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-gray { display:inline-block; background:#f5f5f5; color:#757575; font-weight:600; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-purple { display:inline-block; background:#f3e5f5; color:#6a1b9a; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+
+  /* Quote cards */
+  .quote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 14px; margin-top: 16px;
+  }
+  .quote-card {
+    background: #f8f9fc; border-radius: 10px; padding: 14px 18px;
+    border-left: 4px solid #90a4ae;
+    font-size: 13px; font-style: italic; color: #455a64; line-height: 1.6;
+  }
+  .quote-card .source { font-style: normal; font-size: 11px; color: #9e9e9e; margin-top: 6px; }
+  .quote-card.positive { border-left-color: #4caf50; }
+  .quote-card.negative { border-left-color: #ef5350; }
+  .quote-card.mixed { border-left-color: #ff9800; }
+
+  /* Issue cards */
+  .issue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px; margin-top: 16px;
+  }
+  .issue-card {
+    background: #fff; border: 1px solid #e8eaf0; border-radius: 12px;
+    padding: 18px; text-align: center;
+  }
+  .issue-card .icon { font-size: 28px; margin-bottom: 8px; }
+  .issue-card h4 { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+  .issue-card .pct { font-size: 22px; font-weight: 800; }
+  .issue-card .desc { font-size: 11px; color: #757575; margin-top: 4px; }
+
+  /* Drama detail card */
+  .drama-card {
+    background: #fff; border: 1px solid #e8eaf0; border-radius: 14px;
+    padding: 24px; margin-bottom: 20px;
+  }
+  .drama-card h3 {
+    font-size: 15px; font-weight: 700; color: #1a1a2e;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+  }
+  .drama-card .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px; margin-bottom: 14px;
+  }
+  .drama-card .metric { background: #f8f9fc; border-radius: 8px; padding: 10px; text-align: center; }
+  .drama-card .metric .v { font-size: 18px; font-weight: 800; }
+  .drama-card .metric .l { font-size: 10px; color: #757575; }
+  .drama-card .summary {
+    font-size: 13px; color: #455a64; line-height: 1.8;
+    padding: 12px 16px; background: #fafafa; border-radius: 8px;
+  }
+
+  /* Sentiment bar */
+  .sentiment-bar { display: flex; height: 24px; border-radius: 12px; overflow: hidden; margin: 8px 0; }
+  .sentiment-bar .pos { background: #4caf50; }
+  .sentiment-bar .neu { background: #e0e0e0; }
+  .sentiment-bar .neg { background: #ef5350; }
+
+  /* Action items */
+  .action-list { list-style: none; padding: 0; }
+  .action-list li {
+    padding: 12px 16px; border-left: 4px solid #1565c0;
+    background: #f8f9fc; border-radius: 0 8px 8px 0;
+    margin-bottom: 10px; font-size: 13px; line-height: 1.7;
+  }
+  .action-list li strong { color: #1a1a2e; }
+  .action-list li .priority {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 1px 8px; border-radius: 10px; margin-left: 8px;
+  }
+  .action-list li .p1 { background: #ffebee; color: #c62828; }
+  .action-list li .p2 { background: #fff3e0; color: #e65100; }
+  .action-list li .p3 { background: #e3f2fd; color: #1565c0; }
+
+  /* Comparison box */
+  .compare-box {
+    background: linear-gradient(135deg, #ede7f6 0%, #e8eaf6 100%);
+    border: 1px solid #d1c4e9; border-radius: 12px;
+    padding: 20px 24px; margin-top: 16px;
+  }
+  .compare-box h3 { font-size: 15px; color: #4527a0; margin-bottom: 12px; font-weight: 700; }
+  .compare-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 13px;
+  }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-row .dim { color: #616161; min-width: 140px; }
+  .compare-row .val-real { color: #2e7d32; font-weight: 700; min-width: 80px; text-align: center; }
+  .compare-row .val-ai { color: #c62828; font-weight: 700; min-width: 80px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>真人剧手写评语深度分析报告</h1>
+    <div class="meta">作者：韩泽 &nbsp;|&nbsp; 数据周期：2026-04-27 ~ 2026-05-06</div>
+    <div>
+      <span class="badge">198 条手写评语</span>
+      <span class="badge">8 部剧集</span>
+      <span class="badge">数据源：bi.ads_db_ub_video_cmt_di</span>
+    </div>
+  </div>
+
+  <!-- Core Findings -->
+  <div class="alert">
+    <h2>核心发现</h2>
+    <p>
+      198 条手写评语中，<span class="hl-green">正面率 40.9%</span>，负面率 16.7%，整体口碑显著优于 AI 仿真人剧（正面率 28.1%）。<br/>
+      用户关注焦点从"AI 形态"转向<strong>演技表现（31.3%）和剧情/剧本质量（33.3%）</strong>，这是健康的内容评价结构。<br/>
+      值得警惕的是，<span class="hl-red">霸凌/暴力内容</span>成为真人剧独有痛点（9.6%），部分剧集因此口碑严重受损。
+    </p>
+  </div>
+
+  <!-- Section 1: Overview KPIs -->
+  <div class="section">
+    <h2><span class="num">1</span>全局指标总览</h2>
+    <div class="kpi-row">
+      <div class="kpi-card info">
+        <div class="value">198</div>
+        <div class="label">手写评语总量</div>
+      </div>
+      <div class="kpi-card good">
+        <div class="value">40.9%</div>
+        <div class="label">正面情感占比</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="value">16.7%</div>
+        <div class="label">负面情感占比</div>
+      </div>
+      <div class="kpi-card info">
+        <div class="value">33.3%</div>
+        <div class="label">剧情/剧本讨论率</div>
+      </div>
+      <div class="kpi-card info">
+        <div class="value">31.3%</div>
+        <div class="label">演技讨论率</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="value">9.6%</div>
+        <div class="label">霸凌/暴力提及率</div>
+      </div>
+    </div>
+
+    <h3>用户关注焦点分布</h3>
+    <div class="issue-grid">
+      <div class="issue-card">
+        <div class="icon">&#128221;</div>
+        <h4>剧情/剧本</h4>
+        <div class="pct" style="color:#1565c0;">33.3%</div>
+        <div class="desc">66/198 条讨论剧情剧本</div>
+      </div>
+      <div class="issue-card">
+        <div class="icon">&#127917;</div>
+        <h4>演技表现</h4>
+        <div class="pct" style="color:#1565c0;">31.3%</div>
+        <div class="desc">62/198 条讨论演技</div>
+      </div>
+      <div class="issue-card">
+        <div class="icon">&#128078;</div>
+        <h4>霸凌/暴力争议</h4>
+        <div class="pct" style="color:#c62828;">9.6%</div>
+        <div class="desc">19/198 条提及暴力问题</div>
+      </div>
+      <div class="issue-card">
+        <div class="icon">&#129302;</div>
+        <h4>AI 提及率</h4>
+        <div class="pct" style="color:#2e7d32;">4.0%</div>
+        <div class="desc">8/198 条主动提及 AI</div>
+      </div>
+      <div class="issue-card">
+        <div class="icon">&#127908;</div>
+        <h4>配音/口音</h4>
+        <div class="pct" style="color:#e65100;">3.5%</div>
+        <div class="desc">7/198 条提及语音问题</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Per-drama comparison -->
+  <div class="section">
+    <h2><span class="num">2</span>分剧对比分析</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>剧集</th>
+            <th>评语数</th>
+            <th>正面率</th>
+            <th>负面率</th>
+            <th>演技讨论</th>
+            <th>剧情讨论</th>
+            <th>暴力提及</th>
+            <th>情感判断</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Fated to My Rival's Alpha Father</strong></td>
+            <td>18</td>
+            <td><span class="tag-green">72.2%</span></td>
+            <td><span class="tag-green">11.1%</span></td>
+            <td>33.3%</td>
+            <td>33.3%</td>
+            <td>0%</td>
+            <td><span class="tag-green">口碑最佳</span></td>
+          </tr>
+          <tr>
+            <td><strong>My Poor Rancher Wife is a Trillionaire</strong></td>
+            <td>39</td>
+            <td><span class="tag-green">53.8%</span></td>
+            <td>20.5%</td>
+            <td><span class="hl-blue">41.0%</span></td>
+            <td><span class="hl-blue">38.5%</span></td>
+            <td>7.7%</td>
+            <td><span class="tag-green">整体良好</span></td>
+          </tr>
+          <tr>
+            <td><strong>Driven Hard by My Ex's Rich Dad</strong></td>
+            <td>39</td>
+            <td><span class="tag-green">51.3%</span></td>
+            <td>10.3%</td>
+            <td><span class="hl-blue">43.6%</span></td>
+            <td>33.3%</td>
+            <td>2.6%</td>
+            <td><span class="tag-green">整体良好</span></td>
+          </tr>
+          <tr>
+            <td><strong>I Don't Want Any of You Three</strong></td>
+            <td>47</td>
+            <td>36.2%</td>
+            <td>10.6%</td>
+            <td>19.1%</td>
+            <td><span class="hl-blue">36.2%</span></td>
+            <td><span class="hl-orange">10.6%</span></td>
+            <td><span class="tag-orange">中性偏正</span></td>
+          </tr>
+          <tr>
+            <td><strong>From Mail-Order Bride To Billionaire's Wife</strong></td>
+            <td>24</td>
+            <td>33.3%</td>
+            <td>20.8%</td>
+            <td>29.2%</td>
+            <td>29.2%</td>
+            <td>4.2%</td>
+            <td><span class="tag-orange">两极分化</span></td>
+          </tr>
+          <tr>
+            <td><strong>Don't You Dare Mess With Dr. Davis</strong></td>
+            <td>7</td>
+            <td>28.6%</td>
+            <td>28.6%</td>
+            <td>0%</td>
+            <td>28.6%</td>
+            <td>0%</td>
+            <td><span class="tag-gray">样本不足</span></td>
+          </tr>
+          <tr>
+            <td><strong>Your Money Can't Crush My Dignity</strong></td>
+            <td>19</td>
+            <td><span class="tag-red">0%</span></td>
+            <td><span class="tag-red">36.8%</span></td>
+            <td>36.8%</td>
+            <td>31.6%</td>
+            <td><span class="hl-red">47.4%</span></td>
+            <td><span class="tag-red">口碑最差</span></td>
+          </tr>
+          <tr>
+            <td><strong>裏切りの花嫁と億万長者の復讐</strong></td>
+            <td>5</td>
+            <td>0%</td>
+            <td>0%</td>
+            <td>0%</td>
+            <td>0%</td>
+            <td>0%</td>
+            <td><span class="tag-gray">样本不足</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:28px;">情感分布对比（正面 / 中性 / 负面）</h3>
+    <div style="margin-top:12px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <span style="width:260px; font-size:12px; font-weight:600;">Fated to My Rival's Alpha Father</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:72.2%"></div>
+          <div class="neu" style="width:16.7%"></div>
+          <div class="neg" style="width:11.1%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">72%</span>
+        <span style="font-size:11px; color:#9e9e9e;">17%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">11%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <span style="width:260px; font-size:12px; font-weight:600;">My Poor Rancher Wife...</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:53.8%"></div>
+          <div class="neu" style="width:25.6%"></div>
+          <div class="neg" style="width:20.5%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">54%</span>
+        <span style="font-size:11px; color:#9e9e9e;">26%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">21%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <span style="width:260px; font-size:12px; font-weight:600;">Driven Hard by My Ex's Rich Dad</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:51.3%"></div>
+          <div class="neu" style="width:38.5%"></div>
+          <div class="neg" style="width:10.3%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">51%</span>
+        <span style="font-size:11px; color:#9e9e9e;">39%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">10%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <span style="width:260px; font-size:12px; font-weight:600;">I Don't Want Any of You Three</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:36.2%"></div>
+          <div class="neu" style="width:53.2%"></div>
+          <div class="neg" style="width:10.6%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">36%</span>
+        <span style="font-size:11px; color:#9e9e9e;">53%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">11%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <span style="width:260px; font-size:12px; font-weight:600;">From Mail-Order Bride...</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:33.3%"></div>
+          <div class="neu" style="width:45.8%"></div>
+          <div class="neg" style="width:20.8%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">33%</span>
+        <span style="font-size:11px; color:#9e9e9e;">46%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">21%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <span style="width:260px; font-size:12px; font-weight:600;">Your Money Can't Crush My Dignity</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:0%"></div>
+          <div class="neu" style="width:63.2%"></div>
+          <div class="neg" style="width:36.8%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">0%</span>
+        <span style="font-size:11px; color:#9e9e9e;">63%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">37%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Core Issues Deep Dive -->
+  <div class="section">
+    <h2><span class="num">3</span>核心问题深度拆解</h2>
+
+    <!-- Issue 1: Acting -->
+    <h3>3.1 演技与选角（31.3% 评论讨论）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">真人剧评论中，演技是第二大讨论维度。用户关注点聚焦在：男女主角化学反应、女主选角匹配度、配角过度表演。</p>
+    <div class="quote-grid">
+      <div class="quote-card positive">
+        "The leads in this are fabulous in their own right, but add in Mr Duffy as the heir and fiance it's raised up even higher! Great job guys"
+        <div class="source">— I Don't Want Any of You Three</div>
+      </div>
+      <div class="quote-card negative">
+        "Did not like the female lead at all. Made this one a chore to watch. The storyline was okay, but there was something unusual about the actress' face. The female lead was not right for this part."
+        <div class="source">— Driven Hard by My Ex's Rich Dad</div>
+      </div>
+      <div class="quote-card negative">
+        "The absolute worst fake crying I have ever seen."
+        <div class="source">— I Don't Want Any of You Three</div>
+      </div>
+      <div class="quote-card positive">
+        "Ben Taylor never disappoints when it comes to acting"
+        <div class="source">— My Poor Rancher Wife is a Trillionaire</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>关键发现：</strong><br/>
+      &bull; <span class="hl-green">男主角普遍受到认可</span>：多部剧中男主获得高频好评（"best ML ever""Ben Taylor is excellent"）<br/>
+      &bull; <span class="hl-red">女主选角争议集中</span>：Driven Hard 中女主被多位用户吐槽"不适合这个角色""not convincing"<br/>
+      &bull; <span class="hl-orange">配角过度表演</span>：反派角色"over-the-top""overact"在多部剧中被反复提及
+    </p>
+
+    <!-- Issue 2: Plot -->
+    <h3>3.2 剧情/剧本质量（33.3% 评论讨论）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">剧情是用户最高频的讨论维度，争议主要在"剧本套路化"和"剧情节奏"两个方面。</p>
+    <div class="quote-grid">
+      <div class="quote-card negative">
+        "This a recycled storyline. Erin Orcutt deserved a better script. Cringy plot. Over-the-top bullying and outright violence."
+        <div class="source">— I Don't Want Any of You Three</div>
+      </div>
+      <div class="quote-card negative">
+        "Need new material, this story has been done over a dozen times"
+        <div class="source">— I Don't Want Any of You Three</div>
+      </div>
+      <div class="quote-card positive">
+        "Some awesome script-writing in there with more originality than expected. Good interactions and not overly produced."
+        <div class="source">— Driven Hard by My Ex's Rich Dad</div>
+      </div>
+      <div class="quote-card mixed">
+        "It was a good storyline but she didn't need to dress like a complete peasant and more spice pleaseee."
+        <div class="source">— From Mail-Order Bride</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>高频子问题：</strong><br/>
+      &bull; <span class="hl-red">剧本重复/套路</span>：多位用户指出"recycled storyline""same story done before"，这在 I Don't Want Any of You Three 和 My Poor Rancher Wife 中最突出<br/>
+      &bull; <span class="hl-orange">长宴会/羞辱场景</span>："Long banquets and humiliation scenes are not fun to watch"<br/>
+      &bull; <span class="hl-orange">女主角色塑造弱</span>：多部剧中 FL 被吐槽"太弱""too naive""too dumb"
+    </p>
+
+    <!-- Issue 3: Violence -->
+    <h3>3.3 霸凌/暴力内容争议（9.6% 评论提及）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">这是真人剧区别于 AI 剧的独有痛点。Your Money Can't Crush My Dignity 尤为严重（47.4%）。</p>
+    <div class="quote-grid">
+      <div class="quote-card negative">
+        "The beat down scene was far too long. What gives the right the show to depict such horrific violence toward women."
+        <div class="source">— Your Money Can't Crush My Dignity</div>
+      </div>
+      <div class="quote-card negative">
+        "I hate these stories full of violence against women for basically no reason. I skipped most of it to be able to write this review."
+        <div class="source">— Your Money Can't Crush My Dignity</div>
+      </div>
+      <div class="quote-card negative">
+        "All but 4 scenes are just bullying and humiliation. There are opportunities for actual plot to be inserted."
+        <div class="source">— My Poor Rancher Wife is a Trillionaire</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>洞察：</strong>暴力/霸凌问题直接导致了 Your Money Can't Crush My Dignity <span class="hl-red">正面率为 0%、负面率 36.8%</span> 的极端数据。用户的愤怒不是"演得不好"，而是<strong>内容本身让人不适</strong>。这类内容风险远大于演技或剧情瑕疵。
+    </p>
+
+    <!-- Issue 4: AI comparison -->
+    <h3>3.4 用户主动对比 AI（4.0% 提及，但信号明确）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">虽然只有 4% 提及 AI，但每一条都在表达同一个意思：真人优于 AI。</p>
+    <div class="quote-grid">
+      <div class="quote-card positive">
+        "Finally one with ACTUAL HUMANS!!!!"
+        <div class="source">— My Poor Rancher Wife</div>
+      </div>
+      <div class="quote-card positive">
+        "This is what I like... real actor. Keep it going... I love this... make more"
+        <div class="source">— Driven Hard</div>
+      </div>
+      <div class="quote-card positive">
+        "I love these types of stories not the AI ones I hate them"
+        <div class="source">— Your Money Can't Crush My Dignity</div>
+      </div>
+      <div class="quote-card positive">
+        "Thanks for having real actors. I hate the movies with AI actors."
+        <div class="source">— Fated to My Rival's Alpha Father</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>洞察：</strong>用户在真人剧里主动提及 AI，全部是为了<span class="hl-green">表达对真人的肯定和对 AI 的排斥</span>。这说明 AI 仿真人剧的存在已经影响了用户对真人剧的感知——真人内容正在成为一种"正面差异化标签"。
+    </p>
+  </div>
+
+  <!-- Section 4: Per-drama detail -->
+  <div class="section">
+    <h2><span class="num">4</span>分剧详细解读</h2>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">口碑最佳</span> Fated to My Rival's Alpha Father</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#1565c0;">18</div><div class="l">评语数</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">72.2%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">11.1%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v">33.3%</div><div class="l">演技讨论</div></div>
+      </div>
+      <div class="summary">
+        <strong>核心结论：</strong>正面率高达 72.2%，8 部中最佳。用户特别认可男主角表现（"best ML ever""so handsome"）。负面反馈主要集中在男女主化学反应不足（"zero chemistry"）和女主表演力度。werewolf 题材的粉丝粘性依然强劲。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">整体良好</span> My Poor Rancher Wife is a Trillionaire</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#1565c0;">39</div><div class="l">评语数</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">53.8%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">20.5%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">7.7%</div><div class="l">暴力提及</div></div>
+      </div>
+      <div class="summary">
+        <strong>核心结论：</strong>男主 Ben Taylor 获高频点名好评，成为核心引流资产。负面反馈分两类：一是"剧本套路化"（banquet scenes / humiliation），二是配角演技过度（"villain performances were the worst"）。有用户明确表示"宁要好 AI 剧也不要烂真人宴会戏"，说明剧本质量若不过关，真人优势也会被消解。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">整体良好</span> Driven Hard by My Ex's Rich Dad</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#1565c0;">39</div><div class="l">评语数</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">51.3%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">10.3%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">43.6%</div><div class="l">演技讨论</div></div>
+      </div>
+      <div class="summary">
+        <strong>核心结论：</strong>男主角获得极高认可（"so good""made me change my mind about cancelling"），但<strong>女主选角是本剧最大争议</strong>——多位用户独立吐槽"not convincing""not right for this part""doesn't match"。这说明选角匹配度在真人剧中是比剧情更敏感的体验因素。另有 4 条评论（10.3%）主动提及"终于不是 AI"，反映出用户对真人内容的珍惜感。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-orange">中性偏正</span> I Don't Want Any of You Three</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#1565c0;">47</div><div class="l">评语数（最多）</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">36.2%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">10.6%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">10.6%</div><div class="l">暴力提及</div></div>
+      </div>
+      <div class="summary">
+        <strong>核心结论：</strong>评语数最多（47条），说明内容有讨论度。女主 Erin Orcutt 拥有忠实粉丝（"whenever I see her face, I put that drama on my list"）。主要争议：剧本重复度高（"recycled storyline""been done over a dozen times"）和霸凌场景过度（"over-the-top bullying"）。正面评论更多来自喜剧元素（"hilarious""the 3 brothers were funny"）。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-orange">两极分化</span> From Mail-Order Bride To Billionaire's Wife</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#1565c0;">24</div><div class="l">评语数</div></div>
+        <div class="metric"><div class="v">33.3%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">20.8%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">20.8%</div><div class="l">配音/口音</div></div>
+      </div>
+      <div class="summary">
+        <strong>核心结论：</strong>男主获赞（"Travis was fantastic"），但反派角色的"fake Southern accent"成为最集中的吐槽点（20.8% 提及口音），这是真人剧中罕见的语音问题。女主也受到"consistently terrible in every role"的严厉批评。口音问题在此剧中的表现方式与 AI 剧不同——AI 剧是口音随机切换，真人剧是口音本身让人出戏。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-red">口碑最差</span> Your Money Can't Crush My Dignity</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#1565c0;">19</div><div class="l">评语数</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">0%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">36.8%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">47.4%</div><div class="l">暴力提及</div></div>
+      </div>
+      <div class="summary">
+        <strong>核心结论：</strong>8 部中唯一正面率为 0% 的剧集。<strong>问题不在演技和制作，而在内容本身</strong>——对女性角色的暴力描写过于极端和冗长，触发了用户的道德反感。即使有用户认可演员实力（"good actors"），也无法挽救整体口碑。这是真人剧最需要避免的内容雷区。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-gray">样本不足</span> Don't You Dare Mess With Dr. Davis / 裏切りの花嫁と億万長者の復讐</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#9e9e9e;">7 / 5</div><div class="l">评语数</div></div>
+      </div>
+      <div class="summary">
+        样本量过小，暂不做定性结论。Dr. Davis 正负各半；日语剧评以中性点评为主，有字幕质量和制作粗糙的反馈。
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: vs AI comparison -->
+  <div class="section">
+    <h2><span class="num">5</span>真人剧 vs AI 仿真人剧对比</h2>
+    <div class="compare-box">
+      <h3>关键指标对照</h3>
+      <div class="compare-row">
+        <span class="dim">指标</span>
+        <span class="val-real">真人剧 (198条)</span>
+        <span class="val-ai">AI 剧 (467条)</span>
+      </div>
+      <div class="compare-row">
+        <span class="dim">正面率</span>
+        <span class="val-real">40.9%</span>
+        <span class="val-ai">28.1%</span>
+      </div>
+      <div class="compare-row">
+        <span class="dim">负面率</span>
+        <span class="val-real">16.7%</span>
+        <span class="val-ai">19.7%</span>
+      </div>
+      <div class="compare-row">
+        <span class="dim">AI 提及率</span>
+        <span class="val-real">4.0%（正面提及）</span>
+        <span class="val-ai">57.8%（以负面为主）</span>
+      </div>
+      <div class="compare-row">
+        <span class="dim">核心讨论焦点</span>
+        <span class="val-real" style="font-weight:400; font-size:12px;">演技 + 剧情</span>
+        <span class="val-ai" style="font-weight:400; font-size:12px;">AI接受度 + 配音</span>
+      </div>
+      <div class="compare-row">
+        <span class="dim">独有痛点</span>
+        <span class="val-real" style="font-weight:400; font-size:12px;">暴力内容 + 选角失败</span>
+        <span class="val-ai" style="font-weight:400; font-size:12px;">口音切换 + 穿帮 + 翻拍反感</span>
+      </div>
+      <div class="compare-row">
+        <span class="dim">配音/语音问题</span>
+        <span class="val-real">3.5%</span>
+        <span class="val-ai">14.1%</span>
+      </div>
+    </div>
+    <p style="margin-top:16px; font-size:13px; color:#455a64; line-height:1.8;">
+      <strong>结论：</strong>真人剧在正面率（+12.8pp）、负面率（-3pp）、配音问题（-10.6pp）上全面领先。但真人剧的口碑天花板同样受限于<span class="hl-red">剧本套路化</span>和<span class="hl-red">暴力内容</span>。<br/>
+      换言之：真人剧的底线更高（不会因为"形态"被直接拒绝），但如果剧本不行、内容失控，真人演员也救不了口碑（Your Money 正面率 0%）。
+    </p>
+  </div>
+
+  <!-- Section 6: Conclusions & Actions -->
+  <div class="section">
+    <h2><span class="num">6</span>结论与行动建议</h2>
+
+    <h3>6.1 三大核心结论</h3>
+    <div style="margin-top:12px; font-size:14px; line-height:2;">
+      <p><strong>1.</strong> <span class="hl-green">真人剧的口碑基线显著高于 AI 剧</span> — 正面率 40.9% vs 28.1%，且用户关注的是"内容本身"而非"形态"，这是健康的评价结构。</p>
+      <p><strong>2.</strong> <span class="hl-red">暴力/霸凌内容是真人剧的最大口碑杀手</span> — Your Money 正面率 0% 证明：极端暴力内容会完全抹杀好演技带来的正面价值。</p>
+      <p><strong>3.</strong> <span class="hl-orange">选角匹配度 > 演技绝对值</span> — 用户更在意"这个演员适不适合这个角色"，而非"这个演员演技好不好"。男主普遍被认可，女主选角是最大变量。</p>
+    </div>
+
+    <h3 style="margin-top:24px;">6.2 优先行动项</h3>
+    <ul class="action-list">
+      <li>
+        <strong>严格控制暴力/霸凌场景的篇幅和强度</strong><span class="priority p1">P0</span><br/>
+        用户对女性受暴力场景的耐受度极低。当前部分剧集（Your Money、I Don't Want）的暴力戏占比过高，建议建立内容审查红线，尤其是对女性角色的肢体暴力。
+      </li>
+      <li>
+        <strong>减少套路化剧本，提升剧情原创度</strong><span class="priority p1">P0</span><br/>
+        "Recycled storyline"是真人剧中最高频的负面标签。宴会+羞辱+逆袭的标准公式已经被用户厌倦，需要在剧本结构上做出变化。
+      </li>
+      <li>
+        <strong>加强女主选角的角色匹配度审查</strong><span class="priority p2">P1</span><br/>
+        Driven Hard 的数据证明，女主选角失误可以让一部剧从"好剧"变成"凑合"。建议在选角阶段增加化学反应试镜（chemistry read）。
+      </li>
+      <li>
+        <strong>持续投入优质男演员作为核心引流资产</strong><span class="priority p2">P1</span><br/>
+        Ben Taylor、Greg Duffy 等男演员已形成粉丝效应（"whenever I see him I watch"）。保持核心演员的出镜频率是维持用户粘性的低成本方式。
+      </li>
+      <li>
+        <strong>控制反派角色的表演尺度</strong><span class="priority p3">P2</span><br/>
+        多部剧的反派被吐槽"over-the-top""overact"。建议导演层面统一尺度，反派需要可信而非夸张。
+      </li>
+      <li>
+        <strong>利用真人优势做明确标签区分</strong><span class="priority p3">P2</span><br/>
+        用户已自发将"真人"当作品质背书。在内容推荐层面，可将"真人演员出演"作为正向标签露出，与 AI 内容做差异化。
+      </li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
