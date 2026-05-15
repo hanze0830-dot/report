@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品差评周报（分双端）| 2026-05-08</title>
+<style>
+:root {
+  --brand-gradient: linear-gradient(135deg, #FF8A47 0%, #FF5C55 40%, #FF2D6B 100%);
+  --red: #ef4444; --red-bg: #fef2f2; --red-text: #dc2626;
+  --orange: #f97316; --orange-bg: #fff7ed; --orange-text: #ea580c;
+  --yellow: #eab308; --yellow-bg: #fefce8; --yellow-text: #ca8a04;
+  --green: #22c55e; --green-bg: #f0fdf4; --green-text: #16a34a;
+  --blue: #3b82f6; --blue-bg: #eff6ff; --blue-text: #2563eb;
+  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+  --android: #34a853; --android-dark: #1e7e34;
+  --ios: #007aff; --ios-dark: #0056b3;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background:var(--gray-50); color:var(--gray-900); line-height:1.6; padding:32px; }
+.container { max-width:1200px; margin:0 auto; }
+.brand-bar { background:var(--brand-gradient); border-radius:16px 16px 0 0; padding:20px 40px; display:flex; align-items:center; gap:16px; }
+.brand-bar .brand-name { font-size:22px; font-weight:800; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.15); }
+.brand-bar .brand-divider { width:1px; height:28px; background:rgba(255,255,255,.35); margin:0 4px; }
+.brand-bar .brand-report-type { font-size:13px; color:rgba(255,255,255,.85); font-weight:500; }
+.header { background:linear-gradient(135deg,#2D1B33 0%,#3D1F3E 50%,#4A1942 100%); color:#fff; border-radius:0 0 16px 16px; padding:28px 40px 32px; margin-bottom:24px; }
+.header h1 { font-size:24px; font-weight:700; }
+.header .subtitle { font-size:14px; color:rgba(255,255,255,.55); margin-top:4px; }
+.header .meta { display:flex; gap:28px; margin-top:20px; }
+.header .meta-item { text-align:center; }
+.header .meta-val { font-size:28px; font-weight:700; }
+.header .meta-val.up { color:#FCA5A5; }
+.header .meta-val.down { color:#6BE09A; }
+.header .meta-label { font-size:12px; color:rgba(255,255,255,.5); margin-top:2px; }
+.platform-overview { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:24px; }
+.platform-card { background:#fff; border-radius:14px; padding:24px 28px; border:1px solid var(--gray-200); box-shadow:0 1px 3px rgba(0,0,0,.06); position:relative; overflow:hidden; }
+.platform-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; }
+.platform-card.android::before { background:var(--android); }
+.platform-card.ios::before { background:var(--ios); }
+.platform-label { display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; margin-bottom:12px; padding:3px 10px; border-radius:6px; }
+.platform-label.android { background:#e8f5e9; color:var(--android-dark); }
+.platform-label.ios { background:#e3f2fd; color:var(--ios-dark); }
+.platform-stats { display:flex; gap:28px; }
+.platform-stat .val { font-size:28px; font-weight:700; }
+.platform-stat .label { font-size:12px; color:var(--gray-500); }
+.platform-stat .change { font-size:13px; font-weight:600; margin-top:2px; }
+.up { color:#dc2626; } .down { color:var(--green); }
+.insight { background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:18px 24px; margin-bottom:22px; }
+.insight-title { font-weight:700; color:#2563eb; font-size:15px; margin-bottom:6px; }
+.insight-body { font-size:13px; color:#1e3a5f; line-height:1.75; }
+.insight-body strong { color:#1d4ed8; }
+.good-news { background:var(--green-bg); border:1px solid #BBF7D0; border-radius:12px; padding:18px 24px; margin-bottom:22px; }
+.good-news-title { font-weight:700; color:var(--green-text); font-size:15px; margin-bottom:6px; }
+.good-news-body { font-size:13px; color:#14532d; line-height:1.75; }
+.good-news-body strong { color:var(--green-text); }
+.alert { background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:18px 24px; margin-bottom:22px; }
+.alert-title { font-weight:700; color:#dc2626; font-size:15px; margin-bottom:6px; }
+.alert-body { font-size:13px; color:#7f1d1d; line-height:1.75; }
+.alert-body strong { color:#991b1b; }
+.card { background:#fff; border-radius:14px; padding:28px 32px; margin-bottom:22px; box-shadow:0 1px 3px rgba(0,0,0,.05); border:1px solid var(--gray-200); }
+.card h2 { font-size:17px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+.card .desc { font-size:13px; color:var(--gray-500); margin-bottom:18px; }
+.dual-panel { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-bottom:22px; }
+.panel { background:#fff; border-radius:14px; padding:24px 28px; border:1px solid var(--gray-200); box-shadow:0 1px 3px rgba(0,0,0,.05); }
+.panel h2 { font-size:16px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px; }
+.panel .desc { font-size:12px; color:var(--gray-500); margin-bottom:14px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { text-align:left; font-weight:600; color:var(--gray-500); font-size:11px; text-transform:uppercase; letter-spacing:.5px; padding:9px 10px; border-bottom:2px solid var(--gray-200); }
+td { padding:9px 10px; border-bottom:1px solid var(--gray-100); }
+tr:hover td { background:#f9fafb; }
+.tag-name { font-weight:600; max-width:180px; }
+.badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700; }
+.badge-red { background:var(--red-bg); color:var(--red-text); }
+.badge-orange { background:var(--orange-bg); color:var(--orange-text); }
+.badge-yellow { background:var(--yellow-bg); color:var(--yellow-text); }
+.badge-green { background:var(--green-bg); color:var(--green-text); }
+.badge-blue { background:var(--blue-bg); color:var(--blue-text); }
+.spark-row { display:flex; align-items:end; gap:2px; height:28px; }
+.spark-bar { width:6px; border-radius:2px 2px 0 0; background:#d1d5db; min-height:2px; }
+.spark-bar.a-latest { background:var(--android); }
+.spark-bar.i-latest { background:var(--ios); }
+.footer { text-align:center; font-size:12px; color:var(--gray-500); margin-top:28px; padding:16px 0; border-top:1px solid var(--gray-200); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="brand-bar">
+  <div class="brand-name">DramaBox</div>
+  <div class="brand-divider"></div>
+  <div class="brand-report-type">Product Insights Report</div>
+</div>
+<div class="header">
+  <h1>产品差评三级分类 &mdash; 双端对比周报</h1>
+  <div class="subtitle">数据周期: 2026-05-08（最新周）| 双基线：前期基线 (2026-02-27~2026-03-20) &amp; 4周均值 (2026-04-10~2026-05-01)</div>
+  <div class="meta">
+    <div class="meta-item">
+      <div class="meta-val down">18,652</div>
+      <div class="meta-label">本周差评总量</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-val down">&#9660; -14.3%</div>
+      <div class="meta-label">环比变化</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-val" style="color:rgba(255,255,255,.8)">11 周</div>
+      <div class="meta-label">覆盖周数</div>
+    </div>
+  </div>
+</div>
+
+<div class="platform-overview">
+  <div class="platform-card android">
+    <div class="platform-label android">ANDROID</div>
+    <div class="platform-stats">
+      <div class="platform-stat">
+        <div class="val">14,846</div>
+        <div class="label">本周差评</div>
+        <div class="change down">&#9660; -15.5% 环比</div>
+      </div>
+      <div class="platform-stat">
+        <div class="val">17,559</div>
+        <div class="label">上周差评</div>
+      </div>
+      <div class="platform-stat">
+        <div class="val">79.6%</div>
+        <div class="label">占总量比</div>
+      </div>
+    </div>
+  </div>
+  <div class="platform-card ios">
+    <div class="platform-label ios">IOS</div>
+    <div class="platform-stats">
+      <div class="platform-stat">
+        <div class="val">3,806</div>
+        <div class="label">本周差评</div>
+        <div class="change down">&#9660; -9.7% 环比</div>
+      </div>
+      <div class="platform-stat">
+        <div class="val">4,215</div>
+        <div class="label">上周差评</div>
+      </div>
+      <div class="platform-stat">
+        <div class="val">20.4%</div>
+        <div class="label">占总量比</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="insight">
+<div class="insight-title">&#128270; 关键发现</div>
+<div class="insight-body">本周差评总量 18,652 条，<strong>环比 -14.3%</strong>。Android 增长标签 2 项触发阈值，TOP：「暂时停用：假期/旅行」+76%（vs基线 +121%）、「短剧内容涉及宗教」+35%（vs基线 +100%）。<br>基线偏离视角：11 个 Android 标签仍高于前期基线 50% 以上，TOP：「暂时停用：假期/旅行」vs基线 +121%、「短剧内容涉及宗教」vs基线 +100%、「UI：信息太多」vs基线 +79%。</div>
+</div>
+<div class="good-news">
+<div class="good-news-title">&#9989; 积极信号</div>
+<div class="good-news-body"><strong>应用启动慢</strong> vs 4周均值 -46%（已回归基线）；<strong>广告卡顿加载失败</strong> vs 4周均值 -46%（vs基线 +58%）；<strong>没有优惠</strong> vs 4周均值 -34%（已回归基线）；</div>
+</div>
+<div class="alert">
+<div class="alert-title">&#9888; 需关注</div>
+<div class="alert-body"><strong>暂时停用：假期/旅行</strong> 本周 26（vs 4周 +76%，vs 基线 +121%）；<strong>短剧内容涉及宗教</strong> 本周 23（vs 4周 +35%，vs 基线 +100%）；</div>
+</div>
+<div class="dual-panel">
+<div class="panel">
+  <h2><span style="color:var(--android);">&#9679;</span> ANDROID 增长 TOP（2项）</h2>
+  <div class="desc">本周 &ge;20 条 &amp; vs 4周均值 &gt;25%</div>
+  <table><thead><tr><th>标签</th><th>前期基线</th><th>4周均值</th><th>本周</th><th>vs 4周</th><th>vs 基线</th><th>11周趋势</th></tr></thead><tbody><tr>
+<td class="tag-name">暂时停用：假期/旅行</td>
+<td>12</td>
+<td>15</td>
+<td><strong>26</strong></td>
+<td><span class="badge badge-orange">+76%</span></td>
+<td><span class="badge badge-red">+121%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:14%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:46%"></div><div class="spark-bar " style="height:96%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:46%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar a-latest" style="height:92%"></div></div></td>
+</tr><tr>
+<td class="tag-name">短剧内容涉及宗教</td>
+<td>12</td>
+<td>17</td>
+<td><strong>23</strong></td>
+<td><span class="badge badge-yellow">+35%</span></td>
+<td><span class="badge badge-orange">+100%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:16%"></div><div class="spark-bar " style="height:46%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:36%"></div><div class="spark-bar " style="height:70%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar " style="height:33%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar a-latest" style="height:76%"></div></div></td>
+</tr></tbody></table>
+</div>
+<div class="panel">
+  <h2><span style="color:var(--ios);">&#9679;</span> IOS 增长 TOP（8项）</h2>
+  <div class="desc">本周 &ge;10 条 &amp; vs 4周均值 &gt;25%</div>
+  <table><thead><tr><th>标签</th><th>前期基线</th><th>4周均值</th><th>本周</th><th>vs 4周</th><th>vs 基线</th><th>11周趋势</th></tr></thead><tbody><tr>
+<td class="tag-name">本土化相关</td>
+<td>3</td>
+<td>4</td>
+<td><strong>10</strong></td>
+<td><span class="badge badge-red">+135%</span></td>
+<td><span class="badge badge-red">+208%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:20%"></div><div class="spark-bar " style="height:40%"></div><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:20%"></div><div class="spark-bar " style="height:70%"></div><div class="spark-bar " style="height:30%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar " style="height:20%"></div><div class="spark-bar " style="height:20%"></div><div class="spark-bar " style="height:40%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+</tr><tr>
+<td class="tag-name">想要能够免费试用产品</td>
+<td>21</td>
+<td>19</td>
+<td><strong>31</strong></td>
+<td><span class="badge badge-orange">+63%</span></td>
+<td><span class="badge badge-yellow">+48%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:51%"></div><div class="spark-bar " style="height:74%"></div><div class="spark-bar " style="height:54%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar " style="height:37%"></div><div class="spark-bar " style="height:54%"></div><div class="spark-bar " style="height:65%"></div><div class="spark-bar i-latest" style="height:88%"></div></div></td>
+</tr><tr>
+<td class="tag-name">题材同质化</td>
+<td>4</td>
+<td>9</td>
+<td><strong>14</strong></td>
+<td><span class="badge badge-orange">+56%</span></td>
+<td><span class="badge badge-red">+273%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:35%"></div><div class="spark-bar " style="height:42%"></div><div class="spark-bar " style="height:14%"></div><div class="spark-bar " style="height:14%"></div><div class="spark-bar " style="height:64%"></div><div class="spark-bar " style="height:57%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:64%"></div><div class="spark-bar " style="height:64%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+</tr><tr>
+<td class="tag-name">无法轻松下载发票/收据</td>
+<td>12</td>
+<td>14</td>
+<td><strong>22</strong></td>
+<td><span class="badge badge-orange">+54%</span></td>
+<td><span class="badge badge-orange">+91%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:31%"></div><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:59%"></div><div class="spark-bar " style="height:72%"></div><div class="spark-bar " style="height:59%"></div><div class="spark-bar " style="height:54%"></div><div class="spark-bar " style="height:40%"></div><div class="spark-bar " style="height:63%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+</tr><tr>
+<td class="tag-name">广告涉及色情暴力（投放素材）</td>
+<td>12</td>
+<td>11</td>
+<td><strong>16</strong></td>
+<td><span class="badge badge-yellow">+42%</span></td>
+<td><span class="badge badge-yellow">+31%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:36%"></div><div class="spark-bar " style="height:52%"></div><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar " style="height:84%"></div><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar " style="height:63%"></div><div class="spark-bar " style="height:31%"></div><div class="spark-bar i-latest" style="height:84%"></div></div></td>
+</tr><tr>
+<td class="tag-name">情节漏洞多烂尾</td>
+<td>35</td>
+<td>42</td>
+<td><strong>57</strong></td>
+<td><span class="badge badge-yellow">+35%</span></td>
+<td><span class="badge badge-orange">+62%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:35%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:47%"></div><div class="spark-bar " style="height:92%"></div><div class="spark-bar " style="height:75%"></div><div class="spark-bar " style="height:64%"></div><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:63%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:92%"></div><div class="spark-bar i-latest" style="height:100%"></div></div></td>
+</tr><tr>
+<td class="tag-name">剧情同质化</td>
+<td>58</td>
+<td>54</td>
+<td><strong>71</strong></td>
+<td><span class="badge badge-yellow">+30%</span></td>
+<td><span class="badge badge-blue">+23%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:46%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:75%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:79%"></div><div class="spark-bar " style="height:84%"></div><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:75%"></div><div class="spark-bar " style="height:62%"></div><div class="spark-bar " style="height:76%"></div><div class="spark-bar i-latest" style="height:92%"></div></div></td>
+</tr><tr>
+<td class="tag-name">退款</td>
+<td>22</td>
+<td>20</td>
+<td><strong>25</strong></td>
+<td><span class="badge badge-yellow">+27%</span></td>
+<td><span class="badge badge-blue">+15%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:35%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:67%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:64%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:54%"></div><div class="spark-bar " style="height:67%"></div><div class="spark-bar " style="height:61%"></div><div class="spark-bar " style="height:70%"></div><div class="spark-bar i-latest" style="height:80%"></div></div></td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="dual-panel">
+<div class="panel">
+  <h2><span style="color:var(--android);">&#9679;</span> ANDROID 显著改善 TOP（26项）</h2>
+  <div class="desc">本周 &ge;20 条 &amp; vs 4周均值 &lt;-15%</div>
+  <table><thead><tr><th>标签</th><th>前期基线</th><th>4周均值</th><th>本周</th><th>vs 4周</th><th>vs 基线</th><th>11周趋势</th></tr></thead><tbody><tr>
+<td class="tag-name">应用启动慢</td>
+<td>66</td>
+<td>146</td>
+<td><strong>79</strong></td>
+<td><span class="badge badge-yellow">-46%</span></td>
+<td><span class="badge badge-blue">+19%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:23%"></div><div class="spark-bar " style="height:44%"></div><div class="spark-bar " style="height:35%"></div><div class="spark-bar " style="height:40%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:85%"></div><div class="spark-bar " style="height:91%"></div><div class="spark-bar " style="height:65%"></div><div class="spark-bar " style="height:76%"></div><div class="spark-bar a-latest" style="height:42%"></div></div></td>
+</tr><tr>
+<td class="tag-name">广告卡顿加载失败</td>
+<td>134</td>
+<td>391</td>
+<td><strong>211</strong></td>
+<td><span class="badge badge-yellow">-46%</span></td>
+<td><span class="badge badge-orange">+58%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:24%"></div><div class="spark-bar " style="height:32%"></div><div class="spark-bar " style="height:29%"></div><div class="spark-bar " style="height:27%"></div><div class="spark-bar " style="height:36%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:95%"></div><div class="spark-bar " style="height:89%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar a-latest" style="height:45%"></div></div></td>
+</tr><tr>
+<td class="tag-name">没有优惠</td>
+<td>81</td>
+<td>106</td>
+<td><strong>70</strong></td>
+<td><span class="badge badge-yellow">-34%</span></td>
+<td><span class="badge badge-green">-13%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:57%"></div><div class="spark-bar " style="height:76%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:89%"></div><div class="spark-bar " style="height:91%"></div><div class="spark-bar " style="height:88%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar a-latest" style="height:57%"></div></div></td>
+</tr><tr>
+<td class="tag-name">无分类</td>
+<td>750</td>
+<td>873</td>
+<td><strong>615</strong></td>
+<td><span class="badge badge-yellow">-30%</span></td>
+<td><span class="badge badge-green">-18%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:51%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar " style="height:80%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:89%"></div><div class="spark-bar " style="height:76%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar a-latest" style="height:59%"></div></div></td>
+</tr><tr>
+<td class="tag-name">新剧更新迟缓</td>
+<td>221</td>
+<td>281</td>
+<td><strong>198</strong></td>
+<td><span class="badge badge-yellow">-30%</span></td>
+<td><span class="badge badge-green">-11%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:46%"></div><div class="spark-bar " style="height:65%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:59%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:85%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:67%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar a-latest" style="height:54%"></div></div></td>
+</tr><tr>
+<td class="tag-name">播放卡顿</td>
+<td>254</td>
+<td>418</td>
+<td><strong>295</strong></td>
+<td><span class="badge badge-yellow">-29%</span></td>
+<td><span class="badge badge-blue">+16%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:37%"></div><div class="spark-bar " style="height:51%"></div><div class="spark-bar " style="height:52%"></div><div class="spark-bar " style="height:55%"></div><div class="spark-bar " style="height:59%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:91%"></div><div class="spark-bar " style="height:79%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar a-latest" style="height:57%"></div></div></td>
+</tr><tr>
+<td class="tag-name">时长太短</td>
+<td>22</td>
+<td>31</td>
+<td><strong>22</strong></td>
+<td><span class="badge badge-yellow">-29%</span></td>
+<td><span class="badge badge-green">-1%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:47%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:65%"></div><div class="spark-bar " style="height:67%"></div><div class="spark-bar " style="height:67%"></div><div class="spark-bar " style="height:57%"></div><div class="spark-bar " style="height:70%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:82%"></div><div class="spark-bar a-latest" style="height:55%"></div></div></td>
+</tr><tr>
+<td class="tag-name">退款</td>
+<td>44</td>
+<td>36</td>
+<td><strong>26</strong></td>
+<td><span class="badge badge-yellow">-29%</span></td>
+<td><span class="badge badge-yellow">-41%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:85%"></div><div class="spark-bar " style="height:87%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:87%"></div><div class="spark-bar " style="height:95%"></div><div class="spark-bar " style="height:83%"></div><div class="spark-bar " style="height:69%"></div><div class="spark-bar " style="height:69%"></div><div class="spark-bar " style="height:75%"></div><div class="spark-bar " style="height:83%"></div><div class="spark-bar a-latest" style="height:53%"></div></div></td>
+</tr><tr>
+<td class="tag-name">剧集加载慢</td>
+<td>261</td>
+<td>409</td>
+<td><strong>302</strong></td>
+<td><span class="badge badge-yellow">-26%</span></td>
+<td><span class="badge badge-blue">+16%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:44%"></div><div class="spark-bar " style="height:47%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:51%"></div><div class="spark-bar " style="height:62%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:86%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar " style="height:72%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar a-latest" style="height:56%"></div></div></td>
+</tr><tr>
+<td class="tag-name">观看中频繁插播</td>
+<td>272</td>
+<td>362</td>
+<td><strong>276</strong></td>
+<td><span class="badge badge-green">-24%</span></td>
+<td><span class="badge badge-blue">+2%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:51%"></div><div class="spark-bar " style="height:64%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:79%"></div><div class="spark-bar " style="height:79%"></div><div class="spark-bar " style="height:91%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:85%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:92%"></div><div class="spark-bar a-latest" style="height:67%"></div></div></td>
+</tr></tbody></table>
+</div>
+<div class="panel">
+  <h2><span style="color:var(--ios);">&#9679;</span> IOS 显著改善 TOP（11项）</h2>
+  <div class="desc">本周 &ge;10 条 &amp; vs 4周均值 &lt;-15%</div>
+  <table><thead><tr><th>标签</th><th>前期基线</th><th>4周均值</th><th>本周</th><th>vs 4周</th><th>vs 基线</th><th>11周趋势</th></tr></thead><tbody><tr>
+<td class="tag-name">无法取消订阅</td>
+<td>21</td>
+<td>27</td>
+<td><strong>16</strong></td>
+<td><span class="badge badge-yellow">-40%</span></td>
+<td><span class="badge badge-green">-23%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:42%"></div><div class="spark-bar " style="height:87%"></div><div class="spark-bar " style="height:63%"></div><div class="spark-bar " style="height:57%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:69%"></div><div class="spark-bar " style="height:69%"></div><div class="spark-bar " style="height:87%"></div><div class="spark-bar " style="height:96%"></div><div class="spark-bar i-latest" style="height:48%"></div></div></td>
+</tr><tr>
+<td class="tag-name">翻译质量差</td>
+<td>14</td>
+<td>18</td>
+<td><strong>13</strong></td>
+<td><span class="badge badge-yellow">-30%</span></td>
+<td><span class="badge badge-green">-9%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:12%"></div><div class="spark-bar " style="height:20%"></div><div class="spark-bar " style="height:29%"></div><div class="spark-bar " style="height:29%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:30%"></div><div class="spark-bar " style="height:30%"></div><div class="spark-bar " style="height:33%"></div><div class="spark-bar " style="height:24%"></div><div class="spark-bar i-latest" style="height:20%"></div></div></td>
+</tr><tr>
+<td class="tag-name">单集时长过短</td>
+<td>138</td>
+<td>142</td>
+<td><strong>105</strong></td>
+<td><span class="badge badge-yellow">-26%</span></td>
+<td><span class="badge badge-green">-24%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:57%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar " style="height:80%"></div><div class="spark-bar " style="height:83%"></div><div class="spark-bar " style="height:96%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:80%"></div><div class="spark-bar i-latest" style="height:58%"></div></div></td>
+</tr><tr>
+<td class="tag-name">自动续费价格大幅上涨未充分告知</td>
+<td>10</td>
+<td>17</td>
+<td><strong>13</strong></td>
+<td><span class="badge badge-green">-24%</span></td>
+<td><span class="badge badge-yellow">+30%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:30%"></div><div class="spark-bar " style="height:45%"></div><div class="spark-bar " style="height:50%"></div><div class="spark-bar " style="height:75%"></div><div class="spark-bar " style="height:60%"></div><div class="spark-bar " style="height:65%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:85%"></div><div class="spark-bar " style="height:75%"></div><div class="spark-bar " style="height:80%"></div><div class="spark-bar i-latest" style="height:65%"></div></div></td>
+</tr><tr>
+<td class="tag-name">频繁弹窗提示付费</td>
+<td>87</td>
+<td>81</td>
+<td><strong>62</strong></td>
+<td><span class="badge badge-green">-23%</span></td>
+<td><span class="badge badge-yellow">-29%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:91%"></div><div class="spark-bar " style="height:94%"></div><div class="spark-bar " style="height:95%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:80%"></div><div class="spark-bar " style="height:94%"></div><div class="spark-bar " style="height:68%"></div><div class="spark-bar " style="height:81%"></div><div class="spark-bar " style="height:80%"></div><div class="spark-bar i-latest" style="height:62%"></div></div></td>
+</tr><tr>
+<td class="tag-name">剧情老套无新意</td>
+<td>58</td>
+<td>62</td>
+<td><strong>48</strong></td>
+<td><span class="badge badge-green">-23%</span></td>
+<td><span class="badge badge-green">-18%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:61%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:65%"></div><div class="spark-bar " style="height:93%"></div><div class="spark-bar " style="height:79%"></div><div class="spark-bar " style="height:91%"></div><div class="spark-bar " style="height:93%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar " style="height:71%"></div><div class="spark-bar " style="height:87%"></div><div class="spark-bar i-latest" style="height:65%"></div></div></td>
+</tr><tr>
+<td class="tag-name">单个广告时间过长</td>
+<td>110</td>
+<td>110</td>
+<td><strong>85</strong></td>
+<td><span class="badge badge-green">-23%</span></td>
+<td><span class="badge badge-green">-22%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:55%"></div><div class="spark-bar " style="height:83%"></div><div class="spark-bar " style="height:88%"></div><div class="spark-bar " style="height:72%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar " style="height:76%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar " style="height:67%"></div><div class="spark-bar i-latest" style="height:58%"></div></div></td>
+</tr><tr>
+<td class="tag-name">剧集加载慢</td>
+<td>57</td>
+<td>63</td>
+<td><strong>51</strong></td>
+<td><span class="badge badge-green">-19%</span></td>
+<td><span class="badge badge-green">-11%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:45%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:76%"></div><div class="spark-bar " style="height:82%"></div><div class="spark-bar " style="height:88%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar " style="height:89%"></div><div class="spark-bar " style="height:70%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar " style="height:98%"></div><div class="spark-bar i-latest" style="height:68%"></div></div></td>
+</tr><tr>
+<td class="tag-name">没有优惠</td>
+<td>42</td>
+<td>39</td>
+<td><strong>32</strong></td>
+<td><span class="badge badge-green">-17%</span></td>
+<td><span class="badge badge-green">-24%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:56%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:83%"></div><div class="spark-bar " style="height:79%"></div><div class="spark-bar " style="height:90%"></div><div class="spark-bar " style="height:88%"></div><div class="spark-bar " style="height:77%"></div><div class="spark-bar " style="height:69%"></div><div class="spark-bar " style="height:66%"></div><div class="spark-bar " style="height:79%"></div><div class="spark-bar i-latest" style="height:60%"></div></div></td>
+</tr><tr>
+<td class="tag-name">按集付费贵</td>
+<td>160</td>
+<td>131</td>
+<td><strong>111</strong></td>
+<td><span class="badge badge-green">-15%</span></td>
+<td><span class="badge badge-yellow">-31%</span></td>
+<td><div class="spark-row"><div class="spark-bar " style="height:56%"></div><div class="spark-bar " style="height:100%"></div><div class="spark-bar " style="height:73%"></div><div class="spark-bar " style="height:78%"></div><div class="spark-bar " style="height:82%"></div><div class="spark-bar " style="height:83%"></div><div class="spark-bar " style="height:64%"></div><div class="spark-bar " style="height:53%"></div><div class="spark-bar " style="height:67%"></div><div class="spark-bar " style="height:66%"></div><div class="spark-bar i-latest" style="height:53%"></div></div></td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="card">
+<h2>&#128161; 建议 Action Items</h2>
+<table>
+<thead><tr><th style="width:6%">级别</th><th style="width:8%">端</th><th style="width:16%">问题域</th><th style="width:44%">建议动作</th><th style="width:12%">负责方</th><th style="width:14%">依据</th></tr></thead>
+<tbody><tr>
+<td><span class="badge badge-red">P0</span></td>
+<td><span class="badge" style="background:#e8f5e9;color:var(--android-dark);">ANDROID</span></td>
+<td class="tag-name">高基线偏离集群</td>
+<td>暂时停用：假期/旅行, 短剧内容涉及宗教, UI：信息太多 等 11 项标签 vs 基线仍 &gt;50%。持续推动根因修复，目标回到基线水位</td>
+<td>技术 / 产品</td>
+<td>11项&gt;50%基线</td>
+</tr><tr>
+<td><span class="badge badge-orange">P1</span></td>
+<td><span class="badge" style="background:#e8f5e9;color:var(--android-dark);">ANDROID</span></td>
+<td class="tag-name">新增增长标签</td>
+<td>「暂时停用：假期/旅行」+76%；「短剧内容涉及宗教」+35%；排查根因并制定应对方案</td>
+<td>产品 / 运营</td>
+<td>vs 4周均值&gt;25%</td>
+</tr><tr>
+<td><span class="badge badge-green">&#10003;</span></td>
+<td><span class="badge" style="background:#e8f5e9;color:var(--android-dark);">ANDROID</span></td>
+<td class="tag-name">已恢复正常</td>
+<td>「应用启动慢」vs基线 +19%；「没有优惠」vs基线 -13%；「无分类」vs基线 -18%；已回归正常水位，可关闭跟踪</td>
+<td>—</td>
+<td>双基线均正常</td>
+</tr></tbody></table>
+</div>
+<div class="footer">
+数据来源：产品三级差评5.15.xlsx | 分析周期：2026-02-27~2026-05-08（11周）| 双基线：前期基线=2026-02-27~2026-03-20，4周均值=2026-04-10~2026-05-01 | 生成时间：2026-05-15 11:53
+</div>
+
+</div>
+</body>
+</html>
