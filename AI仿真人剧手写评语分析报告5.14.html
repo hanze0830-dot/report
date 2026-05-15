@@ -90,6 +90,11 @@
   .action-list li .p1 { background:#ffebee; color:#c62828; }
   .action-list li .p2 { background:#fff3e0; color:#e65100; }
   .action-list li .p3 { background:#e3f2fd; color:#1565c0; }
+
+  .sentiment-bar { display:flex; height:24px; border-radius:12px; overflow:hidden; margin:8px 0; }
+  .sentiment-bar .pos { background:#4caf50; }
+  .sentiment-bar .neu { background:#e0e0e0; }
+  .sentiment-bar .neg { background:#ef5350; }
 </style>
 </head>
 <body>
@@ -174,9 +179,185 @@
     </div>
   </div>
 
-  <!-- Section 2: Returning dramas trend -->
+  <!-- Section 2: Sentiment distribution -->
   <div class="section">
-    <h2><span class="num">2</span>续存剧集趋势变化</h2>
+    <h2><span class="num">2</span>情感分布对比（正面 / 中性 / 负面）</h2>
+    <div style="margin-top:12px;">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="width:250px; font-size:12px; font-weight:600;">Fated to My Ruthless Alpha</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:32%"></div>
+          <div class="neu" style="width:62%"></div>
+          <div class="neg" style="width:6%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">32%</span>
+        <span style="font-size:11px; color:#9e9e9e;">62%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">6%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="width:250px; font-size:12px; font-weight:600;">30 Days to be the Mafia King's Bride</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:43.6%"></div>
+          <div class="neu" style="width:46.2%"></div>
+          <div class="neg" style="width:10.3%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">44%</span>
+        <span style="font-size:11px; color:#9e9e9e;">46%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">10%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="width:250px; font-size:12px; font-weight:600;">Keeping His Baby and His Heart</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:26.8%"></div>
+          <div class="neu" style="width:57.7%"></div>
+          <div class="neg" style="width:15.5%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">27%</span>
+        <span style="font-size:11px; color:#9e9e9e;">58%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">16%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="width:250px; font-size:12px; font-weight:600;">Billionaire's Seduce Game For Love</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:33.3%"></div>
+          <div class="neu" style="width:56.7%"></div>
+          <div class="neg" style="width:10%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">33%</span>
+        <span style="font-size:11px; color:#9e9e9e;">57%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">10%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="width:250px; font-size:12px; font-weight:600;">Where Were You When I Fell</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:22.6%"></div>
+          <div class="neu" style="width:61.3%"></div>
+          <div class="neg" style="width:16.1%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">23%</span>
+        <span style="font-size:11px; color:#9e9e9e;">61%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">16%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="width:250px; font-size:12px; font-weight:600;">Doormat No More</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:19.4%"></div>
+          <div class="neu" style="width:51.6%"></div>
+          <div class="neg" style="width:29%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">19%</span>
+        <span style="font-size:11px; color:#9e9e9e;">52%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">29%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="width:250px; font-size:12px; font-weight:600;">The Sniper King's Return</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:25%"></div>
+          <div class="neu" style="width:62.5%"></div>
+          <div class="neg" style="width:12.5%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">25%</span>
+        <span style="font-size:11px; color:#9e9e9e;">63%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">13%</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+        <span style="width:250px; font-size:12px; font-weight:600;">Love The Way You Lie</span>
+        <div class="sentiment-bar" style="flex:1;">
+          <div class="pos" style="width:12.5%"></div>
+          <div class="neu" style="width:75%"></div>
+          <div class="neg" style="width:12.5%"></div>
+        </div>
+        <span style="font-size:11px; color:#4caf50; font-weight:700;">13%</span>
+        <span style="font-size:11px; color:#9e9e9e;">75%</span>
+        <span style="font-size:11px; color:#ef5350; font-weight:700;">13%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Core Issues Deep Dive -->
+  <div class="section">
+    <h2><span class="num">3</span>核心问题深度拆解</h2>
+
+    <h3>3.1 AI 提及率（46.9%，较上期 -10.9pp）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">AI 提及率虽然下降，但仍有近半用户在评语中主动提到 AI。用户态度已从"一刀切拒绝"分化为三层。</p>
+    <div class="quote-grid">
+      <div class="quote-card negative">
+        "AI copy cat!!!! Acting is so fake!!!! and voice over is ridiculous, no real emotions!"
+        <div class="source">— 30 Days</div>
+      </div>
+      <div class="quote-card mixed">
+        "I have started to really like these wee A.I stories.. they're good yes!! However, I'd prefer real life actors more."
+        <div class="source">— Where Were You When I Fell</div>
+      </div>
+      <div class="quote-card positive">
+        "This is a masterpiece, completely loved the show. Create more AI dramas"
+        <div class="source">— Billionaire's Seduce Game</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>变化趋势：</strong>上期以"强烈拒绝"为主，本期"有条件接受"的比例明显增加。关键差异是——<span class="hl-green">用户开始承认故事本身不错</span>（"story is good""loved the show"），只是附带提到 AI 不完美。这是从"形态拒绝"到"内容评价"的健康转变。
+    </p>
+
+    <h3>3.2 配音/口型/口音问题（11.9%，较上期 -2.2pp）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">配音问题有所改善，但在 Fated（19.0%）中仍为第一技术痛点。</p>
+    <div class="quote-grid">
+      <div class="quote-card negative">
+        "The dubbing is off. Words don't match the lips and the accents keep changing mid-sentence."
+        <div class="source">— Fated to My Ruthless Alpha</div>
+      </div>
+      <div class="quote-card negative">
+        "Enough of the damn AI! It reeks of faux acting that is not consistent and undesirable dubbing!"
+        <div class="source">— The Sniper King's Return</div>
+      </div>
+      <div class="quote-card mixed">
+        "It was good, but sometimes the mouth didn't line up with what they were saying and it just is not the same without real actors."
+        <div class="source">— Billionaire's Seduce Game</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>细分问题：</strong><br/>
+      &bull; <span class="hl-red">口音切换</span>：同一角色美式↔英式随机跳变（仍为最高频投诉）<br/>
+      &bull; <span class="hl-orange">口型不同步</span>：嘴部动作和音频明显不匹配<br/>
+      &bull; <span class="hl-orange">语音不一致</span>：角色声音跨集发生变化<br/>
+      对比上期，"发音错误"类投诉有所减少，说明专有名词发音已有修复。
+    </p>
+
+    <h3>3.3 连贯性 / 穿帮问题（1.6%，较上期 -1.2pp）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">整体下降，但新剧 The Sniper King's Return 有严重个案。</p>
+    <div class="quote-grid">
+      <div class="quote-card negative">
+        "Gold teeth in one frame, regular teeth in the next, chopped off arm mostly, some frames two arms, dress on girl horrible... AI needs an upgrade!"
+        <div class="source">— The Sniper King's Return</div>
+      </div>
+      <div class="quote-card negative">
+        "You have a mighty small wardrobe. The women wore the same outfits for days and days."
+        <div class="source">— Billionaire's Seduce Game</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>洞察：</strong>续存剧的连贯性投诉已接近归零，说明质检流程在起作用。但新剧（尤其 Sniper King）存在肢体/牙齿/服装等极端穿帮，说明新剧质检覆盖度不足。
+    </p>
+
+    <h3>3.4 表演自然度（4.1%，较上期 -3.2pp）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">下降最显著的维度，说明 AI 生成的人物动作和表情已有可感知的进步。</p>
+    <div class="quote-grid">
+      <div class="quote-card mixed">
+        "AI action.. way AI hardcore fake"
+        <div class="source">— Where Were You When I Fell</div>
+      </div>
+      <div class="quote-card positive">
+        "I overall like the AI better than the actual actors. If there's a scene where a person is rich, you can create that in AI, but you can't create it at all in a filmed story."
+        <div class="source">— Emergency Reckoning</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>洞察：</strong>从 7.3% 降到 4.1%，说明用户对"假感"的抱怨在减少。甚至出现了认为 AI 在场景搭建上优于真人拍摄的声音——虽然是个例，但标志着用户认知的边界在松动。
+    </p>
+  </div>
+
+  <!-- Section 4: Returning dramas trend -->
+  <div class="section">
+    <h2><span class="num">4</span>续存剧集趋势变化</h2>
     <p style="font-size:13px; color:#616161; margin-bottom:16px;">以下为两期均有评语的剧集，可做纵向对比。</p>
     <div class="table-wrap">
       <table class="trend-table">
@@ -214,9 +395,9 @@
     </p>
   </div>
 
-  <!-- Section 3: New dramas -->
+  <!-- Section 5: New dramas -->
   <div class="section">
-    <h2><span class="num">3</span>新上线剧集表现</h2>
+    <h2><span class="num">5</span>新上线剧集表现</h2>
     <p style="font-size:13px; color:#616161; margin-bottom:16px;">本期新增 4 部剧集，首次有评语数据。</p>
 
     <div class="drama-card">
@@ -271,11 +452,11 @@
     </div>
   </div>
 
-  <!-- Section 4: Key Trend Insights -->
+  <!-- Section 6: Key Trend Insights -->
   <div class="section">
-    <h2><span class="num">4</span>趋势洞察</h2>
+    <h2><span class="num">6</span>趋势洞察</h2>
 
-    <h3>4.1 AI "脱敏"趋势确认</h3>
+    <h3>6.1 AI "脱敏"趋势确认</h3>
     <p style="font-size:13px; color:#455a64; line-height:1.8; margin-bottom:12px;">
       全局 AI 提及率从 57.8% 降至 46.9%，"希望真人演员"从 15.2% 降至 7.6%——这意味着用户的<strong>初始应激反应正在消退</strong>。尤其是续存剧，用户群体经过自然筛选后，留下来的人对 AI 的耐受度更高。
     </p>
@@ -290,12 +471,12 @@
       </div>
     </div>
 
-    <h3>4.2 配音问题持续优化但仍是主要技术痛点</h3>
+    <h3>6.2 配音问题持续优化但仍是主要技术痛点</h3>
     <p style="font-size:13px; color:#455a64; line-height:1.8; margin-bottom:12px;">
       整体配音提及率下降 2.2pp（14.1%→11.9%），Fated 从 21.5% 降到 19.0%，Keeping 从 18.6% 降到 9.3%。但 Fated 仍有 19% 提及配音——口音切换和发音错误依然存在。
     </p>
 
-    <h3>4.3 负面率大幅下降是最积极的信号</h3>
+    <h3>6.3 负面率大幅下降是最积极的信号</h3>
     <p style="font-size:13px; color:#455a64; line-height:1.8; margin-bottom:12px;">
       全局负面率从 19.7% 降到 13.6%（-6.1pp），Fated 从 13.6%→6.0%，Doormat 从 47.8%→29.0%。这说明：<br/>
       &bull; 强烈排斥 AI 的用户已经用脚投票离开（上期集中差评后不再回来）<br/>
@@ -303,24 +484,24 @@
       &bull; 但正面率没有同步上升（28.1%→28.5%），说明"不排斥"≠"喜欢"，内容质量仍需持续提升
     </p>
 
-    <h3>4.4 新剧的"AI可见度"呈两极</h3>
+    <h3>6.4 新剧的"AI可见度"呈两极</h3>
     <p style="font-size:13px; color:#455a64; line-height:1.8;">
       Where Were You When I Fell（29.0%）和 Billionaire's Seduce（40.0%）的 AI 提及率明显低于上期平均水平，说明<strong>AI 制作质量在提升</strong>；但 The Sniper King（56.2%）和 Emergency Reckoning（60.0%）仍处于高位。新剧的技术执行水平不均匀，需建立上线前质检标准。
     </p>
   </div>
 
-  <!-- Section 5: Conclusions -->
+  <!-- Section 7: Conclusions -->
   <div class="section">
-    <h2><span class="num">5</span>结论与建议</h2>
+    <h2><span class="num">7</span>结论与建议</h2>
 
-    <h3>5.1 三大核心结论</h3>
+    <h3>7.1 三大核心结论</h3>
     <div style="margin-top:12px; font-size:14px; line-height:2;">
       <p><strong>1.</strong> <span class="hl-green">用户对 AI 的排斥正在自然消退</span> — AI 提及率 -10.9pp，"要真人演员" -7.6pp，负面率 -6.1pp，所有核心负向指标均在改善。</p>
       <p><strong>2.</strong> <span class="hl-orange">"不排斥"尚未转化为"喜欢"</span> — 正面率几乎未变（28.1%→28.5%），用户停留在"可以接受"阶段，还需要更好的内容来驱动正面评价。</p>
       <p><strong>3.</strong> <span class="hl-blue">新剧制作质量参差不齐</span> — 最好的新剧（Where Were You）AI 提及率仅 29%，但最差的（Emergency Reckoning）高达 60%，说明制作流程标准化仍需加强。</p>
     </div>
 
-    <h3 style="margin-top:24px;">5.2 下一步行动建议</h3>
+    <h3 style="margin-top:24px;">7.2 下一步行动建议</h3>
     <ul class="action-list">
       <li>
         <strong>继续优化 Fated to My Ruthless Alpha 的配音口音问题</strong><span class="priority p1">P0</span><br/>
