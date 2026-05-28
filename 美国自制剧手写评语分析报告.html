@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>美国自制剧·用户手写评语分析报告</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #2c3e50; line-height: 1.7; padding: 40px 20px; }
+.container { max-width: 1200px; margin: 0 auto; }
+.header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px 40px; border-radius: 16px 16px 0 0; box-shadow: 0 4px 20px rgba(102,126,234,.25); }
+.header h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+.header .meta { font-size: 14px; opacity: .9; }
+.header .meta span { margin-right: 24px; }
+.section { background: white; padding: 36px 40px; border-bottom: 1px solid #eee; }
+.section:last-child { border-radius: 0 0 16px 16px; }
+.section h2 { font-size: 22px; font-weight: 700; color: #2c3e50; padding-left: 14px; border-left: 5px solid #667eea; margin-bottom: 20px; }
+.section h3 { font-size: 17px; font-weight: 600; color: #34495e; margin: 22px 0 12px; }
+.alert { background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px 20px; border-radius: 6px; margin: 14px 0; color: #856404; }
+.alert.danger { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+.alert.success { background: #d4edda; border-color: #28a745; color: #155724; }
+.alert.info { background: #d1ecf1; border-color: #17a2b8; color: #0c5460; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 20px 0; }
+.stat-card { background: linear-gradient(135deg, #f8f9fb 0%, #eef1f8 100%); padding: 22px; border-radius: 10px; text-align: center; border: 1px solid #e8ebf3; }
+.stat-card .num { font-size: 30px; font-weight: 700; color: #667eea; }
+.stat-card .label { font-size: 13px; color: #7f8c8d; margin-top: 6px; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+th { background: #667eea; color: white; padding: 12px 14px; text-align: left; font-weight: 600; }
+td { padding: 11px 14px; border-bottom: 1px solid #ecf0f1; }
+tr:hover td { background: #f8f9fb; }
+.bar { display: inline-block; background: linear-gradient(90deg, #667eea, #764ba2); height: 18px; border-radius: 3px; vertical-align: middle; }
+.tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+.tag-red { background: #fde7e9; color: #c0392b; }
+.tag-orange { background: #fff0e0; color: #d35400; }
+.tag-green { background: #e3f9e5; color: #27ae60; }
+.tag-blue { background: #e1ecfc; color: #2980b9; }
+.tag-gray { background: #ecf0f1; color: #7f8c8d; }
+.quote { background: #fafbfd; border-left: 3px solid #bdc3c7; padding: 10px 14px; margin: 8px 0; font-size: 13px; color: #555; font-style: italic; }
+.quote .src { display: block; color: #95a5a6; font-style: normal; font-size: 12px; margin-top: 4px; }
+.cluster { background: #fafbfd; border-radius: 10px; padding: 18px 22px; margin: 14px 0; border: 1px solid #ecf0f1; }
+.cluster-title { font-size: 16px; font-weight: 700; color: #2c3e50; margin-bottom: 6px; }
+.cluster-pct { font-size: 13px; color: #e74c3c; font-weight: 600; margin-bottom: 10px; }
+.action-item { background: linear-gradient(135deg, #eef2ff 0%, #f5f0ff 100%); border-left: 5px solid #667eea; padding: 16px 20px; margin: 12px 0; border-radius: 6px; }
+.action-item .pri { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-right: 8px; }
+.pri-p0 { background: #dc3545; color: white; }
+.pri-p1 { background: #ffc107; color: #333; }
+.pri-p2 { background: #6c757d; color: white; }
+.footnote { font-size: 12px; color: #95a5a6; padding: 20px 40px; text-align: center; background: #fafbfd; border-radius: 0 0 16px 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>📺 美国自制剧·用户手写评语分析报告</h1>
+  <div class="meta">
+    <span>📅 报告时间：2026/05/28</span>
+    <span>👤 韩泽 Zephyr</span>
+    <span>📂 数据源：美国自制剧手写评语明细.xlsx</span>
+    <span>💬 样本量：594 条</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2>📌 一、核心结论 TL;DR</h2>
+  <div class="alert success"><b>整体口碑偏正向。</b>594 条手写评语中，含积极词汇 57.6%、消极词汇仅 9.4%，剩余 33% 为混合/中性反馈；说明会写评论的多是&ldquo;有情感投入&rdquo;的用户。</div>
+  <div class="alert danger"><b>3 部剧拉低均值，需重点关注。</b><i>Oops! The CEO's Birthday is Ruined</i>（27% 负评）、<i>The Sorority Hazed The Wrong Girl</i>（24%）、<i>Daddy, Love Me One Last Time</i>（16%），共占负评总量的 48%。</div>
+  <div class="alert"><b>用户最反感 3 类题材问题：</b>① 过度暴力 / 霸凌（尤其儿童或女性受害者）；② 重复套路（&ldquo;Asia 已经拍过 12 次&rdquo;）；③ 女主软弱 / 一味原谅。</div>
+  <div class="alert info"><b>用户最喜爱的元素：</b>角色演技（&ldquo;great acting&rdquo;高频出现）、复仇 / 正义感剧情、有成长弧光的女主、续集呼声。</div>
+</div>
+
+<div class="section">
+  <h2>📊 二、数据概览</h2>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num">594</div><div class="label">评语总数</div></div>
+    <div class="stat-card"><div class="num">10</div><div class="label">涉及剧目</div></div>
+    <div class="stat-card"><div class="num">97</div><div class="label">平均字符数</div></div>
+    <div class="stat-card"><div class="num">9.4%</div><div class="label">明确负评占比</div></div>
+  </div>
+
+  <h3>剧目评论量分布（TOP 10）</h3>
+  <table>
+    <tr><th>剧名</th><th>评论数</th><th>占比</th><th>分布</th></tr>
+    <tr><td>From Mail-Order Bride To Billionaire's Wife</td><td>213</td><td>35.9%</td><td><span class="bar" style="width:360px"></span></td></tr>
+    <tr><td>My Poor Rancher Wife is a Trillionaire</td><td>64</td><td>10.8%</td><td><span class="bar" style="width:108px"></span></td></tr>
+    <tr><td>Oops! The CEO's Birthday is Ruined</td><td>48</td><td>8.1%</td><td><span class="bar" style="width:81px"></span></td></tr>
+    <tr><td>Driven Hard by My Ex's Rich Dad</td><td>45</td><td>7.6%</td><td><span class="bar" style="width:76px"></span></td></tr>
+    <tr><td>I Don't Want Any of You Three</td><td>45</td><td>7.6%</td><td><span class="bar" style="width:76px"></span></td></tr>
+    <tr><td>Alpha King, This Time I Reject You</td><td>44</td><td>7.4%</td><td><span class="bar" style="width:74px"></span></td></tr>
+    <tr><td>Daddy, Love Me One Last Time</td><td>37</td><td>6.2%</td><td><span class="bar" style="width:62px"></span></td></tr>
+    <tr><td>The Sorority Hazed The Wrong Girl</td><td>34</td><td>5.7%</td><td><span class="bar" style="width:57px"></span></td></tr>
+    <tr><td>Return Of The Gold King</td><td>32</td><td>5.4%</td><td><span class="bar" style="width:54px"></span></td></tr>
+    <tr><td>Kissing the Ruthless Tycoon</td><td>32</td><td>5.4%</td><td><span class="bar" style="width:54px"></span></td></tr>
+  </table>
+
+  <h3>剧目情感分布（按负评率排序）</h3>
+  <table>
+    <tr><th>剧名</th><th>评论数</th><th>正向%</th><th>负向%</th><th>风险等级</th></tr>
+    <tr><td>Oops! The CEO's Birthday is Ruined</td><td>48</td><td>31%</td><td><b style="color:#c0392b">27%</b></td><td><span class="tag tag-red">🚨 高风险</span></td></tr>
+    <tr><td>The Sorority Hazed The Wrong Girl</td><td>34</td><td>24%</td><td><b style="color:#c0392b">24%</b></td><td><span class="tag tag-red">🚨 高风险</span></td></tr>
+    <tr><td>Daddy, Love Me One Last Time</td><td>37</td><td>19%</td><td><b style="color:#d35400">16%</b></td><td><span class="tag tag-orange">⚠️ 中风险</span></td></tr>
+    <tr><td>I Don't Want Any of You Three</td><td>45</td><td>47%</td><td><b style="color:#d35400">16%</b></td><td><span class="tag tag-orange">⚠️ 中风险</span></td></tr>
+    <tr><td>Kissing the Ruthless Tycoon</td><td>32</td><td>62%</td><td>9%</td><td><span class="tag tag-green">✅ 健康</span></td></tr>
+    <tr><td>My Poor Rancher Wife is a Trillionaire</td><td>64</td><td>64%</td><td>9%</td><td><span class="tag tag-green">✅ 健康</span></td></tr>
+    <tr><td>Alpha King, This Time I Reject You</td><td>44</td><td>75%</td><td>7%</td><td><span class="tag tag-green">✅ 健康</span></td></tr>
+    <tr><td>From Mail-Order Bride To Billionaire's Wife</td><td>213</td><td>68%</td><td>4%</td><td><span class="tag tag-green">✅ 健康</span></td></tr>
+    <tr><td>Return Of The Gold King</td><td>32</td><td>69%</td><td>3%</td><td><span class="tag tag-green">✅ 健康</span></td></tr>
+    <tr><td>Driven Hard by My Ex's Rich Dad</td><td>45</td><td>67%</td><td>2%</td><td><span class="tag tag-green">✅ 健康</span></td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>🔍 三、用户反馈聚类（全量主题分布）</h2>
+  <table>
+    <tr><th>主题</th><th>命中数</th><th>占比</th><th>分布</th></tr>
+    <tr><td>🎭 角色 / 演技讨论</td><td>160</td><td>26.9%</td><td><span class="bar" style="width:269px"></span></td></tr>
+    <tr><td>💖 明确表达喜爱</td><td>80</td><td>13.5%</td><td><span class="bar" style="width:135px"></span></td></tr>
+    <tr><td>👩 女主软弱 / 圣母</td><td>29</td><td>4.9%</td><td><span class="bar" style="width:49px;background:linear-gradient(90deg,#e74c3c,#c0392b)"></span></td></tr>
+    <tr><td>⚖️ 渴望复仇 / 正义</td><td>28</td><td>4.7%</td><td><span class="bar" style="width:47px"></span></td></tr>
+    <tr><td>🎬 结局烂尾 / 未完</td><td>22</td><td>3.7%</td><td><span class="bar" style="width:37px;background:linear-gradient(90deg,#e74c3c,#c0392b)"></span></td></tr>
+    <tr><td>🐢 节奏拖沓 / 无聊</td><td>20</td><td>3.4%</td><td><span class="bar" style="width:34px;background:linear-gradient(90deg,#e74c3c,#c0392b)"></span></td></tr>
+    <tr><td>👹 男主 toxic / 虐待</td><td>17</td><td>2.9%</td><td><span class="bar" style="width:29px;background:linear-gradient(90deg,#e74c3c,#c0392b)"></span></td></tr>
+    <tr><td>🌐 翻译 / 字幕 / 配音</td><td>13</td><td>2.2%</td><td><span class="bar" style="width:22px;background:linear-gradient(90deg,#f39c12,#e67e22)"></span></td></tr>
+    <tr><td>📱 APP / 加载 / 广告</td><td>12</td><td>2.0%</td><td><span class="bar" style="width:20px;background:linear-gradient(90deg,#f39c12,#e67e22)"></span></td></tr>
+    <tr><td>👯 出轨 / 小三 / 姐妹</td><td>10</td><td>1.7%</td><td><span class="bar" style="width:17px"></span></td></tr>
+    <tr><td>🔁 套路 / 可预测</td><td>10</td><td>1.7%</td><td><span class="bar" style="width:17px;background:linear-gradient(90deg,#e74c3c,#c0392b)"></span></td></tr>
+    <tr><td>💰 充值 / 解锁费用</td><td>9</td><td>1.5%</td><td><span class="bar" style="width:15px;background:linear-gradient(90deg,#f39c12,#e67e22)"></span></td></tr>
+    <tr><td>📺 求续集 / 加更</td><td>7</td><td>1.2%</td><td><span class="bar" style="width:12px;background:linear-gradient(90deg,#27ae60,#16a085)"></span></td></tr>
+  </table>
+  <div class="alert info">📌 单条评语可命中多个主题；&ldquo;角色/演技&rdquo;占比最高表明用户在意演员表现，是后续选角与营销可放大的杠杆。</div>
+</div>
+
+<div class="section">
+  <h2>🔥 四、三大重点问题剧深度拆解</h2>
+
+  <div class="cluster">
+    <div class="cluster-title">🚨 #1 &nbsp;Oops! The CEO's Birthday is Ruined</div>
+    <div class="cluster-pct">负评率 27%（48 条中 13 条）｜核心问题：过度暴力 + 涉童不适感</div>
+    <p><b>用户诉求：</b>暴力呈现过于直白，结局&ldquo;儿童被警察拖走尖叫&rdquo;让观众感到不适；多条评论质疑评分真实性。</p>
+    <div class="quote">"Too much violence. Even though he was a menace I don't feel great about a child being dragged off kicking and screaming by the police in the end."<span class="src">— US user</span></div>
+    <div class="quote">"It's clear that Drama Box tampered with the ratings and reviews to give this trash a 4+ rating..." <span class="src">— US user（评分公信力质疑，需要警惕）</span></div>
+    <div class="quote">"I was excited for a different storyline ... but this was too ridiculous!! And too violent so much so it was disturbing to watch!"<span class="src">— US user</span></div>
+  </div>
+
+  <div class="cluster">
+    <div class="cluster-title">🚨 #2 &nbsp;The Sorority Hazed The Wrong Girl</div>
+    <div class="cluster-pct">负评率 24%（34 条中 8 条）｜核心问题：霸凌镜头冗长 + 复仇仅占结尾两集</div>
+    <p><b>用户诉求：</b>剧情结构失衡（&ldquo;90% 折磨 + 10% 反击&rdquo;），且部分用户担忧暴力镜头对青少年的模仿效应。</p>
+    <div class="quote">"Revenge is only like the last 2 clips. Not fun to watch."<span class="src">— US user（节奏结构问题）</span></div>
+    <div class="quote">"Students are doing the same things in ragging in colleges after watching such things, you should not show such things..."<span class="src">— US user（社会观感担忧）</span></div>
+    <div class="quote">"There is no character growth whatsoever either."<span class="src">— US user（人物弧光缺失）</span></div>
+  </div>
+
+  <div class="cluster">
+    <div class="cluster-title">⚠️ #3 &nbsp;Daddy, Love Me One Last Time</div>
+    <div class="cluster-pct">负评率 16%（37 条中 6 条）｜核心问题：题材高度重复，被认为&ldquo;炒冷饭&rdquo;</div>
+    <p><b>用户诉求：</b>多名用户指出剧情已被&ldquo;Asia 短剧拍过 N 次&rdquo;，且&ldquo;不愿再为此类剧付费&rdquo;的明确流失信号出现。</p>
+    <div class="quote">"This story is a RERUN done several times different actors!! Boring!! Fast forward!! Not going to pay for your lousy series's anymore!!"<span class="src">— US user（付费意愿流失）</span></div>
+    <div class="quote">"Asia already did the storyline like 12 times..."<span class="src">— US user</span></div>
+    <div class="quote">"The actors are very good. But they cannot save the entire production..."<span class="src">— US user（演员被肯定，剧本被否定）</span></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>💡 五、共性洞察</h2>
+
+  <h3>1️⃣ 美国用户对&ldquo;女主成长弧光&rdquo;敏感度高于亚洲市场</h3>
+  <p>多条评语集中批评&ldquo;女主一再原谅&rdquo;&ldquo;为男主妥协&rdquo;的设定，认为这不符合 role model for young girls 的期待。例如：</p>
+  <div class="quote">"Why couldn't we have had a good role model for young girls where her character realised her self worth & decided she isn't going to tolerate his horrible behaviour anymore."</div>
+
+  <h3>2️⃣ 暴力 / 霸凌剧情是双刃剑：高负评 + 高社会风险</h3>
+  <p>涉及儿童或长时间霸凌的剧目，负评率显著高于平均；部分用户担忧&ldquo;影响青少年模仿&rdquo;，存在 PR 风险。</p>
+
+  <h3>3️⃣ 演员是用户最大的&ldquo;救场点&rdquo;</h3>
+  <p>26.9% 的评论聚焦演员表现，且即便剧情被骂，&ldquo;great acting&rdquo;&ldquo;the lead actress is fabulous&rdquo;高频出现。说明<b>选角和演员包装</b>是性价比最高的口碑杠杆。</p>
+
+  <h3>4️⃣ &ldquo;炒冷饭&rdquo;开始消耗付费意愿</h3>
+  <p>已有用户明确表态&ldquo;不再为同类剧付费&rdquo;，是早期流失信号；同时存在&ldquo;评分真实性&rdquo;质疑，需关注信任成本。</p>
+
+  <h3>5️⃣ 翻译 / 配音 / 加载问题占比小但持续存在</h3>
+  <p>13 条字幕反馈 + 12 条 APP 技术反馈，需联动技术侧持续优化基础体验。</p>
+</div>
+
+<div class="section">
+  <h2>🎯 六、行动建议（Action Items）</h2>
+
+  <div class="action-item">
+    <div><span class="pri pri-p0">P0</span><b>选剧 / 立项审核增加&ldquo;暴力强度&rdquo;与&ldquo;涉童敏感度&rdquo;红线</b></div>
+    <p style="margin-top:8px;font-size:13px;">对包含未成年人施暴或被警方带走、长时间霸凌镜头的剧本，在采购阶段标注红色风险，由内容委员会复核。建议参考目前 2 部高负评剧（CEO Birthday / Sorority Hazed）作为反面案例样片。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p0">P0</span><b>建立&ldquo;题材重复度&rdquo;预警机制</b></div>
+    <p style="margin-top:8px;font-size:13px;">"Daddy, Love Me One Last Time" 出现明确&ldquo;不再付费&rdquo;信号。建议为美区维护&ldquo;近 90 天上架剧情骨架&rdquo;清单，新立项剧需比对相似度，超过阈值时由编剧团队提供差异化卖点。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p1">P1</span><b>女主人设迭代：从&ldquo;原谅型&rdquo;到&ldquo;觉醒型&rdquo;</b></div>
+    <p style="margin-top:8px;font-size:13px;">在新立项的爱情/虐恋题材中，要求至少包含 1 处&ldquo;女主主动设立边界&rdquo;的高光场景；可用 A/B 测试方式上新 2-3 部觉醒型女主剧，对比留存与好评率。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p1">P1</span><b>放大&ldquo;演员&rdquo;杠杆：建立美区头部演员档案</b></div>
+    <p style="margin-top:8px;font-size:13px;">用户对 Candice 等演员有点名好评（&ldquo;Best actress ever&rdquo;）。建议运营侧汇总好评演员名单，在剧目详情页/推送中突出主演卡片，提升点击率；同时对头部演员建立续约/独家合作策略。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p1">P1</span><b>对 27% 负评剧《Oops! The CEO's Birthday is Ruined》启动&ldquo;评分公信力&rdquo;复核</b></div>
+    <p style="margin-top:8px;font-size:13px;">已有多名用户公开质疑评分注水，是品牌信任的早期裂痕。建议运营 + 数据团队复核该剧实际评分逻辑，必要时官方回应说明，避免发酵。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p2">P2</span><b>响应&ldquo;求续集/加更&rdquo;呼声，做高口碑剧续航</b></div>
+    <p style="margin-top:8px;font-size:13px;">7 条评语主动要求 season 2/sequel，集中在 Mail-Order Bride、Rancher Wife、Driven Hard 等高口碑剧。建议优先排期续集开发；同时在 APP 内对该类剧加&ldquo;Season 2 coming soon&rdquo;占位，承接用户期待。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p2">P2</span><b>持续优化基础体验：字幕 / 加载 / 广告</b></div>
+    <p style="margin-top:8px;font-size:13px;">13+12 条基础体验反馈虽占比小但持续出现。建议联动技术侧定期抽检美区头部剧的字幕准确度与加载性能；同时审视广告插入频率是否影响沉浸感。</p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>📎 七、附录：方法说明</h2>
+  <p style="font-size:13px;color:#555;">
+  • <b>数据来源：</b>美国自制剧手写评语明细.xlsx，共 594 条用户手写评语，覆盖 10 部美国自制剧；<br>
+  • <b>情感判定：</b>基于英文正负向词汇表（pos: love/great/amazing 等；neg: boring/terrible/disappoint 等）做粗粒度匹配，仅命中负向且无正向词为&ldquo;负评&rdquo;；同时命中或都未命中为&ldquo;混合/中性&rdquo;。该方法用于快速分布观察，不能替代精细 LLM 情感分析；<br>
+  • <b>主题聚类：</b>采用关键词字典匹配，单条评语可命中多主题，占比之和可大于 100%；<br>
+  • <b>引用原文：</b>所有 quote 均为用户原话，未做翻译或润色，仅截断至 300 字符。<br>
+  </p>
+</div>
+
+<div class="footnote">
+  报告生成 2026/05/28 ｜ Produced by Zephyr 韩泽 ｜ DramaBox 用户洞察
+</div>
+
+</div>
+</body>
+</html>
