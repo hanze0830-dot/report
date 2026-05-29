@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 仿真人剧手写评语分析报告（5.08-5.28）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    background: #f0f2f5; color: #1a1a2e; line-height: 1.7; padding: 40px 20px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 16px; padding: 48px 40px; color: #fff;
+    margin-bottom: 32px; position: relative; overflow: hidden;
+  }
+  .header::after { content:''; position:absolute; top:-40%; right:-15%; width:350px; height:350px; background:radial-gradient(circle,rgba(94,114,228,0.12) 0%,transparent 70%); border-radius:50%; }
+  .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .header .meta { font-size: 13px; opacity: 0.7; margin-bottom: 12px; }
+  .header .badge { display:inline-block; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:4px 14px; font-size:12px; margin-right:8px; margin-bottom:6px; }
+
+  .alert { background:linear-gradient(135deg,#fff3e0 0%,#fff8e1 100%); border-left:5px solid #ff9800; border-radius:12px; padding:24px 28px; margin-bottom:32px; }
+  .alert h2 { font-size:16px; color:#e65100; margin-bottom:10px; }
+  .alert p { font-size:14px; color:#4e342e; line-height:1.9; }
+  .hl-red { color:#c62828; font-weight:700; }
+  .hl-orange { color:#e65100; font-weight:700; }
+  .hl-green { color:#2e7d32; font-weight:700; }
+  .hl-blue { color:#1565c0; font-weight:700; }
+
+  .section { background:#fff; border-radius:14px; padding:32px; margin-bottom:28px; box-shadow:0 1px 8px rgba(0,0,0,0.04); }
+  .section h2 { font-size:18px; font-weight:700; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #f0f2f5; display:flex; align-items:center; gap:10px; }
+  .section h2 .num { background:#1a1a2e; color:#fff; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+  .section h3 { font-size:15px; font-weight:700; color:#37474f; margin:24px 0 12px; }
+
+  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:16px; margin-bottom:24px; }
+  .kpi-card { text-align:center; padding:20px 12px; background:#f8f9fc; border-radius:12px; border:1px solid #e8eaf0; }
+  .kpi-card .value { font-size:28px; font-weight:800; }
+  .kpi-card .label { font-size:11px; color:#757575; margin-top:4px; }
+  .kpi-card .trend { font-size:11px; margin-top:4px; font-weight:700; }
+  .kpi-card .trend.up { color:#c62828; }
+  .kpi-card .trend.down { color:#2e7d32; }
+  .kpi-card .trend.flat { color:#757575; }
+  .kpi-card.danger .value { color:#c62828; }
+  .kpi-card.warn .value { color:#e65100; }
+  .kpi-card.good .value { color:#2e7d32; }
+  .kpi-card.info .value { color:#1565c0; }
+
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  thead th { background:#f8f9fc; color:#5a5a7a; font-weight:600; padding:12px 14px; text-align:left; border-bottom:2px solid #e8eaf0; white-space:nowrap; }
+  tbody td { padding:12px 14px; border-bottom:1px solid #f0f2f5; }
+  tbody tr:hover { background:#f8f9fc; }
+
+  .tag-green { display:inline-block; background:#e8f5e9; color:#2e7d32; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-red { display:inline-block; background:#ffebee; color:#c62828; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-orange { display:inline-block; background:#fff3e0; color:#e65100; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-blue { display:inline-block; background:#e3f2fd; color:#1565c0; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-gray { display:inline-block; background:#f5f5f5; color:#757575; font-weight:600; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-purple { display:inline-block; background:#f3e5f5; color:#6a1b9a; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+
+  .trend-table td.better { color:#2e7d32; font-weight:700; }
+  .trend-table td.worse { color:#c62828; font-weight:700; }
+  .trend-table td.same { color:#757575; }
+
+  .compare-box { background:linear-gradient(135deg,#ede7f6 0%,#e8eaf6 100%); border:1px solid #d1c4e9; border-radius:12px; padding:20px 24px; margin-top:16px; }
+  .compare-box h3 { font-size:15px; color:#4527a0; margin-bottom:12px; font-weight:700; }
+
+  .quote-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; margin-top:16px; }
+  .quote-card { background:#f8f9fc; border-radius:10px; padding:14px 18px; border-left:4px solid #90a4ae; font-size:13px; font-style:italic; color:#455a64; line-height:1.6; }
+  .quote-card .source { font-style:normal; font-size:11px; color:#9e9e9e; margin-top:6px; }
+  .quote-card.positive { border-left-color:#4caf50; }
+  .quote-card.negative { border-left-color:#ef5350; }
+  .quote-card.mixed { border-left-color:#ff9800; }
+
+  .drama-card { background:#fff; border:1px solid #e8eaf0; border-radius:14px; padding:24px; margin-bottom:20px; }
+  .drama-card h3 { font-size:15px; font-weight:700; color:#1a1a2e; margin-bottom:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .drama-card .metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:10px; margin-bottom:14px; }
+  .drama-card .metric { background:#f8f9fc; border-radius:8px; padding:10px; text-align:center; }
+  .drama-card .metric .v { font-size:18px; font-weight:800; }
+  .drama-card .metric .l { font-size:10px; color:#757575; }
+  .drama-card .summary { font-size:13px; color:#455a64; line-height:1.8; padding:12px 16px; background:#fafafa; border-radius:8px; }
+
+  .action-list { list-style:none; padding:0; }
+  .action-list li { padding:12px 16px; border-left:4px solid #1565c0; background:#f8f9fc; border-radius:0 8px 8px 0; margin-bottom:10px; font-size:13px; line-height:1.7; }
+  .action-list li strong { color:#1a1a2e; }
+  .action-list li .priority { display:inline-block; font-size:10px; font-weight:700; padding:1px 8px; border-radius:10px; margin-left:8px; }
+  .action-list li .p1 { background:#ffebee; color:#c62828; }
+  .action-list li .p2 { background:#fff3e0; color:#e65100; }
+  .action-list li .p3 { background:#e3f2fd; color:#1565c0; }
+
+  .sentiment-bar { display:flex; height:22px; border-radius:11px; overflow:hidden; }
+  .sentiment-bar .pos { background:#4caf50; }
+  .sentiment-bar .neu { background:#e0e0e0; }
+  .sentiment-bar .neg { background:#ef5350; }
+
+  .tier-box { border-radius:12px; padding:20px 24px; margin-bottom:16px; }
+  .tier-green { background:#e8f5e9; border:1px solid #c8e6c9; }
+  .tier-orange { background:#fff3e0; border:1px solid #ffe0b2; }
+  .tier-red { background:#ffebee; border:1px solid #ffcdd2; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>AI 仿真人剧手写评语分析报告（5.08-5.28 三周）</h1>
+    <div class="meta">作者：韩泽 &nbsp;|&nbsp; 数据周期：2026-05-08 至 2026-05-28</div>
+    <div>
+      <span class="badge">658 条手写评语</span>
+      <span class="badge">24 部剧集（含 13 部新上线）</span>
+      <span class="badge">三周趋势对比</span>
+    </div>
+  </div>
+
+  <!-- Core Findings -->
+  <div class="alert">
+    <h2>&#9889; 核心发现</h2>
+    <p>
+      三周内 AI 提及率<strong>稳定在 38-41% 区间</strong>（40.8% → 41.1% → 38.5%），下降速度趋缓，进入"底部震荡"阶段。<br/>
+      <span class="hl-green">Fated to My Ruthless Alpha 第三周 AI 提及率降至 10%，正面率升至 52%</span>——头部剧已完全"脱敏"。<br/>
+      但<span class="hl-red">新上线剧集分化严重</span>：第三周新增 9 部剧，AI 提及率从 0%（Who Is the Nobody Here）到 75%（WTF! Burger Flipper），制作质量参差是当前最大风险。<br/>
+      AI 提及评论中：<span class="hl-red">负面 106 条（40%）</span> > 中性 119 条（45%）> <span class="hl-green">正面 38 条（15%）</span>——排斥仍是主流，但正面声音正在增长。
+    </p>
+  </div>
+
+  <!-- Section 1: Global Trend -->
+  <div class="section">
+    <h2><span class="num">1</span>全局指标三周趋势</h2>
+    <div class="kpi-row">
+      <div class="kpi-card info">
+        <div class="value">658</div>
+        <div class="label">评语总量（三周合计）</div>
+        <div class="trend flat">191 / 192 / 275</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="value">40.0%</div>
+        <div class="label">AI 提及率（三周均值）</div>
+        <div class="trend flat">40.8% → 41.1% → 38.5%</div>
+      </div>
+      <div class="kpi-card info">
+        <div class="value">33.5%</div>
+        <div class="label">正面率（三周均值）</div>
+        <div class="trend flat">37.2% → 31.2% → 32.7%</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="value">24.3%</div>
+        <div class="label">负面率（三周均值）</div>
+        <div class="trend up">20.4% → 30.2% → 22.9%</div>
+      </div>
+      <div class="kpi-card info">
+        <div class="value">24</div>
+        <div class="label">剧集数量（累计）</div>
+        <div class="trend flat">11 → 15 → 23 部</div>
+      </div>
+      <div class="kpi-card warn">
+        <div class="value">6.5%</div>
+        <div class="label">广告投诉（第三周）</div>
+        <div class="trend up">3.7% → 3.1% → 6.5%</div>
+      </div>
+    </div>
+
+    <div class="compare-box">
+      <h3>三周全局数据对照</h3>
+      <div class="table-wrap">
+        <table class="trend-table">
+          <thead>
+            <tr><th>指标</th><th>第一周<br/>5.08-5.14</th><th>第二周<br/>5.15-5.21</th><th>第三周<br/>5.22-5.28</th><th>趋势判断</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>评语总量</td><td>191</td><td>192</td><td>275</td><td><span class="tag-green">第三周放量 +43%</span></td></tr>
+            <tr><td>剧集数量</td><td>11</td><td>15</td><td>23</td><td><span class="tag-blue">快速扩量</span></td></tr>
+            <tr><td>AI 提及率</td><td>40.8%</td><td>41.1%</td><td>38.5%</td><td><span class="tag-orange">底部震荡</span></td></tr>
+            <tr><td>配音问题</td><td>5.2%</td><td>7.3%</td><td class="worse">8.7%</td><td><span class="tag-orange">微升（新剧拉高）</span></td></tr>
+            <tr><td>希望真人演员</td><td>4.2%</td><td>8.9%</td><td>6.5%</td><td class="same">波动中</td></tr>
+            <tr><td>广告投诉</td><td>3.7%</td><td>3.1%</td><td class="worse">6.5%</td><td><span class="tag-orange">第三周明显上升</span></td></tr>
+            <tr><td>正面率</td><td class="better">37.2%</td><td>31.2%</td><td>32.7%</td><td><span class="tag-orange">第二周下探后回升</span></td></tr>
+            <tr><td>负面率</td><td>20.4%</td><td class="worse">30.2%</td><td>22.9%</td><td><span class="tag-orange">第二周峰值，第三周回落</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:14px; font-size:12px; color:#757575;">
+        * 第二周负面率飙升（30.2%）主要由 Her Longlost Heiress（46%负面）、Old Soldiers（38%负面）、Crowned（31%负面）等新上线剧集拉高。第三周虽有回落（22.9%），但 Move to Countryside（47%负面）、Old Soldiers（50%负面）等仍为主要拖累。
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 2: Sentiment by Drama -->
+  <div class="section">
+    <h2><span class="num">2</span>分剧情感分布（正面 / 中性 / 负面）</h2>
+    <p style="font-size:12px; color:#9e9e9e; margin-bottom:16px;">按评语总量降序 · <span style="color:#4caf50;">&#9632;</span> 正面 <span style="color:#bdbdbd;">&#9632;</span> 中性 <span style="color:#ef5350;">&#9632;</span> 负面 · 仅展示 ≥15 条的剧集</p>
+
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Fated to My Ruthless Alpha（97）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:44.3%"></div><div class="neu" style="width:41.2%"></div><div class="neg" style="width:14.4%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">44%</span>
+      <span style="font-size:11px; color:#9e9e9e;">41%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">14%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Keeping His Baby and His Heart（82）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:37.8%"></div><div class="neu" style="width:46.3%"></div><div class="neg" style="width:15.9%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">38%</span>
+      <span style="font-size:11px; color:#9e9e9e;">46%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">16%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Billionaire's Seduce Game（63）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:39.7%"></div><div class="neu" style="width:36.5%"></div><div class="neg" style="width:23.8%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">40%</span>
+      <span style="font-size:11px; color:#9e9e9e;">37%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">24%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Crowned By Billion Dollar Baby（50）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:28%"></div><div class="neu" style="width:48%"></div><div class="neg" style="width:24%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">28%</span>
+      <span style="font-size:11px; color:#9e9e9e;">48%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">24%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">30 Days to be the Mafia King's Bride（35）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:57.1%"></div><div class="neu" style="width:28.6%"></div><div class="neg" style="width:14.3%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">57%</span>
+      <span style="font-size:11px; color:#9e9e9e;">29%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">14%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Her Longlost Heiress is Found（35）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:14.3%"></div><div class="neu" style="width:45.7%"></div><div class="neg" style="width:40%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">14%</span>
+      <span style="font-size:11px; color:#9e9e9e;">46%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">40%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Move to Countryside（34）<span class="tag-red" style="font-size:10px; margin-left:6px;">NEW</span></span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:23.5%"></div><div class="neu" style="width:29.4%"></div><div class="neg" style="width:47.1%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">24%</span>
+      <span style="font-size:11px; color:#9e9e9e;">29%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">47%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">New Life, New Mate（34）<span class="tag-blue" style="font-size:10px; margin-left:6px;">NEW</span></span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:35.3%"></div><div class="neu" style="width:47.1%"></div><div class="neg" style="width:17.6%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">35%</span>
+      <span style="font-size:11px; color:#9e9e9e;">47%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">18%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Too Late When You See the Divorce Papers（31）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:19.4%"></div><div class="neu" style="width:38.7%"></div><div class="neg" style="width:41.9%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">19%</span>
+      <span style="font-size:11px; color:#9e9e9e;">39%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">42%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Where Were You When I Fell（29）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:27.6%"></div><div class="neu" style="width:58.6%"></div><div class="neg" style="width:13.8%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">28%</span>
+      <span style="font-size:11px; color:#9e9e9e;">59%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">14%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Old Soldiers Never Die（20）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:5%"></div><div class="neu" style="width:50%"></div><div class="neg" style="width:45%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">5%</span>
+      <span style="font-size:11px; color:#9e9e9e;">50%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">45%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Marry Vampire King After Rebirth（18）<span class="tag-green" style="font-size:10px; margin-left:6px;">NEW</span></span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:50%"></div><div class="neu" style="width:38.9%"></div><div class="neg" style="width:11.1%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">50%</span>
+      <span style="font-size:11px; color:#9e9e9e;">39%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">11%</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+      <span style="width:280px; font-size:12px; font-weight:600;">Emergency Reckoning（15）</span>
+      <div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:0%"></div><div class="neu" style="width:40%"></div><div class="neg" style="width:60%"></div></div>
+      <span style="font-size:11px; color:#4caf50; font-weight:700;">0%</span>
+      <span style="font-size:11px; color:#9e9e9e;">40%</span>
+      <span style="font-size:11px; color:#ef5350; font-weight:700;">60%</span>
+    </div>
+  </div>
+
+  <!-- Section 3: Core Issues -->
+  <div class="section">
+    <h2><span class="num">3</span>核心问题深度拆解</h2>
+
+    <h3>3.1 AI 提及率分析（三周均值 40.0%，263/658 条）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">三周 AI 提及率保持在 38-41% 区间，<strong>下降速度趋缓</strong>。AI 提及评论的态度分布：负面 40%、中性 45%、正面 15%。</p>
+    <div class="quote-grid">
+      <div class="quote-card positive">
+        "I know it's AI and sometimes it irritates me however, this story the affects the whole things was so beautifully done... I loved it!!!!"
+        <div class="source">— Fated to My Ruthless Alpha（有条件接受转正面）</div>
+      </div>
+      <div class="quote-card positive">
+        "wow, truly a masterpiece. one of the best drama I have seen. a beautiful love story, please create more AI dramas"
+        <div class="source">— My Substitute Groom（积极拥抱 AI）</div>
+      </div>
+      <div class="quote-card negative">
+        "using AI to create the storyline and characters feels like you are scamming subscriptions... I will not be renewing my service"
+        <div class="source">— Old Soldiers Never Die（强烈排斥 + 流失风险）</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>分层解读：</strong>AI 提及率在老剧中持续下降（Fated: 28%→32%→10%），但在新上线剧集中仍然较高（Move to Countryside 65%、WTF! Burger Flipper 75%）。这说明<span class="hl-orange">全局数据的稳定实际上是"老剧改善"与"新剧拉高"的对冲结果</span>。要让全局 AI 提及率进一步下降，关键在于提升新剧的制作质量。
+    </p>
+
+    <h3>3.2 配音/字幕问题（三周 5.2% → 7.3% → 8.7%，趋势上升）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">配音投诉率逐周上升，主因是第三周大量新剧上线带来的质量参差。</p>
+    <div class="quote-grid">
+      <div class="quote-card negative">
+        "as with all AI dramas, the audio doesn't match, the words are mispronounced more than correctly pronounced, the accent changes mid-phrase"
+        <div class="source">— Old Soldiers Never Die</div>
+      </div>
+      <div class="quote-card mixed">
+        "Great story line. I was hooked to it! Must watch. There were some issues with audio, accents and words but it is AI."
+        <div class="source">— Fated to My Ruthless Alpha（有瑕疵但可接受）</div>
+      </div>
+    </div>
+
+    <h3>3.3 广告投诉（3.7% → 3.1% → 6.5%，第三周翻倍）</h3>
+    <p style="font-size:13px; color:#616161; margin-bottom:12px;">第三周广告投诉翻倍，集中在高粘性续存剧（Fated 4条、Keeping 4条、Crowned 5条）。投诉者的共同特征是"认可内容但对广告体验不满"。</p>
+    <div class="quote-grid">
+      <div class="quote-card mixed">
+        "The drama was decent, but the ads are too long and towards the end, it makes you watch two long ads for one episode."
+        <div class="source">— Fated to My Ruthless Alpha</div>
+      </div>
+      <div class="quote-card negative">
+        "expensive and too many adds to watch"
+        <div class="source">— Fated to My Ruthless Alpha</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#455a64; margin-top:14px; line-height:1.8;">
+      <strong>洞察：</strong>广告投诉增长说明有更多用户在<strong>深度追剧</strong>后才触发不满。这是好信号（留存深度在增加），但也意味着广告策略需要对后半段集数做优化。
+    </p>
+  </div>
+
+  <!-- Section 4: Drama Tiers -->
+  <div class="section">
+    <h2><span class="num">4</span>剧集梯队划分</h2>
+
+    <div class="tier-box tier-green">
+      <h3 style="color:#2e7d32; margin:0 0 12px;">&#9733; 健康剧集（正面率 ≥ 35%，负面率 ≤ 20%）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>剧集</th><th>评语数</th><th>AI提及率</th><th>正面率</th><th>负面率</th><th>亮点</th></tr></thead>
+          <tbody>
+            <tr><td><strong>30 Days to be the Mafia King's Bride</strong></td><td>35</td><td>31.4%</td><td style="color:#2e7d32; font-weight:700;">57.1%</td><td>14.3%</td><td>正面率最高，第三周 AI 提及 0%</td></tr>
+            <tr><td><strong>Fated to My Ruthless Alpha</strong></td><td>97</td><td>24.7%</td><td style="color:#2e7d32; font-weight:700;">44.3%</td><td>14.4%</td><td>头部爆量剧，第三周 AI 提及仅 10%</td></tr>
+            <tr><td><strong>Marry Vampire King After Rebirth</strong></td><td>18</td><td style="color:#2e7d32; font-weight:700;">17%</td><td style="color:#2e7d32; font-weight:700;">50%</td><td>11%</td><td>新剧标杆，AI 提及率最低</td></tr>
+            <tr><td><strong>My Substitute Groom, The King Of Olympus</strong></td><td>6</td><td>33%</td><td style="color:#2e7d32; font-weight:700;">83%</td><td>0%</td><td>小样本但极正面</td></tr>
+            <tr><td><strong>Keeping His Baby and His Heart</strong></td><td>82</td><td>43.9%</td><td>37.8%</td><td>15.9%</td><td>高量稳定，AI 争议在消退</td></tr>
+            <tr><td><strong>New Life, New Mate</strong></td><td>34</td><td>38%</td><td>35.3%</td><td>17.6%</td><td>新剧表现可观</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tier-box tier-orange">
+      <h3 style="color:#e65100; margin:0 0 12px;">&#9888; 需关注（正面率 25-35% 或负面率 20-35%）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>剧集</th><th>评语数</th><th>AI提及率</th><th>正面率</th><th>负面率</th><th>主要问题</th></tr></thead>
+          <tbody>
+            <tr><td>Billionaire's Seduce Game</td><td>63</td><td>39.7%</td><td>39.7%</td><td style="color:#e65100; font-weight:700;">23.8%</td><td>AI 排斥型用户持续涌入</td></tr>
+            <tr><td>Crowned By Billion Dollar Baby</td><td>50</td><td>48%</td><td>28%</td><td style="color:#e65100; font-weight:700;">24%</td><td>AI 提及率偏高，需时间消化</td></tr>
+            <tr><td>Where Were You When I Fell</td><td>29</td><td>31%</td><td>27.6%</td><td>13.8%</td><td>正面率偏低，剧情吸引力不足</td></tr>
+            <tr><td>The One You Love is Her Twin Sister</td><td>26</td><td>46%</td><td>30.8%</td><td style="color:#e65100; font-weight:700;">26.9%</td><td>AI 提及率较高，第三周有改善</td></tr>
+            <tr><td>The Sniper King's Return</td><td>17</td><td>35%</td><td>35.3%</td><td style="color:#e65100; font-weight:700;">29.4%</td><td>穿帮/连贯性问题</td></tr>
+            <tr><td>WTF! Burger Flipper</td><td>8</td><td style="color:#c62828; font-weight:700;">75%</td><td>25%</td><td style="color:#e65100; font-weight:700;">37.5%</td><td>AI 提及率极高，制作质量差</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tier-box tier-red">
+      <h3 style="color:#c62828; margin:0 0 12px;">&#9888; 高风险（负面率 ≥ 40% 或正面率 &lt; 15%）</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>剧集</th><th>评语数</th><th>AI提及率</th><th>正面率</th><th>负面率</th><th>风险描述</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Move to Countryside, Marry a Billionaire</strong></td><td>34</td><td style="color:#c62828; font-weight:700;">65%</td><td>24%</td><td style="color:#c62828; font-weight:700;">47%</td><td>第三周新剧，AI排斥+质量问题并发</td></tr>
+            <tr><td><strong>Old Soldiers Never Die</strong></td><td>20</td><td style="color:#c62828; font-weight:700;">50%</td><td style="color:#c62828; font-weight:700;">5%</td><td style="color:#c62828; font-weight:700;">45%</td><td>正面率极低，配音/字幕严重</td></tr>
+            <tr><td><strong>Too Late When You See the Divorce Papers</strong></td><td>31</td><td>51.6%</td><td>19.4%</td><td style="color:#c62828; font-weight:700;">41.9%</td><td>AI 提及>50%，连贯性问题明显</td></tr>
+            <tr><td><strong>Her Longlost Heiress is Found</strong></td><td>35</td><td>42.9%</td><td style="color:#c62828; font-weight:700;">14.3%</td><td style="color:#c62828; font-weight:700;">40%</td><td>正面率极低，制作质量堪忧</td></tr>
+            <tr><td><strong>Emergency Reckoning</strong></td><td>15</td><td style="color:#c62828; font-weight:700;">60%</td><td style="color:#c62828; font-weight:700;">0%</td><td style="color:#c62828; font-weight:700;">60%</td><td>连续三周零正面，已建议下架</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Key Drama Detail -->
+  <div class="section">
+    <h2><span class="num">5</span>重点剧集趋势解读</h2>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">标杆</span> Fated to My Ruthless Alpha（97条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">10%</div><div class="l">AI提及率（第三周）</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">52%</div><div class="l">正面率（第三周）</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">10%</div><div class="l">负面率（第三周）</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">19%</div><div class="l">广告投诉率（三周）</div></div>
+      </div>
+      <div class="summary">
+        <strong>三周走势：</strong>AI提及率 28%→32%→10%，正面率 44%→36%→52%，负面率 13%→23%→10%。第三周数据确认该剧已<strong>完全"脱敏"</strong>：仅 2/21 条提及 AI，超半数给正面评价。但广告投诉成为新痛点（三周累计 12 条提及广告/价格），用户明确表示"剧好但广告太多"。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">稳健</span> 30 Days to be the Mafia King's Bride（35条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">0%</div><div class="l">AI提及率（第三周）</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">57%</div><div class="l">正面率（第三周）</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">0%</div><div class="l">负面率（第三周）</div></div>
+      </div>
+      <div class="summary">
+        <strong>三周走势：</strong>AI提及率 35%→50%→0%，正面率 55%→62%→57%。第三周达到"理想终态"：零 AI 提及、零负面，有评论称"This version is much better from the other existing"。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">新剧惊喜</span> Marry Vampire King After Rebirth（18条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">17%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">50%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">11%</div><div class="l">负面率</div></div>
+      </div>
+      <div class="summary">
+        第三周新上线，AI 提及率仅 17%（全场最低），正面率 50%。说明当题材新颖（非翻拍）+ 制作质量达标时，用户几乎不会注意到 AI。可作为"AI 隐形"的新剧参考案例。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-red">高风险</span> Move to Countryside, Marry a Billionaire（34条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#c62828;">65%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v">24%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">47%</div><div class="l">负面率</div></div>
+      </div>
+      <div class="summary">
+        第三周新上线，AI 提及率 65% 为所有新剧中最高。近半评论为负面，AI 排斥感明显。与同期 Marry Vampire King（17%）形成鲜明对比——同为新剧，制作质量差距导致截然不同的用户反馈。
+      </div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-red">建议下架</span> Emergency Reckoning: My Brother's Fury（15条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#c62828;">60%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">0%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">60%</div><div class="l">负面率</div></div>
+      </div>
+      <div class="summary">
+        三周累计 15 条评语，<strong>零正面</strong>。问题覆盖全维度：AI 排斥、集数循环、字幕错位、剧情跳跃。已多次建议干预，目前仍无改善迹象。
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: AI Attitude Spectrum -->
+  <div class="section">
+    <h2><span class="num">6</span>AI 态度光谱分析</h2>
+    <p style="font-size:13px; color:#616161; margin-bottom:16px;">263 条 AI 相关评论中，用户态度已形成清晰的三层光谱：</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>态度层</th><th>占比</th><th>特征描述</th><th>代表评论</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="tag-red">强烈排斥</span></td>
+            <td style="font-weight:700;">40%（106条）</td>
+            <td>明确反对 AI、要求真人、考虑退订</td>
+            <td style="font-size:12px; color:#616161;">"using AI feels like scamming subscriptions... will not renew"</td>
+          </tr>
+          <tr>
+            <td><span class="tag-orange">有条件接受</span></td>
+            <td style="font-weight:700;">45%（119条）</td>
+            <td>承认 AI 但不以此为主要评价维度</td>
+            <td style="font-size:12px; color:#616161;">"good story but this is AI make so its a little bit fake"</td>
+          </tr>
+          <tr>
+            <td><span class="tag-green">积极拥抱</span></td>
+            <td style="font-weight:700;">15%（38条）</td>
+            <td>主动认可 AI 质量、要求更多 AI 剧</td>
+            <td style="font-size:12px; color:#616161;">"please create more AI dramas""first AI I've watched, very well done"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size:13px; color:#455a64; margin-top:16px; line-height:1.8;">
+      <strong>关键洞察：</strong>"有条件接受"（45%）是最大群体，也是最可转化的群体。他们不反感 AI 形态本身，只是需要更好的内容和技术质量。头部剧（Fated、30 Days）的数据证明：<span class="hl-green">当内容足够好时，"有条件接受"层会自然转为不再提及 AI</span>。
+    </p>
+  </div>
+
+  <!-- Section 7: Insights -->
+  <div class="section">
+    <h2><span class="num">7</span>趋势洞察</h2>
+
+    <h3>7.1 AI 提及率进入"底部震荡"，进一步下降取决于新剧质量</h3>
+    <p style="font-size:13px; color:#455a64; line-height:1.8; margin-bottom:16px;">
+      全局 AI 提及率在 38-41% 稳定三周，已不再快速下降。核心原因是<strong>老剧的改善被新剧的拉高对冲</strong>：Fated（10%）、30 Days（0%）证明"脱敏"可以达成，但 Move to Countryside（65%）、WTF Burger Flipper（75%）说明新剧制作质量不达标时，AI 提及率会回到高位。要实现全局下降，必须<span class="hl-orange">从源头控制新剧的上线质量</span>。
+    </p>
+
+    <h3>7.2 正面率受新剧质量拖累</h3>
+    <p style="font-size:13px; color:#455a64; line-height:1.8; margin-bottom:16px;">
+      第一周正面率 37.2%（11部剧），第三周降至 32.7%（23部剧）。头部剧的正面率在持续改善（Fated 第三周 52%），但新上线的 5 部高风险剧（Move to Countryside、Old Soldiers、Too Late、Her Longlost Heiress、Emergency Reckoning）合计 135 条评语中负面率达 44%，严重拉低了全局正面率。
+    </p>
+
+    <h3>7.3 新剧质量呈"两极分化"</h3>
+    <p style="font-size:13px; color:#455a64; line-height:1.8; margin-bottom:16px;">
+      第三周新增 9 部剧，表现差距极大：
+    </p>
+    <div class="table-wrap" style="margin-bottom:16px;">
+      <table>
+        <thead><tr><th>剧集</th><th>评语数</th><th>AI提及率</th><th>正面率</th><th>负面率</th><th>判断</th></tr></thead>
+        <tbody>
+          <tr><td>Marry Vampire King After Rebirth</td><td>18</td><td style="color:#2e7d32;">17%</td><td style="color:#2e7d32;">50%</td><td>11%</td><td><span class="tag-green">优秀</span></td></tr>
+          <tr><td>My Substitute Groom, The King Of Olympus</td><td>6</td><td>33%</td><td style="color:#2e7d32;">83%</td><td>0%</td><td><span class="tag-green">优秀</span></td></tr>
+          <tr><td>Who Is the Nobody Here?</td><td>9</td><td style="color:#2e7d32;">0%</td><td>44%</td><td>0%</td><td><span class="tag-green">优秀</span></td></tr>
+          <tr><td>New Life, New Mate</td><td>34</td><td>38%</td><td>35%</td><td>18%</td><td><span class="tag-blue">可观</span></td></tr>
+          <tr><td>My Husband is a Hidden Hero!</td><td>11</td><td>36%</td><td>27%</td><td>18%</td><td><span class="tag-orange">一般</span></td></tr>
+          <tr><td>WTF! Burger Flipper is the Chain Boss</td><td>8</td><td style="color:#c62828;">75%</td><td>25%</td><td>38%</td><td><span class="tag-red">风险</span></td></tr>
+          <tr><td>Move to Countryside, Marry a Billionaire</td><td>34</td><td style="color:#c62828;">65%</td><td>24%</td><td style="color:#c62828;">47%</td><td><span class="tag-red">风险</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px; color:#455a64; line-height:1.8;">
+      规律很清晰：<span class="hl-green">AI 提及率 ≤ 35% 的新剧，正面率均 ≥ 35%</span>；AI 提及率 ≥ 60% 的新剧，负面率均 ≥ 35%。AI 提及率本质上是"制作质量"的代理指标——用户不提 AI，说明 AI 痕迹不明显，制作过关。
+    </p>
+
+    <h3>7.4 广告问题正在成为留存风险</h3>
+    <p style="font-size:13px; color:#455a64; line-height:1.8;">
+      第三周广告投诉翻倍（6.5%），集中在高粘性剧集。广告投诉者的措辞模式是"内容认可+体验不满"——这意味着他们是<strong>已验证的付费/留存用户</strong>，流失成本远高于首集就退出的 AI 排斥者。
+    </p>
+  </div>
+
+  <!-- Section 8: Conclusions -->
+  <div class="section">
+    <h2><span class="num">8</span>结论与建议</h2>
+
+    <h3>8.1 核心结论</h3>
+    <div style="margin-top:12px; font-size:14px; line-height:2.2;">
+      <p><strong>1.</strong> <span class="hl-orange">AI 接受度已度过"快速改善期"，进入"稳态分化期"</span> — 全局 AI 提及率稳定在 ~40%，头部剧已"脱敏"（Fated 10%、30 Days 0%），但新剧持续带入新用户和新排斥。全局指标的进一步改善取决于新剧质量控制。</p>
+      <p><strong>2.</strong> <span class="hl-red">新剧制作质量参差是当前最大风险</span> — 第三周 9 部新剧中，3 部优秀（AI 提及 ≤ 33%）、2 部高风险（AI 提及 ≥ 65%），差距悬殊。高风险新剧不仅自身表现差，还拖累全局指标并消耗用户信任。</p>
+      <p><strong>3.</strong> <span class="hl-green">头部剧已完成"AI → 正常内容"的转变</span> — Fated/30 Days/Marry Vampire 的数据证明：当制作质量达标时，用户的评论完全聚焦内容本身，AI 不再是议题。这是 AI 仿真人剧商业化的积极信号。</p>
+      <p><strong>4.</strong> <span class="hl-orange">广告体验正成为第二痛点</span> — 第三周广告投诉率 6.5%，仅次于 AI 提及。影响的是高价值留存用户，需要平衡商业化和用户体验。</p>
+    </div>
+
+    <h3 style="margin-top:24px;">8.2 行动建议</h3>
+    <ul class="action-list">
+      <li>
+        <strong>建立新剧上线前"AI 可见度"质检门槛</strong><span class="priority p1">P0</span><br/>
+        数据明确显示 AI 提及率 ≤ 35% 是健康线。建议对新剧做上线前内测，AI 提及率若 >50% 则打回修复。参考 Marry Vampire King 和 Who Is the Nobody 的制作标准。
+      </li>
+      <li>
+        <strong>对 Emergency Reckoning、Old Soldiers Never Die 做下架/重制评估</strong><span class="priority p1">P0</span><br/>
+        Emergency Reckoning 三周零正面（0/15），Old Soldiers 正面率仅 5%（1/20）。继续上架只会消耗用户对平台 AI 内容的整体信任。
+      </li>
+      <li>
+        <strong>优化高粘性剧集（Fated、Keeping、Crowned）的后半段广告策略</strong><span class="priority p2">P1</span><br/>
+        广告投诉集中在追剧后半段，投诉者是已验证的内容认可用户。建议：降低后半段广告频次，或引入"看完 N 集解锁免广告"的奖励。
+      </li>
+      <li>
+        <strong>将 Marry Vampire King / My Substitute Groom 的制作参数提炼为"新剧模板"</strong><span class="priority p2">P1</span><br/>
+        这两部新剧 AI 提及率低（17%/33%）且正面率高（50%/83%），说明其制作流程可复用。分析其与高风险剧的差异（题材选择、人物数量、场景复杂度等），形成可操作的制作指南。
+      </li>
+      <li>
+        <strong>对 Move to Countryside 做紧急质量修复</strong><span class="priority p2">P1</span><br/>
+        第三周最高量的新剧之一（34条），但 AI 提及率 65%、负面率 47%。作为当前推广中的剧集，其负面评论可能影响拉新效果。优先修复最突出的 AI 可见性问题。
+      </li>
+      <li>
+        <strong>跟踪"积极拥抱 AI"群体的增长</strong><span class="priority p3">P2</span><br/>
+        当前占 AI 提及评论的 15%（38/263），出现了"please create more AI dramas""masterpiece"等强正面评论。如果这一比例持续增长至 25%+，意味着 AI 仿真人剧正在形成独立的粉丝群体。
+      </li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
