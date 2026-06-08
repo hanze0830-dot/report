@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户反馈趋势分析报告 2026年4月-5月</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f4f8; color: #1a1a2e; line-height: 1.7; }
+
+  .cover {
+    background: linear-gradient(135deg, #1F497D 0%, #2E74B5 60%, #4A9FD4 100%);
+    color: #fff;
+    padding: 80px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .cover h1 { font-size: 2.6rem; font-weight: 700; letter-spacing: 2px; margin-bottom: 12px; }
+  .cover .subtitle { font-size: 1.2rem; opacity: 0.85; margin-bottom: 32px; }
+  .cover .badge-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+  .cover .badge {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    backdrop-filter: blur(4px);
+  }
+  .cover .date { font-size: 0.85rem; opacity: 0.65; }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 40px 24px 60px; }
+
+  .section-title {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 1.35rem; font-weight: 700; color: #1F497D;
+    border-left: 4px solid #2E74B5; padding-left: 14px;
+    margin-bottom: 20px; margin-top: 40px;
+  }
+  .section-title .num {
+    background: #2E74B5; color: #fff;
+    width: 28px; height: 28px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700; flex-shrink: 0;
+  }
+
+  .finding-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width:680px){ .finding-grid { grid-template-columns: 1fr; } }
+  .finding-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 18px;
+    border-left: 4px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+  .finding-card.warn  { border-left-color: #e74c3c; }
+  .finding-card.up    { border-left-color: #e67e22; }
+  .finding-card.down  { border-left-color: #27ae60; }
+  .finding-card.info  { border-left-color: #2980b9; }
+  .finding-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+  .finding-text { font-size: 0.92rem; line-height: 1.6; }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin: 20px 0; }
+  @media(max-width:760px){ .kpi-row { grid-template-columns: repeat(2,1fr); } }
+  .kpi-card {
+    background: #fff; border-radius: 10px; padding: 18px 16px;
+    text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .kpi-card .label { font-size: 0.78rem; color: #888; margin-bottom: 6px; }
+  .kpi-card .value { font-size: 1.8rem; font-weight: 700; }
+  .kpi-card .change { font-size: 0.82rem; margin-top: 4px; font-weight: 600; }
+  .red   { color: #e74c3c; }
+  .green { color: #27ae60; }
+  .orange{ color: #e67e22; }
+  .blue  { color: #2E74B5; }
+
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: #fff; }
+  thead tr { background: #1F497D; color: #fff; }
+  thead th { padding: 11px 14px; text-align: center; font-weight: 600; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: #f7f9fc; }
+  tbody tr:hover { background: #eef4fb; }
+  tbody td { padding: 10px 14px; text-align: center; border-bottom: 1px solid #e8ecf2; }
+  tbody td.left { text-align: left; }
+  .highlight-red td   { background: #fff0f0 !important; }
+  .highlight-yellow td{ background: #fffde7 !important; }
+  .highlight-green td { background: #f0fff4 !important; }
+  .tag-up   { color: #e74c3c; font-weight: 700; }
+  .tag-down { color: #27ae60; font-weight: 700; }
+  .tag-warn { color: #e67e22; font-weight: 700; }
+  .tag-flat { color: #888; }
+
+  .analysis-block {
+    background: #fff; border-radius: 10px; padding: 20px 22px;
+    margin: 14px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .analysis-block h4 {
+    font-size: 1rem; font-weight: 700; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .analysis-block p { font-size: 0.92rem; line-height: 1.8; color: #333; }
+  .analysis-block.warn-block  { border-left: 4px solid #e74c3c; }
+  .analysis-block.good-block  { border-left: 4px solid #27ae60; }
+  .analysis-block.info-block  { border-left: 4px solid #2E74B5; }
+  .analysis-block.alert-block { border-left: 4px solid #e67e22; }
+
+  .rec-section { margin-top: 8px; }
+  .rec-priority { font-size: 0.95rem; font-weight: 700; margin: 18px 0 10px; padding: 6px 14px; border-radius: 6px; display: inline-block; }
+  .rec-priority.p0 { background: #fee; color: #c0392b; }
+  .rec-priority.p1 { background: #fff3e0; color: #e67e22; }
+  .rec-priority.p2 { background: #e8f4fd; color: #2E74B5; }
+  .rec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width:680px){ .rec-grid { grid-template-columns: 1fr; } }
+  .rec-card {
+    background: #fff; border-radius: 10px; padding: 16px 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-top: 3px solid #ccc;
+  }
+  .rec-card.p0 { border-top-color: #e74c3c; }
+  .rec-card.p1 { border-top-color: #e67e22; }
+  .rec-card.p2 { border-top-color: #2E74B5; }
+  .rec-card h5 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+  .rec-card p  { font-size: 0.88rem; color: #555; line-height: 1.7; }
+
+  .h3 {
+    font-size: 1.05rem; font-weight: 700; color: #2E74B5;
+    margin: 28px 0 12px; padding-bottom: 6px;
+    border-bottom: 1px dashed #c8d8ec;
+  }
+
+  .mini-table { width: auto; min-width: 380px; }
+
+  .footer {
+    background: #1F497D; color: rgba(255,255,255,0.6);
+    text-align: center; padding: 20px;
+    font-size: 0.82rem; margin-top: 60px;
+  }
+
+  .appendix-list { list-style: none; padding: 0; }
+  .appendix-list li {
+    padding: 8px 0 8px 16px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    position: relative;
+  }
+  .appendix-list li::before { content: "·"; position: absolute; left: 0; color: #2E74B5; font-weight: 700; }
+  .appendix-list li strong { color: #1F497D; }
+</style>
+</head>
+<body>
+
+<!-- ===== 封面 ===== -->
+<div class="cover">
+  <h1>用户反馈趋势分析报告</h1>
+  <div class="subtitle">2026年4月 — 5月</div>
+  <div class="badge-row">
+    <span class="badge">产品差评分类趋势</span>
+    <span class="badge">客诉工单趋势</span>
+    <span class="badge">多语言剧集评分趋势</span>
+  </div>
+  <div class="date">生成日期：2026年6月8日</div>
+</div>
+
+<div class="container">
+
+<!-- ===== 一、问题总结 ===== -->
+<div class="section-title"><span class="num">1</span>问题总结</div>
+<p style="font-size:0.95rem;color:#444;margin-bottom:18px;">
+  本报告对2026年4月至5月期间的用户反馈数据进行全面分析，覆盖产品差评分类、客户投诉工单及多语言剧集评分三大维度，旨在识别关键问题趋势，为产品优化提供数据支撑。
+</p>
+
+<div class="kpi-row">
+  <div class="kpi-card">
+    <div class="label">Android会员充值未到账（5月均值）</div>
+    <div class="value red">2.54‱</div>
+    <div class="change red">▲ +0.64（明显上升）</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">日语整体差评率（5月均值）</div>
+    <div class="value red">10.83%</div>
+    <div class="change red">▲ +1.47ppt（连续恶化）</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">Android周均差评量（5月）</div>
+    <div class="value green">14,026</div>
+    <div class="change green">▼ -13.2%（显著下降）</div>
+  </div>
+  <div class="kpi-card">
+    <div class="label">泰语整体差评率（5月均值）</div>
+    <div class="value green">3.95%</div>
+    <div class="change green">▼ -0.74ppt（持续改善）</div>
+  </div>
+</div>
+
+<div class="finding-grid">
+  <div class="finding-card warn">
+    <div class="finding-icon">⚠️</div>
+    <div class="finding-text"><strong>日语差评率连续两月恶化，5月升至10.83%</strong>，较4月+1.47ppt，字幕剧（+1.44ppt）和配音剧（+1.09ppt）同步劣化，且5月呈逐周加速上升态势（5月末达11.30%）</div>
+  </div>
+  <div class="finding-card warn">
+    <div class="finding-icon">⚠️</div>
+    <div class="finding-text"><strong>Android会员充值未到账投诉率升至2.54‱</strong>，较4月+0.64，5月首周突增至2.88‱后虽有回落但整体仍高于4月水平，需关注支付链路稳定性</div>
+  </div>
+  <div class="finding-card down">
+    <div class="finding-icon">✅</div>
+    <div class="finding-text"><strong>Android差评总量大幅下降13.2%</strong>，周均从16,168降至14,026条；iOS同步下降7.0%，反映整体产品体验改善</div>
+  </div>
+  <div class="finding-card down">
+    <div class="finding-icon">✅</div>
+    <div class="finding-text"><strong>Android金币投诉率回落至3.61‱</strong>，较4月-0.41，结束了连续两月的恶化趋势（3月2.38→4月4.02→5月3.61），前期专项治理见效</div>
+  </div>
+  <div class="finding-card up">
+    <div class="finding-icon">🔺</div>
+    <div class="finding-text"><strong>韩语配音剧差评率攀升至11.96%</strong>，较4月+1.24ppt，配音质量差评率从1.50%升至1.84%，逐周持续走高，配音体验成为韩语市场新痛点</div>
+  </div>
+  <div class="finding-card down">
+    <div class="finding-icon">✅</div>
+    <div class="finding-text"><strong>泰语差评率全面改善</strong>，全部剧集-0.74ppt、字幕剧-1.21ppt、配音剧-0.50ppt，延续上月改善势头，字幕质量优化成效显著</div>
+  </div>
+</div>
+
+<!-- ===== 二、产品差评分类趋势 ===== -->
+<div class="section-title"><span class="num">2</span>产品差评分类趋势</div>
+<p style="font-size:0.85rem;color:#888;margin-bottom:16px;font-style:italic;">分析周期：2026年4月3日 — 2026年5月22日（周维度数据，Android + iOS分别统计）</p>
+
+<div class="h3">2.1 Android各差评类别均值对比（4月 vs 5月）</div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>差评类别</th><th>4月均值</th><th>5月均值</th><th>变化（ppt）</th><th>趋势</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-yellow">
+      <td class="left"><strong>付费相关</strong></td><td>25.8%</td><td>27.8%</td><td class="tag-up">+2.0</td><td class="tag-warn">↑ 上升</td>
+    </tr>
+    <tr>
+      <td class="left">广告相关</td><td>30.3%</td><td>30.2%</td><td class="tag-flat">-0.1</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">付费/广告不兑现</td><td>11.2%</td><td>10.7%</td><td class="tag-down">-0.5</td><td class="tag-down">↓ 小幅改善</td>
+    </tr>
+    <tr>
+      <td class="left">内容相关</td><td>9.9%</td><td>9.5%</td><td class="tag-down">-0.4</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>应用Bug相关 ✅</strong></td><td>5.9%</td><td>4.8%</td><td class="tag-down">-1.1</td><td class="tag-down">↓ 改善</td>
+    </tr>
+    <tr>
+      <td class="left">其他</td><td>9.4%</td><td>10.5%</td><td class="tag-up">+1.1</td><td class="tag-warn">↑ 上升</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>无分类 ✅</strong></td><td>5.3%</td><td>4.1%</td><td class="tag-down">-1.2</td><td class="tag-down">↓ 改善</td>
+    </tr>
+    <tr>
+      <td class="left">产品相关</td><td>1.1%</td><td>1.1%</td><td class="tag-flat">-0.0</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">本土化相关</td><td>0.7%</td><td>0.9%</td><td class="tag-flat">+0.2</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">广告涉黄涉赌</td><td>0.3%</td><td>0.4%</td><td class="tag-flat">+0.1</td><td class="tag-flat">→ 持平</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="h3">2.2 iOS各差评类别均值对比（4月 vs 5月）</div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>差评类别</th><th>4月均值</th><th>5月均值</th><th>变化（ppt）</th><th>趋势</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="left">付费相关</td><td>38.7%</td><td>38.0%</td><td class="tag-down">-0.7</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>广告相关 ✅</strong></td><td>16.8%</td><td>15.3%</td><td class="tag-down">-1.5</td><td class="tag-down">↓ 改善</td>
+    </tr>
+    <tr class="highlight-yellow">
+      <td class="left"><strong>内容相关</strong></td><td>14.9%</td><td>16.0%</td><td class="tag-up">+1.1</td><td class="tag-warn">↑ 上升</td>
+    </tr>
+    <tr>
+      <td class="left">付费/广告不兑现</td><td>7.4%</td><td>7.2%</td><td class="tag-flat">-0.3</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">应用Bug相关</td><td>5.1%</td><td>5.3%</td><td class="tag-flat">+0.2</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">其他</td><td>8.5%</td><td>10.5%</td><td class="tag-up">+2.0</td><td class="tag-warn">↑ 上升</td>
+    </tr>
+    <tr>
+      <td class="left">无分类</td><td>5.8%</td><td>4.9%</td><td class="tag-down">-0.9</td><td class="tag-down">↓ 改善</td>
+    </tr>
+    <tr>
+      <td class="left">产品相关</td><td>1.2%</td><td>1.3%</td><td class="tag-flat">+0.2</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">本土化相关</td><td>1.2%</td><td>1.2%</td><td class="tag-flat">+0.0</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">广告涉黄涉赌</td><td>0.5%</td><td>0.3%</td><td class="tag-down">-0.2</td><td class="tag-flat">→ 持平</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="h3">2.3 关键发现与深度分析</div>
+
+<div class="analysis-block good-block">
+  <h4>✅ 广告/Bug类差评回落，上月核心痛点得到缓解</h4>
+  <p>Android端广告相关差评占比从30.3%微降至30.2%（持平），应用Bug相关从5.9%降至4.8%（-1.1ppt）。上月报告指出广告加载失败引发的Bug类差评反弹，本月数据显示该问题已得到有效控制。iOS端广告相关更从16.8%降至15.3%（-1.5ppt），表明广告体验整体改善。</p>
+</div>
+
+<div class="analysis-block alert-block">
+  <h4>🔺 付费相关差评占比Android端反弹+2.0ppt</h4>
+  <p>Android端付费相关差评从25.8%升至27.8%，虽然绝对量下降（总量减少13.2%），但占比上升说明付费问题相对其他问题凸显。结合客诉数据看，Android会员充值未到账投诉率5月上升+0.64‱，两组数据相互印证，付费到账稳定性仍需持续关注。</p>
+</div>
+
+<div class="analysis-block info-block">
+  <h4>📊 差评总量显著下降，整体体验向好</h4>
+  <p>Android端周均差评总量从4月16,168条降至5月14,026条（-13.2%），iOS端从3,683条降至3,427条（-7.0%）。各主要类别绝对数量均有不同程度减少，反映出产品整体体验在持续优化中。"无分类"占比下降1.2ppt，也说明差评标签体系覆盖度在提升。</p>
+</div>
+
+<!-- ===== 三、客诉工单趋势 ===== -->
+<div class="section-title"><span class="num">3</span>客诉工单趋势</div>
+<p style="font-size:0.85rem;color:#888;margin-bottom:16px;font-style:italic;">分析周期：2026年4月3日 — 2026年5月28日（周维度数据，单位：‱）</p>
+
+<div class="h3">3.1 各投诉类型月度均值对比</div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>投诉类型</th><th>4月均值（‱）</th><th>5月均值（‱）</th><th>变化</th><th>趋势</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-red">
+      <td class="left"><strong>Android会员充值未到账 ⚠</strong></td><td>1.89</td><td>2.54</td><td class="tag-up">+0.64</td><td class="tag-up">↑ 明显上升</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>Android金币充值未到账 ✅</strong></td><td>4.02</td><td>3.61</td><td class="tag-down">-0.41</td><td class="tag-down">↓ 改善</td>
+    </tr>
+    <tr>
+      <td class="left">iOS会员充值未到账</td><td>0.47</td><td>0.55</td><td class="tag-flat">+0.09</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">iOS金币充值未到账</td><td>0.44</td><td>0.50</td><td class="tag-flat">+0.06</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">取消订阅</td><td>2.00</td><td>2.05</td><td class="tag-flat">+0.05</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">功能类投诉</td><td>0.82</td><td>0.86</td><td class="tag-flat">+0.04</td><td class="tag-flat">→ 持平</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="h3">3.2 关键发现与深度分析</div>
+
+<div class="analysis-block warn-block">
+  <h4>⚠️ Android会员充值未到账投诉率反弹上升</h4>
+  <p>5月Android会员充值未到账投诉率均值2.54‱，较4月1.89‱上升+0.64。5月首周突增至2.88‱（环比4月末1.91‱大幅上升），随后虽逐步回落（2.49→2.45→2.32），但整体水平仍显著高于4月均值。需排查5月初是否存在支付渠道变更或系统升级导致的暂时性到账延迟。</p>
+</div>
+
+<div class="analysis-block good-block">
+  <h4>✅ Android金币充值未到账结束两月连续恶化</h4>
+  <p>该指标经历3月均值2.38‱→4月4.02‱的大幅恶化后，5月回落至3.61‱（-0.41）。但需注意5月中下旬又出现回升迹象（5.15周=4.17、5.22周=4.05），说明问题虽有改善但尚未根治，仍需持续监控三方支付到账时效。</p>
+</div>
+
+<div class="analysis-block info-block">
+  <h4>📊 三月趋势回顾：充值问题走势对比</h4>
+  <p>Android金币：2.38‱(3月) → 4.02‱(4月) → 3.61‱(5月)，高位回落但仍远高于3月水平<br>
+  Android会员：2.04‱(3月) → 1.89‱(4月) → 2.54‱(5月)，本月成为新的关注焦点<br>
+  iOS端两项指标持续保持在低位（均<0.6‱），表现稳定</p>
+</div>
+
+<!-- ===== 四、剧集评分趋势 ===== -->
+<div class="section-title"><span class="num">4</span>剧集评分趋势</div>
+<p style="font-size:0.85rem;color:#888;margin-bottom:16px;font-style:italic;">分析周期：2026年4月5日 — 2026年5月30日（周维度数据，覆盖10个主要海外语言）</p>
+
+<div class="h3">4.1 全部剧集差评率月度对比</div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>语言</th><th>4月均值</th><th>5月均值</th><th>变化（ppt）</th><th>质量差评变化</th><th>综合趋势</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-red">
+      <td class="left"><strong>日语 JAPANESE</strong></td><td>9.36%</td><td>10.83%</td><td class="tag-up">+1.47</td><td class="tag-up">剧情+0.60 / 演员+0.38</td><td class="tag-up">↑↑ 连续恶化</td>
+    </tr>
+    <tr class="highlight-yellow">
+      <td class="left"><strong>英语 ENGLISH</strong></td><td>5.32%</td><td>5.90%</td><td class="tag-up">+0.59</td><td class="tag-flat">剧情+0.00 / 演员+0.14</td><td class="tag-warn">↑ 小幅上升</td>
+    </tr>
+    <tr class="highlight-yellow">
+      <td class="left"><strong>韩语 KOREAN</strong></td><td>10.20%</td><td>10.52%</td><td class="tag-up">+0.32</td><td class="tag-flat">剧情-0.18 / 演员+0.27</td><td class="tag-warn">↑ 小幅上升</td>
+    </tr>
+    <tr>
+      <td class="left">法语 FRENCH</td><td>6.27%</td><td>6.21%</td><td class="tag-flat">-0.05</td><td class="tag-flat">剧情-0.25 / 演员+0.07</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">西语 SPANISH</td><td>3.73%</td><td>3.69%</td><td class="tag-flat">-0.04</td><td class="tag-flat">剧情-0.08 / 演员+0.01</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">阿语 ARAB</td><td>8.09%</td><td>8.09%</td><td class="tag-flat">+0.00</td><td class="tag-flat">剧情-0.18 / 演员+0.05</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>泰语 THAI ✅</strong></td><td>4.69%</td><td>3.95%</td><td class="tag-down">-0.74</td><td class="tag-down">剧情-0.11 / 演员-0.16</td><td class="tag-down">↓ 持续改善</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>葡语 PORTUGUESE ✅</strong></td><td>5.17%</td><td>4.81%</td><td class="tag-down">-0.35</td><td class="tag-down">剧情-0.19 / 演员-0.02</td><td class="tag-down">↓ 改善</td>
+    </tr>
+    <tr>
+      <td class="left">印尼语 BAHASA_INDONESIA</td><td>3.22%</td><td>3.03%</td><td class="tag-flat">-0.19</td><td class="tag-flat">剧情-0.07 / 演员+0.02</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>越南语 VIETNAMESE ✅</strong></td><td>11.88%</td><td>8.87%</td><td class="tag-down">-3.01</td><td class="tag-down">剧情-2.10 / 演员-0.32</td><td class="tag-down">↓↓ 大幅改善</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="h3">4.2 字幕剧差评率月度对比</div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>语言</th><th>4月均值</th><th>5月均值</th><th>变化（ppt）</th><th>字幕质量差评变化</th><th>综合趋势</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-red">
+      <td class="left"><strong>日语 JAPANESE</strong></td><td>9.26%</td><td>10.70%</td><td class="tag-up">+1.44</td><td class="tag-flat">-0.16</td><td class="tag-up">↑↑ 整体恶化，字幕质量持平</td>
+    </tr>
+    <tr class="highlight-red">
+      <td class="left"><strong>韩语 KOREAN</strong></td><td>9.40%</td><td>10.41%</td><td class="tag-up">+1.02</td><td class="tag-flat">+0.16</td><td class="tag-up">↑ 整体上升</td>
+    </tr>
+    <tr class="highlight-yellow">
+      <td class="left"><strong>法语 FRENCH</strong></td><td>6.64%</td><td>6.97%</td><td class="tag-up">+0.33</td><td class="tag-flat">-0.13</td><td class="tag-warn">↑ 小幅上升，字幕质量持平</td>
+    </tr>
+    <tr>
+      <td class="left">英语 ENGLISH</td><td>6.32%</td><td>6.18%</td><td class="tag-flat">-0.14</td><td class="tag-flat">-0.04</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">西语 SPANISH</td><td>5.02%</td><td>4.95%</td><td class="tag-flat">-0.08</td><td class="tag-down">-0.13</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">阿语 ARAB</td><td>9.09%</td><td>9.18%</td><td class="tag-flat">+0.09</td><td class="tag-flat">-0.08</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>泰语 THAI ✅</strong></td><td>5.05%</td><td>3.85%</td><td class="tag-down">-1.21</td><td class="tag-flat">-0.01</td><td class="tag-down">↓↓ 显著改善</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>葡语 PORTUGUESE ✅</strong></td><td>6.97%</td><td>6.32%</td><td class="tag-down">-0.65</td><td class="tag-flat">-0.09</td><td class="tag-down">↓ 改善</td>
+    </tr>
+    <tr>
+      <td class="left">印尼语 BAHASA_INDONESIA</td><td>2.96%</td><td>2.86%</td><td class="tag-flat">-0.10</td><td class="tag-flat">-0.10</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>越南语 VIETNAMESE ✅</strong></td><td>11.88%</td><td>10.26%</td><td class="tag-down">-1.62</td><td class="tag-flat">-0.13</td><td class="tag-down">↓ 改善</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="h3">4.3 配音剧差评率月度对比</div>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>语言</th><th>4月均值</th><th>5月均值</th><th>变化（ppt）</th><th>配音质量差评变化</th><th>综合趋势</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight-red">
+      <td class="left"><strong>韩语 KOREAN</strong></td><td>10.72%</td><td>11.96%</td><td class="tag-up">+1.24</td><td class="tag-up">+0.34</td><td class="tag-up">↑↑ 整体+配音质量同步恶化</td>
+    </tr>
+    <tr class="highlight-red">
+      <td class="left"><strong>日语 JAPANESE</strong></td><td>9.20%</td><td>10.29%</td><td class="tag-up">+1.09</td><td class="tag-flat">+0.12</td><td class="tag-up">↑ 整体上升</td>
+    </tr>
+    <tr>
+      <td class="left">英语 ENGLISH</td><td>4.53%</td><td>4.84%</td><td class="tag-flat">+0.31</td><td class="tag-flat">+0.14</td><td class="tag-flat">→ 持平偏上</td>
+    </tr>
+    <tr>
+      <td class="left">西语 SPANISH</td><td>3.09%</td><td>3.17%</td><td class="tag-flat">+0.08</td><td class="tag-flat">+0.02</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>法语 FRENCH ✅</strong></td><td>5.85%</td><td>5.32%</td><td class="tag-down">-0.53</td><td class="tag-flat">-0.11</td><td class="tag-down">↓ 改善（上月劣化已修复）</td>
+    </tr>
+    <tr>
+      <td class="left">阿语 ARAB</td><td>7.57%</td><td>7.46%</td><td class="tag-flat">-0.12</td><td class="tag-flat">-0.07</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>泰语 THAI ✅</strong></td><td>4.54%</td><td>4.04%</td><td class="tag-down">-0.50</td><td class="tag-flat">-0.13</td><td class="tag-down">↓ 改善</td>
+    </tr>
+    <tr>
+      <td class="left">葡语 PORTUGUESE</td><td>4.38%</td><td>4.18%</td><td class="tag-flat">-0.20</td><td class="tag-flat">+0.02</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr>
+      <td class="left">印尼语 BAHASA_INDONESIA</td><td>3.73%</td><td>3.50%</td><td class="tag-flat">-0.23</td><td class="tag-flat">+0.11</td><td class="tag-flat">→ 持平</td>
+    </tr>
+    <tr class="highlight-green">
+      <td class="left"><strong>越南语 VIETNAMESE ✅</strong></td><td>10.07%</td><td>7.65%</td><td class="tag-down">-2.42</td><td class="tag-flat">-0.22</td><td class="tag-down">↓↓ 大幅改善</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="h3">4.4 关键语言深度分析</div>
+
+<div class="analysis-block warn-block">
+  <h4>⚠️ 日语市场：连续两月恶化，需紧急干预</h4>
+  <p>日语差评率从3月8.53%→4月9.36%→5月10.83%，连续两个月上升累计+2.30ppt。5月四周数据呈逐周递增态势（10.25%→10.69%→11.09%→11.30%），未见拐点。<br>
+  <strong>问题定位：</strong>剧情质量差评率从3.93%升至4.54%（+0.60ppt），演员演绎差评率从1.47%升至1.84%（+0.38ppt），两个质量维度同步恶化，提示并非单一因素导致，可能与近期上线日语区内容的整体质量水平有关。字幕剧差评率（10.70%）高于配音剧（10.29%），且字幕剧字幕质量差评率保持稳定（-0.16ppt），说明字幕本身无问题，核心是内容质量。</p>
+</div>
+
+<div class="analysis-block warn-block">
+  <h4>⚠️ 韩语配音剧：配音质量差评率逐周攀升</h4>
+  <p>韩语配音剧整体差评率从10.72%升至11.96%（+1.24ppt），配音质量差评率从1.50%升至1.84%（+0.34ppt）。5月四周数据为9.53%→10.97%→12.88%→14.45%，加速恶化明显。<br>
+  <strong>问题定位：</strong>配音质量差评占比从配音剧整体差评的14.0%上升至15.4%，贡献了约27%的增量差评。建议审查近期韩语配音项目的音质、情感还原度等指标，是否存在供应商变更或产能压缩导致的质量波动。</p>
+</div>
+
+<div class="analysis-block good-block">
+  <h4>✅ 泰语连续两月改善，优化策略已验证</h4>
+  <p>泰语全部剧集差评率从3月4.99%→4月4.69%→5月3.95%，累计改善-1.04ppt。字幕剧改善幅度最大（5.05%→3.85%，-1.21ppt），配音剧同步改善（4.54%→4.04%，-0.50ppt）。各质量维度均同步向好，表明前期针对泰语市场的内容和本地化优化策略有效，可作为其他语言改善的参考案例。</p>
+</div>
+
+<div class="analysis-block good-block">
+  <h4>✅ 越南语大幅改善-3.01ppt，逆转前期恶化</h4>
+  <p>越南语全部剧集差评率从4月11.88%骤降至5月8.87%（-3.01ppt），剧情质量差评率-2.10ppt为最大贡献项。配音剧同步大幅改善-2.42ppt。上月报告曾标记越南语连续恶化的风险，本月数据证实前期内容调整已生效。但需注意样本量仍偏小（全部剧集周均约340人），趋势稳定性待观察。</p>
+</div>
+
+<div class="analysis-block info-block">
+  <h4>📊 法语配音剧：上月劣化问题已修复</h4>
+  <p>上月报告标记法语为"劣化最明显的主流语言"（全部剧集+0.71ppt、配音剧+1.01ppt）。5月数据显示法语全部剧集已回稳（-0.05ppt），配音剧更从5.85%降至5.32%（-0.53ppt），配音质量差评率同步下降0.11ppt。前期识别的问题已得到纠正。</p>
+</div>
+
+<!-- ===== 五、综合关联分析 ===== -->
+<div class="section-title"><span class="num">5</span>综合关联分析</div>
+
+<div class="analysis-block info-block">
+  <h4>📊 三维度交叉验证：付费体验与充值投诉的联动</h4>
+  <p>Android端付费差评占比上升+2.0ppt与Android会员充值投诉率上升+0.64‱形成交叉印证：<br>
+  • 差评数据侧：付费相关占比从25.8%升至27.8%，且差评总量下降13.2%的情况下付费类绝对量仅小幅下降，说明付费问题的减少速度慢于其他类别<br>
+  • 客诉数据侧：Android会员充值未到账5月首周2.88‱为近3个月峰值，虽逐步回落但月度均值仍明显高于4月<br>
+  • 结论：5月初可能存在支付系统调整或三方渠道变更，导致Android会员到账能力短期受损</p>
+</div>
+
+<div class="analysis-block info-block">
+  <h4>📊 内容质量维度：日韩两大亚洲核心市场同步承压</h4>
+  <p>日语和韩语作为DramaBox亚洲市场两大核心语言，5月同步出现差评率上升：<br>
+  • 日语：全部剧集+1.47ppt、字幕剧+1.44ppt、配音剧+1.09ppt，全面劣化<br>
+  • 韩语：全部剧集+0.32ppt、字幕剧+1.02ppt、配音剧+1.24ppt，配音端更突出<br>
+  两者共同特征是"演员演绎差评率"均上升（日语+0.38ppt、韩语+0.27ppt），提示近期上线的亚洲区内容在选角或表演维度可能存在质量波动。</p>
+</div>
+
+<div class="analysis-block info-block">
+  <h4>📊 历史趋势线：三个月走势关键标的追踪</h4>
+  <p>
+  • <strong>Android金币充值未到账</strong>：2.38‱(3月) → 4.02‱(4月) → 3.61‱(5月) — 高位回落，改善但未回基线<br>
+  • <strong>日语全部剧集差评率</strong>：8.53%(3月) → 9.36%(4月) → 10.83%(5月) — 加速恶化，急需干预<br>
+  • <strong>泰语全部剧集差评率</strong>：4.99%(3月) → 4.69%(4月) → 3.95%(5月) — 连续改善，策略验证成功<br>
+  • <strong>法语配音剧差评率</strong>：4.84%(3月) → 5.85%(4月) → 5.32%(5月) — V型反弹，问题已修复</p>
+</div>
+
+<!-- ===== 六、优化建议 ===== -->
+<div class="section-title"><span class="num">6</span>优化建议</div>
+<div class="rec-section">
+
+<div class="rec-priority p0">P0 — 紧急（本周启动）</div>
+<div class="rec-grid">
+  <div class="rec-card p0">
+    <h5>日语内容质量紧急审查</h5>
+    <p>日语差评率连续两月恶化已达10.83%，逐周加速。建议：①拉取5月上线日语区剧集清单，按差评率排序定位TOP问题剧；②审查内容筛选/引入标准是否存在放宽；③暂停低质量内容上线，优先消化存量问题。</p>
+  </div>
+  <div class="rec-card p0">
+    <h5>Android会员支付链路排查</h5>
+    <p>5月首周投诉率突增至2.88‱，建议：①排查5月初前后是否有支付SDK升级或渠道切换；②核查三方支付回调成功率和到账时效监控数据；③对比会员与金币的支付通道差异，定位Android会员特有的到账瓶颈。</p>
+  </div>
+</div>
+
+<div class="rec-priority p1">P1 — 重要（两周内推进）</div>
+<div class="rec-grid">
+  <div class="rec-card p1">
+    <h5>韩语配音质量专项治理</h5>
+    <p>韩语配音剧差评率逐周攀升（9.53%→14.45%），配音质量差评贡献增加。建议：①审查近期韩语配音供应商的交付质量评分；②抽检5月上线配音剧集的音频技术指标（均匀度、情感匹配度）；③建立配音质量前置审核流程。</p>
+  </div>
+  <div class="rec-card p1">
+    <h5>Android金币支付持续监控</h5>
+    <p>虽然月度均值已回落（4.02→3.61‱），但5月中下旬有再次抬升迹象（4.17、4.05）。建议：①维持每日支付到账率监控告警；②梳理金币支付全链路中间件的容量和超时配置；③目标将月均值拉至3.0‱以下。</p>
+  </div>
+</div>
+
+<div class="rec-priority p2">P2 — 建议（持续优化）</div>
+<div class="rec-grid">
+  <div class="rec-card p2">
+    <h5>泰语优化经验复用</h5>
+    <p>泰语连续两月改善累计-1.04ppt，优化策略已验证有效。建议：①总结泰语内容选择、本地化和质量控制的成功经验；②评估是否可复用至同样处于改善通道的葡语市场；③形成标准化的语言市场质量提升SOP。</p>
+  </div>
+  <div class="rec-card p2">
+    <h5>iOS内容差评占比上升关注</h5>
+    <p>iOS端内容相关差评占比从14.9%升至16.0%（+1.1ppt），虽绝对量变化不大，但占比上升说明在其他问题改善后内容体验相对凸显。建议持续关注iOS端用户的内容偏好变化，优化推荐策略。</p>
+  </div>
+</div>
+
+</div>
+
+<!-- ===== 七、附录 ===== -->
+<div class="section-title"><span class="num">7</span>附录：数据说明</div>
+<ul class="appendix-list">
+  <li><strong>数据来源：</strong>产品差评数据来自应用商店评论抓取系统，客诉数据来自客服工单系统，剧集评分来自APP内评分组件</li>
+  <li><strong>统计口径：</strong>月度均值 = 当月各自然周数据的算术平均值；变化 = 5月均值 - 4月均值</li>
+  <li><strong>产品差评分类：</strong>基于二级标签体系，每条差评可能对应多个标签，因此各类别占比之和可能略超100%</li>
+  <li><strong>客诉投诉率单位：</strong>万分率（‱），即每万名付费/活跃用户中的投诉人数</li>
+  <li><strong>iOS金币 4.3-4.9 数据：</strong>原始数据为空值，按实际值0处理（该周为已知系统统计缺失）</li>
+  <li><strong>剧集评分周期划分：</strong>4月数据取4月5日-5月2日（含跨月周04-26至05-02按起始日归入4月）；5月数据取5月3日-5月30日</li>
+  <li><strong>语言选择标准：</strong>选取周均评分人数>2,000的10个主要海外语言市场，排除中文（非海外目标市场）及德语、意大利语、波兰语、土耳其语（周均用户量1,000-2,500区间，样本偏小）</li>
+  <li><strong>趋势判定标准：</strong>变化绝对值<0.3ppt判定为"持平"，0.3-1.0ppt为"小幅变化"，>1.0ppt为"显著变化"</li>
+  <li><strong>三月趋势对比：</strong>3月数据引用自《用户反馈趋势分析报告2-3月》和《用户反馈趋势分析报告3-4月》</li>
+</ul>
+
+</div>
+
+<div class="footer">
+  DramaBox 用户体验团队 · 用户反馈趋势分析报告 · 2026年6月
+</div>
+
+</body>
+</html>
