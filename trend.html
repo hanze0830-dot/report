@@ -6,43 +6,75 @@
 <title>用户反馈趋势分析 · 报告目录</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #2c3e50; line-height: 1.7; padding: 40px 20px; }
-.container { max-width: 800px; margin: 0 auto; }
-.header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 36px 40px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(102,126,234,.2); }
-.header h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-.header p { font-size: 13px; opacity: .85; }
-.card { display: block; background: white; border-radius: 12px; padding: 24px 28px; margin-bottom: 14px; text-decoration: none; color: #2c3e50; border: 1px solid #ecf0f1; transition: all .15s; }
-.card:hover { border-color: #667eea; box-shadow: 0 4px 12px rgba(102,126,234,.1); transform: translateY(-2px); }
-.card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-.card p { font-size: 13px; color: #7f8c8d; }
-.card .meta { font-size: 12px; color: #95a5a6; margin-top: 8px; }
-.footer { text-align: center; font-size: 12px; color: #95a5a6; margin-top: 30px; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%); color: #e0e0e0; min-height: 100vh; padding: 60px 20px; }
+.container { max-width: 720px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 48px; }
+.header .icon { font-size: 48px; margin-bottom: 16px; }
+.header h1 { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
+.header p { font-size: 14px; color: rgba(255,255,255,.5); }
+.timeline { position: relative; padding-left: 32px; }
+.timeline::before { content: ''; position: absolute; left: 11px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(180deg, #667eea, #764ba2, #e74c3c); border-radius: 2px; }
+.timeline-item { position: relative; margin-bottom: 20px; }
+.timeline-item::before { content: ''; position: absolute; left: -25px; top: 22px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #667eea; background: #1a1a2e; z-index: 1; }
+.timeline-item:nth-child(2)::before { border-color: #764ba2; }
+.timeline-item:nth-child(3)::before { border-color: #e74c3c; }
+.card { display: block; background: rgba(255,255,255,.06); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 24px 28px; text-decoration: none; color: #e0e0e0; transition: all .25s ease; }
+.card:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.25); transform: translateX(6px); box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+.card .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.card h3 { font-size: 17px; font-weight: 600; color: #fff; }
+.card .badge { padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-latest { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+.badge-normal { background: rgba(255,255,255,.1); color: rgba(255,255,255,.6); }
+.card .desc { font-size: 13px; color: rgba(255,255,255,.45); }
+.card .arrow { float: right; font-size: 18px; color: rgba(255,255,255,.3); transition: all .25s; }
+.card:hover .arrow { color: #667eea; transform: translateX(4px); }
+.footer { text-align: center; font-size: 11px; color: rgba(255,255,255,.2); margin-top: 48px; letter-spacing: .5px; }
 </style>
 </head>
 <body>
 <div class="container">
 
 <div class="header">
+  <div class="icon">📈</div>
   <h1>用户反馈趋势分析</h1>
-  <p>DramaBox 用户洞察 · Zephyr 韩泽</p>
+  <p>DramaBox · 差评率变化 & 用户情绪追踪</p>
 </div>
 
-<a class="card" href="用户反馈趋势分析报告4-5月.html">
-  <h3>用户反馈趋势分析（4-5月）</h3>
-  <div class="meta">2026/05</div>
-</a>
+<div class="timeline">
 
-<a class="card" href="用户反馈趋势分析报告3-4月.html">
-  <h3>用户反馈趋势分析（3-4月）</h3>
-  <div class="meta">2026/04</div>
-</a>
+  <div class="timeline-item">
+    <a class="card" href="用户反馈趋势分析报告4-5月.html">
+      <div class="top">
+        <h3>4 - 5 月趋势报告</h3>
+        <span class="badge badge-latest">最新</span>
+      </div>
+      <div class="desc">2026年4月 ~ 5月用户反馈数据对比与趋势洞察 <span class="arrow">→</span></div>
+    </a>
+  </div>
 
-<a class="card" href="用户反馈趋势分析报告2-3月.html">
-  <h3>用户反馈趋势分析（2-3月）</h3>
-  <div class="meta">2026/03</div>
-</a>
+  <div class="timeline-item">
+    <a class="card" href="用户反馈趋势分析报告3-4月.html">
+      <div class="top">
+        <h3>3 - 4 月趋势报告</h3>
+        <span class="badge badge-normal">2026/04</span>
+      </div>
+      <div class="desc">2026年3月 ~ 4月用户反馈数据对比与趋势洞察 <span class="arrow">→</span></div>
+    </a>
+  </div>
 
-<div class="footer">DramaBox 用户洞察 · dramabox-report.vercel.app</div>
+  <div class="timeline-item">
+    <a class="card" href="用户反馈趋势分析报告2-3月.html">
+      <div class="top">
+        <h3>2 - 3 月趋势报告</h3>
+        <span class="badge badge-normal">2026/03</span>
+      </div>
+      <div class="desc">2026年2月 ~ 3月用户反馈数据对比与趋势洞察 <span class="arrow">→</span></div>
+    </a>
+  </div>
+
+</div>
+
+<div class="footer">Produced by Zephyr 韩泽 · DramaBox 用户洞察</div>
 
 </div>
 </body>
