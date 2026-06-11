@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Oops! The CEO's Birthday is Ruined · 用户手写评语分析</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6fa; color: #2c3e50; line-height: 1.7; padding: 40px 20px; }
+.container { max-width: 1200px; margin: 0 auto; }
+.header { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 60%, #922b21 100%); color: white; padding: 50px 40px; border-radius: 16px 16px 0 0; box-shadow: 0 4px 20px rgba(231,76,60,.25); }
+.header h1 { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+.header .meta { font-size: 14px; opacity: .9; }
+.header .meta span { margin-right: 24px; }
+.section { background: white; padding: 36px 40px; border-bottom: 1px solid #eee; }
+.section:last-child { border-radius: 0 0 16px 16px; }
+.section h2 { font-size: 22px; font-weight: 700; color: #2c3e50; padding-left: 14px; border-left: 5px solid #e74c3c; margin-bottom: 20px; }
+.section h3 { font-size: 17px; font-weight: 600; color: #34495e; margin: 22px 0 12px; }
+.alert { background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px 20px; border-radius: 6px; margin: 14px 0; color: #856404; }
+.alert.danger { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+.alert.success { background: #d4edda; border-color: #28a745; color: #155724; }
+.alert.info { background: #d1ecf1; border-color: #17a2b8; color: #0c5460; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 20px 0; }
+.stat-card { background: linear-gradient(135deg, #f8f9fb 0%, #eef1f8 100%); padding: 22px; border-radius: 10px; text-align: center; border: 1px solid #e8ebf3; }
+.stat-card .num { font-size: 30px; font-weight: 700; color: #e74c3c; }
+.stat-card .num.green { color: #27ae60; }
+.stat-card .num.orange { color: #e67e22; }
+.stat-card .num.blue { color: #2980b9; }
+.stat-card .label { font-size: 13px; color: #7f8c8d; margin-top: 6px; }
+table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+th { background: #e74c3c; color: white; padding: 12px 14px; text-align: left; font-weight: 600; }
+td { padding: 11px 14px; border-bottom: 1px solid #ecf0f1; }
+tr:hover td { background: #f8f9fb; }
+.bar { display: inline-block; height: 18px; border-radius: 3px; vertical-align: middle; }
+.bar-red { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+.bar-green { background: linear-gradient(90deg, #27ae60, #16a085); }
+.bar-orange { background: linear-gradient(90deg, #f39c12, #e67e22); }
+.bar-blue { background: linear-gradient(90deg, #3498db, #2980b9); }
+.bar-gray { background: linear-gradient(90deg, #95a5a6, #7f8c8d); }
+.tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-right: 6px; margin-bottom: 4px; }
+.tag-red { background: #fde7e9; color: #c0392b; }
+.tag-orange { background: #fff0e0; color: #d35400; }
+.tag-green { background: #e3f9e5; color: #27ae60; }
+.tag-blue { background: #e1ecfc; color: #2980b9; }
+.tag-gray { background: #ecf0f1; color: #7f8c8d; }
+.quote { background: #fafbfd; border-left: 3px solid #bdc3c7; padding: 10px 14px; margin: 8px 0; font-size: 13px; color: #555; font-style: italic; }
+.quote .src { display: block; color: #95a5a6; font-style: normal; font-size: 12px; margin-top: 4px; }
+.cluster { background: #fafbfd; border-radius: 10px; padding: 18px 22px; margin: 14px 0; border: 1px solid #ecf0f1; }
+.cluster-title { font-size: 16px; font-weight: 700; color: #2c3e50; margin-bottom: 6px; }
+.cluster-pct { font-size: 13px; color: #e74c3c; font-weight: 600; margin-bottom: 10px; }
+.cluster-pct.pos { color: #27ae60; }
+.action-item { background: linear-gradient(135deg, #fef5f5 0%, #fdf0f0 100%); border-left: 5px solid #e74c3c; padding: 16px 20px; margin: 12px 0; border-radius: 6px; }
+.action-item .pri { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-right: 8px; }
+.pri-p0 { background: #dc3545; color: white; }
+.pri-p1 { background: #ffc107; color: #333; }
+.pri-p2 { background: #6c757d; color: white; }
+.polarize { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+.pol-card { border-radius: 10px; padding: 22px; }
+.pol-neg { background: linear-gradient(135deg, #fff5f5 0%, #fee); border: 1px solid #f5c6cb; }
+.pol-pos { background: linear-gradient(135deg, #f0fff4 0%, #e6ffe6); border: 1px solid #c3e6cb; }
+.pol-card h4 { font-size: 15px; margin-bottom: 12px; }
+.pol-card ul { list-style: none; padding: 0; }
+.pol-card li { padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(0,0,0,.05); }
+.pol-card li:last-child { border: none; }
+.rating-bar { display: flex; align-items: center; margin: 6px 0; }
+.rating-bar .label { width: 40px; font-size: 13px; font-weight: 600; }
+.rating-bar .track { flex: 1; height: 20px; background: #ecf0f1; border-radius: 4px; overflow: hidden; margin: 0 10px; }
+.rating-bar .fill { height: 100%; border-radius: 4px; }
+.rating-bar .count { font-size: 12px; color: #7f8c8d; width: 70px; }
+.footnote { font-size: 12px; color: #95a5a6; padding: 20px 40px; text-align: center; background: #fafbfd; border-radius: 0 0 16px 16px; }
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .polarize { grid-template-columns: 1fr; }
+  .header { padding: 30px 20px; }
+  .section { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <h1>Oops! The CEO's Birthday is Ruined</h1>
+  <p style="font-size:15px; opacity:.85; margin-bottom:16px;">用户手写评语焦点分析</p>
+  <div class="meta">
+    <span>ID：41000123062</span>
+    <span>评论数：322 条</span>
+    <span>时间跨度：2025/11 ~ 2026/06</span>
+    <span>报告日期：2026/06/11</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2>核心结论</h2>
+  <div class="alert danger"><b>评分严重两极分化。</b>5星（43.5%）与1星（30.4%）合计占 74%，中间分极少。说明该剧"爱恨分明"——爱的人觉得结局爽，恨的人觉得全程被折磨。</div>
+  <div class="alert"><b>用户最集中的不满：</b>① 暴力/霸凌时长失控（40%+ 评论提及）；② 剧情逻辑硬伤（警察旁观、医院无安保）；③ 台词脏话密度过高（F-word）。</div>
+  <div class="alert success"><b>正面口碑支撑点：</b>结局正义爽感、演员表演力（John Palmer / Annie 扮演者被多次点名）、"比AI版好"的真人优势感知。</div>
+</div>
+
+<div class="section">
+  <h2>数据概览</h2>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num">322</div><div class="label">评论总数</div></div>
+    <div class="stat-card"><div class="num orange">3.21</div><div class="label">平均评分（/5）</div></div>
+    <div class="stat-card"><div class="num">30.4%</div><div class="label">1星占比</div></div>
+    <div class="stat-card"><div class="num green">43.5%</div><div class="label">5星占比</div></div>
+  </div>
+
+  <h3>评分分布</h3>
+  <div class="rating-bar">
+    <div class="label">5星</div>
+    <div class="track"><div class="fill" style="width:43.5%;background:linear-gradient(90deg,#27ae60,#2ecc71)"></div></div>
+    <div class="count">140 条（43.5%）</div>
+  </div>
+  <div class="rating-bar">
+    <div class="label">4星</div>
+    <div class="track"><div class="fill" style="width:5.6%;background:linear-gradient(90deg,#2ecc71,#82e0aa)"></div></div>
+    <div class="count">18 条（5.6%）</div>
+  </div>
+  <div class="rating-bar">
+    <div class="label">3星</div>
+    <div class="track"><div class="fill" style="width:9.6%;background:linear-gradient(90deg,#f39c12,#f1c40f)"></div></div>
+    <div class="count">31 条（9.6%）</div>
+  </div>
+  <div class="rating-bar">
+    <div class="label">2星</div>
+    <div class="track"><div class="fill" style="width:10.9%;background:linear-gradient(90deg,#e67e22,#d35400)"></div></div>
+    <div class="count">35 条（10.9%）</div>
+  </div>
+  <div class="rating-bar">
+    <div class="label">1星</div>
+    <div class="track"><div class="fill" style="width:30.4%;background:linear-gradient(90deg,#e74c3c,#c0392b)"></div></div>
+    <div class="count">98 条（30.4%）</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>负面评论焦点聚类</h2>
+  <p style="font-size:13px;color:#7f8c8d;margin-bottom:16px;">基于 322 条评语的关键词匹配与人工复核，单条可命中多个主题</p>
+
+  <table>
+    <tr><th>负面主题</th><th>命中数（估）</th><th>占比</th><th>分布</th></tr>
+    <tr><td>暴力/霸凌过度</td><td>~130</td><td>40%+</td><td><span class="bar bar-red" style="width:300px"></span></td></tr>
+    <tr><td>剧情不真实/逻辑硬伤</td><td>~80</td><td>~25%</td><td><span class="bar bar-red" style="width:187px"></span></td></tr>
+    <tr><td>脏话/F-word 过多</td><td>~30</td><td>~9%</td><td><span class="bar bar-orange" style="width:70px"></span></td></tr>
+    <tr><td>剧情重复/套路化</td><td>~25</td><td>~8%</td><td><span class="bar bar-orange" style="width:60px"></span></td></tr>
+    <tr><td>节奏拖沓/复仇太晚</td><td>~25</td><td>~8%</td><td><span class="bar bar-orange" style="width:60px"></span></td></tr>
+    <tr><td>广告过多/付费贵</td><td>~15</td><td>~5%</td><td><span class="bar bar-gray" style="width:37px"></span></td></tr>
+    <tr><td>演技差</td><td>~12</td><td>~4%</td><td><span class="bar bar-gray" style="width:30px"></span></td></tr>
+  </table>
+
+  <div class="cluster">
+    <div class="cluster-title">🚨 #1 暴力/霸凌时长失控</div>
+    <div class="cluster-pct">约 40%+ 评论提及 · 1~3星集中爆发</div>
+    <p style="margin-bottom:10px;">用户核心诉求：施暴场景占比过高（"95% are torture"），女主长时间被打无人帮助，观感从"紧张"变为"痛苦"和"反感"。</p>
+    <div class="quote">"I hate this type of show. Excessive bullying and violence. I fast-forwarded 80 percent of it. Yuck! Skip it."<span class="src">— 1星用户</span></div>
+    <div class="quote">"95% of the story, the sister was being TORTURED and no one stops it... watching a woman get assaulted for almost the whole thing was disturbing."<span class="src">— 1星用户</span></div>
+    <div class="quote">"Too much physical violence."<span class="src">— 4星用户（即使给好评也在吐槽暴力）</span></div>
+    <div class="quote">"The excessive bullying, physical abuse to the point of manslaughter was too much."<span class="src">— 1星用户</span></div>
+    <div class="quote">"These beatings and kicking people is so repetitious that it is boring."<span class="src">— 1星用户</span></div>
+  </div>
+
+  <div class="cluster">
+    <div class="cluster-title">🚨 #2 剧情不真实/逻辑硬伤</div>
+    <div class="cluster-pct">约 25% 评论提及</div>
+    <p style="margin-bottom:10px;">最集中的槽点是"警察/医护旁观不管"和"医院没有安保系统"，用户认为即使是短剧也应有基本逻辑。</p>
+    <div class="quote">"When cops are standing by while a woman gets beat and almost killed, it's crazy."<span class="src">— 3星用户</span></div>
+    <div class="quote">"No way any violent that bad that a police officer stands by and allows. It went too far."<span class="src">— 1星用户</span></div>
+    <div class="quote">"Took over an ER, WHICH most have the equivalent of a PANIC BUTTON... plus only family are allowed in, not a whole wedding party."<span class="src">— 2星用户</span></div>
+    <div class="quote">"A hospital doesn't help their patients? Seriously? Even if they're corrupt police, this story is just unrealistic."<span class="src">— 1星用户</span></div>
+  </div>
+
+  <div class="cluster">
+    <div class="cluster-title">⚠️ #3 台词脏话密度过高</div>
+    <div class="cluster-pct">约 9% 评论提及 · 部分 5 星用户也表达不满</div>
+    <p style="margin-bottom:10px;">用户反感 F-word 高频使用，认为"低级"且"不必要"，有家长担忧儿童观看问题。</p>
+    <div class="quote">"If I took a shot every time they had an f bomb, I'll be drunk by now. Can't you do drama without all this excessive cursing."<span class="src">— 1星用户</span></div>
+    <div class="quote">"4 stars for story. Too many 'f' bombs. Not necessary to have with the story. Story was good. F word ruined it."<span class="src">— 4星用户</span></div>
+    <div class="quote">"Disgusting language I'm demanding a refund. My children watch this."<span class="src">— 1星用户</span></div>
+    <div class="quote">"The foul language was unnecessary. People who curse do not have a grasp of the English language."<span class="src">— 5星用户</span></div>
+  </div>
+
+  <div class="cluster">
+    <div class="cluster-title">⚠️ #4 剧情重复/套路化</div>
+    <div class="cluster-pct">约 8% 评论提及</div>
+    <p style="margin-bottom:10px;">用户感知到该剧与平台其他剧高度雷同，出现"不愿再付费"的流失信号。</p>
+    <div class="quote">"I'm so sick of the same story line just different people. Y'all need new content."<span class="src">— 1星用户</span></div>
+    <div class="quote">"Stop repeating stories. Very bad actors. I have watched too many with the same story."<span class="src">— 1星用户</span></div>
+    <div class="quote">"This is a recycled, disgusting plot! Acting is terrible."<span class="src">— 1星用户</span></div>
+    <div class="quote">"Don't repeat the same story again, it's getting old."<span class="src">— 5星用户</span></div>
+  </div>
+
+  <div class="cluster">
+    <div class="cluster-title">⚠️ #5 节奏拖沓/复仇来得太晚</div>
+    <div class="cluster-pct">约 8% 评论提及</div>
+    <p style="margin-bottom:10px;">用户感知到"反击/正义"只出现在最后几集，前面大量篇幅全是受虐场面，观看耐心被消耗殆尽。</p>
+    <div class="quote">"Too long to get the brother there."<span class="src">— 5星用户</span></div>
+    <div class="quote">"Sister had to suffer too long and they should been beating up worse than she got from them."<span class="src">— 4星用户</span></div>
+    <div class="quote">"The show linger on with all the abuse. So mean to the girl."<span class="src">— 2星用户</span></div>
+    <div class="quote">"Spread this out way too long. It was drawn out for what?"<span class="src">— 3星用户</span></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>正面评论焦点聚类</h2>
+
+  <table>
+    <tr><th>正面主题</th><th>命中数（估）</th><th>占比</th><th>分布</th></tr>
+    <tr><td>结局爽/正义感满足</td><td>~55</td><td>~17%</td><td><span class="bar bar-green" style="width:130px"></span></td></tr>
+    <tr><td>故事吸引/沉浸感强</td><td>~40</td><td>~12%</td><td><span class="bar bar-green" style="width:95px"></span></td></tr>
+    <tr><td>演员表演好</td><td>~30</td><td>~9%</td><td><span class="bar bar-blue" style="width:72px"></span></td></tr>
+    <tr><td>比AI版好/真人优势</td><td>~5</td><td>~2%</td><td><span class="bar bar-blue" style="width:15px"></span></td></tr>
+    <tr><td>求续集/更多类似内容</td><td>~8</td><td>~2%</td><td><span class="bar bar-blue" style="width:20px"></span></td></tr>
+  </table>
+
+  <div class="cluster">
+    <div class="cluster-title" style="color:#27ae60;">✅ #1 结局正义爽感</div>
+    <div class="cluster-pct pos">约 17% 评论提及</div>
+    <p style="margin-bottom:10px;">用户最大满足点是"坏人得到惩罚"，结局的反转是 5 星评价的核心驱动力。</p>
+    <div class="quote">"This story ended with me cheering!! Even though it was a story, there are people in this world who are just EVIL!! Thanks."<span class="src">— 5星用户</span></div>
+    <div class="quote">"I'm glad they're rotten in prison. They deserve it."<span class="src">— 5星用户</span></div>
+    <div class="quote">"Dang, in the end the rude and arrogant people threw each other under the bus! Money can't buy you everything. Karma."<span class="src">— 5星用户</span></div>
+    <div class="quote">"The last 10 episodes were so satisfying."<span class="src">— 5星用户</span></div>
+  </div>
+
+  <div class="cluster">
+    <div class="cluster-title" style="color:#27ae60;">✅ #2 演员表演获认可</div>
+    <div class="cluster-pct pos">约 9% 评论提及 · 即使差评也肯定演员</div>
+    <p style="margin-bottom:10px;">John Palmer、Annie 扮演者（Sarah-Grace Donnelly）、反派 Camille 扮演者被多次点名。</p>
+    <div class="quote">"I love John Palmer Edwards. He is a great actor."<span class="src">— 5星用户</span></div>
+    <div class="quote">"Sarah-Grace Donnelly did an amazing work, she is extremely talented actress."<span class="src">— 5星用户</span></div>
+    <div class="quote">"The actress playing Camille played that part well."<span class="src">— 4星用户</span></div>
+    <div class="quote">"I'm not a fan of the bullying and the violence. I am a fan of John Palmer, so I watched his scenes. He did a great job. The rating is for him."<span class="src">— 3星用户（因演员给分）</span></div>
+  </div>
+
+  <div class="cluster">
+    <div class="cluster-title" style="color:#27ae60;">✅ #3 真人 > AI 的感知优势</div>
+    <div class="cluster-pct pos">少量但信号明确</div>
+    <div class="quote">"Much better than the AI version. Real actors are just better."<span class="src">— 5星用户</span></div>
+    <div class="quote">"I'm glad this was a little different."<span class="src">— 5星用户</span></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>典型两极对比</h2>
+  <div class="polarize">
+    <div class="pol-card pol-neg">
+      <h4 style="color:#c0392b;">1星用户怎么说</h4>
+      <ul>
+        <li>"Foolish, unnecessary violence and repetitive drama. What's the point of all that."</li>
+        <li>"One star is one star too many! All 50 episodes take place at the hospital entrance and it's all about bullying."</li>
+        <li>"The worst dialog and over acting I've ever seen plus way too much slapping."</li>
+        <li>"I usually never skip episodes but this has got to be the WORSE waste of time mini series I have ever seen."</li>
+        <li>"Good actors wasted on this same old plot! Way over the top fake!!"</li>
+      </ul>
+    </div>
+    <div class="pol-card pol-pos">
+      <h4 style="color:#27ae60;">5星用户怎么说</h4>
+      <ul>
+        <li>"This was actually hella good... I was fully immersed into the story line. Strongly suggest this if you like revenge."</li>
+        <li>"Fantastic acting, gets you boiling. Love the story line."</li>
+        <li>"Very intense! You will love this movie. The acting was great!"</li>
+        <li>"OMG more of these please I loved it."</li>
+        <li>"Brilliant drama, one of the best I watched yet."</li>
+      </ul>
+    </div>
+  </div>
+  <div class="alert info"><b>启示：</b>该剧的受众高度分化。喜欢"复仇爽剧"的用户能接受暴力铺垫并享受结局反转；但对暴力/逻辑敏感的用户则完全无法忍受。核心矛盾不在于"有没有暴力"，而在于<b>暴力时长占比是否超出了用户忍耐阈值</b>。</div>
+</div>
+
+<div class="section">
+  <h2>行动建议</h2>
+
+  <div class="action-item">
+    <div><span class="pri pri-p0">P0</span><b>压缩施暴/霸凌场景时长占比</b></div>
+    <p style="margin-top:8px;font-size:13px;">当前用户感知"95%是虐、5%是反击"。建议在剪辑层面将霸凌场景压缩至总时长 50% 以内，中间穿插"小反击"或"线索揭露"节点，避免单调重复的施暴堆叠。对后续类似题材立项时，要求编剧在节奏大纲中标注"受虐vs反击"的时长比例。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p0">P0</span><b>修补逻辑硬伤：警察/医护旁观设定</b></div>
+    <p style="margin-top:8px;font-size:13px;">"警察看着打人不管"是最伤害沉浸感的设定，被 25% 用户点名吐槽。后续同类剧需在立项审核时增加"合理性红线"检查：权力机构（警察/医生/保安）不能无理由缺位，如需设定腐败也必须给出铺垫。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p1">P1</span><b>降低台词脏话密度</b></div>
+    <p style="margin-top:8px;font-size:13px;">F-word 高频使用导致部分用户（含家长群体）强烈反感，且有"要求退款"的极端反应。建议对美区剧本增加脏话密度审核，每集 F-word 控制在 2-3 次以内，用其他冲突表达方式替代。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p1">P1</span><b>提前反击节点，改善"爽感节奏曲线"</b></div>
+    <p style="margin-top:8px;font-size:13px;">当前结构为"长时间受虐→最后集中反击"，导致大量用户中途流失/快进。建议采用"小爽点分布"策略：每 10-15 集设置一次小反击或真相揭露，维持观看动力到结局大爽点。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p1">P1</span><b>放大演员杠杆：John Palmer / Sarah-Grace Donnelly</b></div>
+    <p style="margin-top:8px;font-size:13px;">两位主演被多次点名好评，甚至有用户"因为演员才打分"。建议在该剧详情页突出主演卡片，并考虑为 John Palmer 安排后续新剧主角，承接已建立的粉丝认知。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p2">P2</span><b>避免同题材重复上线</b></div>
+    <p style="margin-top:8px;font-size:13px;">已有多名用户表示"same storyline, different people"和"不愿再付费"。该剧所属的"医院霸凌/身份揭露"题材在近期应降低排期优先级，给用户新鲜感恢复空间。</p>
+  </div>
+
+  <div class="action-item">
+    <div><span class="pri pri-p2">P2</span><b>优化广告体验</b></div>
+    <p style="margin-top:8px;font-size:13px;">约 5% 用户抱怨广告过长（"ads were as long as 90secs"）或频率过高。建议对该剧抽检广告插入逻辑，确保单次广告≤30s且剧情高潮段不插入广告。</p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>附录：方法说明</h2>
+  <p style="font-size:13px;color:#555;">
+  • <b>数据来源：</b>41000123062手写评语.xlsx，共 322 条用户手写评语，单剧（Oops! The CEO's Birthday is Ruined）；<br>
+  • <b>评分结构：</b>4 列（用户ID / 评分 / 手写评语 / 提交时间），时间跨度 2025/11 ~ 2026/06；<br>
+  • <b>主题聚类：</b>基于关键词匹配 + 人工复核，单条评语可命中多主题，各主题占比之和可大于 100%；<br>
+  • <b>引用原文：</b>所有 quote 为用户原话，未翻译或润色。<br>
+  </p>
+</div>
+
+<div class="footnote">
+  报告生成 2026/06/11 ｜ Produced by Zephyr 韩泽 ｜ DramaBox 用户洞察
+</div>
+
+</div>
+</body>
+</html>
