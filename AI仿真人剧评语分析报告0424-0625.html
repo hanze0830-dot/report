@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 仿真人剧评语分析报告（4.24-6.25）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif; background: #f0f2f5; color: #1a1a2e; line-height: 1.7; padding: 40px 20px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .header { background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%); border-radius: 16px; padding: 48px 40px; color: #fff; margin-bottom: 32px; position: relative; overflow: hidden; }
+  .header::after { content:''; position:absolute; top:-40%; right:-15%; width:350px; height:350px; background:radial-gradient(circle,rgba(255,193,7,0.1) 0%,transparent 70%); border-radius:50%; }
+  .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .header .meta { font-size: 13px; opacity: 0.7; margin-bottom: 12px; }
+  .header .badge { display:inline-block; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:4px 14px; font-size:12px; margin-right:8px; }
+  .alert { background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 100%); border-left:5px solid #4caf50; border-radius:12px; padding:24px 28px; margin-bottom:32px; }
+  .alert h2 { font-size:16px; color:#2e7d32; margin-bottom:10px; }
+  .alert p { font-size:14px; color:#33691e; line-height:1.9; }
+  .hl-red { color:#c62828; font-weight:700; } .hl-orange { color:#e65100; font-weight:700; } .hl-green { color:#2e7d32; font-weight:700; } .hl-blue { color:#1565c0; font-weight:700; } .hl-purple { color:#6a1b9a; font-weight:700; }
+  .section { background:#fff; border-radius:14px; padding:32px; margin-bottom:28px; box-shadow:0 1px 8px rgba(0,0,0,0.04); }
+  .section h2 { font-size:18px; font-weight:700; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #f0f2f5; display:flex; align-items:center; gap:10px; }
+  .section h2 .num { background:#1a1a2e; color:#fff; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+  .section h3 { font-size:15px; font-weight:700; color:#37474f; margin:24px 0 12px; }
+  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:16px; margin-bottom:24px; }
+  .kpi-card { text-align:center; padding:20px 12px; background:#f8f9fc; border-radius:12px; border:1px solid #e8eaf0; }
+  .kpi-card .value { font-size:28px; font-weight:800; } .kpi-card .label { font-size:11px; color:#757575; margin-top:4px; } .kpi-card .trend { font-size:11px; margin-top:4px; font-weight:700; }
+  .kpi-card.good .value { color:#2e7d32; } .kpi-card.warn .value { color:#e65100; } .kpi-card.info .value { color:#1565c0; } .kpi-card.danger .value { color:#c62828; }
+  .table-wrap { overflow-x:auto; } table { width:100%; border-collapse:collapse; font-size:13px; }
+  thead th { background:#f8f9fc; color:#5a5a7a; font-weight:600; padding:12px 14px; text-align:left; border-bottom:2px solid #e8eaf0; white-space:nowrap; }
+  tbody td { padding:12px 14px; border-bottom:1px solid #f0f2f5; } tbody tr:hover { background:#f8f9fc; }
+  .tag-green { display:inline-block; background:#e8f5e9; color:#2e7d32; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-red { display:inline-block; background:#ffebee; color:#c62828; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-orange { display:inline-block; background:#fff3e0; color:#e65100; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-blue { display:inline-block; background:#e3f2fd; color:#1565c0; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-purple { display:inline-block; background:#f3e5f5; color:#6a1b9a; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .trend-table td.better { color:#2e7d32; font-weight:700; } .trend-table td.worse { color:#c62828; font-weight:700; } .trend-table td.same { color:#757575; }
+  .compare-box { background:linear-gradient(135deg,#ede7f6 0%,#e8eaf6 100%); border:1px solid #d1c4e9; border-radius:12px; padding:20px 24px; margin-top:16px; }
+  .compare-box h3 { font-size:15px; color:#4527a0; margin-bottom:12px; font-weight:700; }
+  .insight-box { background:linear-gradient(135deg,#fff8e1 0%,#fff3e0 100%); border:1px solid #ffe0b2; border-radius:12px; padding:20px 24px; margin-top:16px; }
+  .insight-box h3 { font-size:15px; color:#e65100; margin-bottom:12px; font-weight:700; }
+  .sentiment-bar { display:flex; height:22px; border-radius:11px; overflow:hidden; }
+  .sentiment-bar .pos { background:#4caf50; } .sentiment-bar .neu { background:#e0e0e0; } .sentiment-bar .neg { background:#ef5350; }
+  .drama-card { background:#fff; border:1px solid #e8eaf0; border-radius:14px; padding:24px; margin-bottom:20px; }
+  .drama-card h3 { font-size:15px; font-weight:700; color:#1a1a2e; margin-bottom:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .drama-card .metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-bottom:14px; }
+  .drama-card .metric { background:#f8f9fc; border-radius:8px; padding:10px; text-align:center; }
+  .drama-card .metric .v { font-size:18px; font-weight:800; } .drama-card .metric .l { font-size:10px; color:#757575; }
+  .drama-card .summary { font-size:13px; color:#455a64; line-height:1.8; padding:12px 16px; background:#fafafa; border-radius:8px; }
+  .genre-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; margin-top:16px; }
+  .genre-card { background:#f8f9fc; border-radius:12px; padding:20px; border:1px solid #e8eaf0; }
+  .genre-card h4 { font-size:14px; font-weight:700; margin-bottom:12px; }
+  .genre-card .stat { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; border-bottom:1px solid #f0f2f5; }
+  .genre-card .stat:last-child { border-bottom:none; }
+  .action-list { list-style:none; padding:0; }
+  .action-list li { padding:12px 16px; border-left:4px solid #1565c0; background:#f8f9fc; border-radius:0 8px 8px 0; margin-bottom:10px; font-size:13px; line-height:1.7; }
+  .action-list li .priority { display:inline-block; font-size:10px; font-weight:700; padding:1px 8px; border-radius:10px; margin-left:8px; }
+  .action-list li .p1 { background:#ffebee; color:#c62828; } .action-list li .p2 { background:#fff3e0; color:#e65100; } .action-list li .p3 { background:#e3f2fd; color:#1565c0; }
+  .quote-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; margin-top:16px; }
+  .quote-card { background:#f8f9fc; border-radius:10px; padding:14px 18px; border-left:4px solid #90a4ae; font-size:13px; font-style:italic; color:#455a64; line-height:1.6; }
+  .quote-card .source { font-style:normal; font-size:11px; color:#9e9e9e; margin-top:6px; }
+  .quote-card.positive { border-left-color:#4caf50; } .quote-card.negative { border-left-color:#ef5350; } .quote-card.mixed { border-left-color:#ff9800; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>AI 仿真人剧评语分析报告（4.24-6.25）</h1>
+    <div class="meta">作者：韩泽 &nbsp;|&nbsp; 数据周期：2026-04-24 至 2026-06-25（9周）</div>
+    <div>
+      <span class="badge">3,595 条评语</span>
+      <span class="badge">62 部剧集</span>
+      <span class="badge">含一级/二级分类维度</span>
+    </div>
+  </div>
+
+  <div class="alert">
+    <h2>&#9889; Executive Summary</h2>
+    <p>
+      9 周共收集 <span class="hl-blue">3,595 条</span>手写评语，覆盖 <span class="hl-blue">62 部剧</span>。<br/>
+      AI 提及率从首周 54% <span class="hl-green">持续降至最近一周 19%</span>，累计 29.1%；正面率 38.8%，负面率 16.3%，正负比 2.4:1。<br/>
+      <span class="hl-purple">一级分类维度</span>：<strong>女频言情</strong>表现最优（正面 45.7%/负面 14.1%），<strong>女频打脸</strong>表现最差（正面 22.3%/负面 25.9%）。<br/>
+      <span class="hl-purple">二级分类维度</span>：<strong>甜宠</strong>（正面 48.2%/负面 12.3%）和<strong>禁忌恋</strong>（正面 44.8%/负面 13.9%）是最优赛道；<strong>打脸虐渣</strong>（正面 20.1%/负面 28.1%）是最差赛道。<br/>
+      配音问题（9.7%）已超过 AI 提及成为用户反馈的<span class="hl-orange">新焦点</span>。
+    </p>
+  </div>
+
+  <!-- Section 1: KPIs + Weekly Trend -->
+  <div class="section">
+    <h2><span class="num">1</span>全局指标与周度趋势</h2>
+    <div class="kpi-row">
+      <div class="kpi-card info"><div class="value">3,595</div><div class="label">评语总量</div><div class="trend" style="color:#757575;">62 部剧 / 9 周</div></div>
+      <div class="kpi-card info"><div class="value">29.1%</div><div class="label">AI 提及率</div><div class="trend" style="color:#757575;">1,046/3,595</div></div>
+      <div class="kpi-card good"><div class="value">38.8%</div><div class="label">正面率</div><div class="trend" style="color:#757575;">1,396/3,595</div></div>
+      <div class="kpi-card info"><div class="value">16.3%</div><div class="label">负面率</div><div class="trend" style="color:#757575;">586/3,595</div></div>
+      <div class="kpi-card warn"><div class="value">9.7%</div><div class="label">配音问题</div><div class="trend" style="color:#757575;">348/3,595</div></div>
+      <div class="kpi-card info"><div class="value">4.3%</div><div class="label">广告投诉</div><div class="trend" style="color:#757575;">155/3,595</div></div>
+    </div>
+
+    <div class="compare-box">
+      <h3>九周趋势对照表</h3>
+      <div class="table-wrap">
+        <table class="trend-table">
+          <thead><tr><th>周次</th><th>评语量</th><th>AI提及率</th><th>正面率</th><th>负面率</th><th>配音</th><th>广告</th><th>希望真人</th></tr></thead>
+          <tbody>
+            <tr><td>4.24-4.30</td><td>105</td><td class="worse">54%</td><td>29%</td><td>20%</td><td>2.9%</td><td>0.0%</td><td>8.6%</td></tr>
+            <tr><td>5.01-5.07</td><td>240</td><td class="worse">52%</td><td class="better">37%</td><td>20%</td><td>5.4%</td><td>4.2%</td><td class="worse">10.8%</td></tr>
+            <tr><td>5.08-5.14</td><td>193</td><td>40%</td><td class="better">37%</td><td>20%</td><td>5.7%</td><td>3.6%</td><td>3.6%</td></tr>
+            <tr><td>5.15-5.21</td><td>181</td><td>40%</td><td>31%</td><td class="worse">29%</td><td>7.2%</td><td>3.3%</td><td>8.8%</td></tr>
+            <tr><td>5.22-5.28</td><td>184</td><td>43%</td><td>32%</td><td>24%</td><td>5.4%</td><td class="worse">8.7%</td><td>7.6%</td></tr>
+            <tr><td>5.29-6.04</td><td>318</td><td class="better">31%</td><td class="better">37%</td><td class="better">17%</td><td>5.0%</td><td>5.7%</td><td>5.0%</td></tr>
+            <tr><td>6.05-6.11</td><td>838</td><td class="better">23%</td><td class="better">41%</td><td class="better">16%</td><td class="worse">12.2%</td><td>3.7%</td><td>4.7%</td></tr>
+            <tr><td>6.12-6.18</td><td>1,051</td><td class="better">24%</td><td class="better">40%</td><td class="better">14%</td><td class="worse">13.4%</td><td>4.7%</td><td>5.0%</td></tr>
+            <tr><td style="font-weight:700;">6.19-6.25</td><td style="font-weight:700;">485</td><td class="better" style="font-weight:700;">19%</td><td class="better" style="font-weight:700;">42%</td><td class="better" style="font-weight:700;">10%</td><td>8.5%</td><td>3.3%</td><td>4.7%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h3>趋势解读</h3>
+      <p style="font-size:13px;color:#455a64;line-height:1.9;">
+        <strong>AI 提及率</strong>：从 54% 持续降至 19%，下降 35pp。拐点出现在第 6 周（5.29-6.04），新剧大量上线且渲染质量提升，用户开始"忘记" AI 的存在。<br/>
+        <strong>正面率</strong>：从 29% 攀升至 42%，6 月以来稳定在 40%+ 区间。<br/>
+        <strong>负面率</strong>：从 20% 降至 10%，最近一周创历史新低。<br/>
+        <strong>配音问题</strong>：6 月激增至 12-13%，已取代 AI 提及成为用户反馈第一焦点——这是<span class="hl-orange">好消息也是新挑战</span>。<br/>
+        <strong>广告投诉</strong>：5.22-5.28 周达峰值 8.7%后回落，但仍是平台级痛点。
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 2: Category Analysis -->
+  <div class="section">
+    <h2><span class="num">2</span>一级分类维度分析</h2>
+    <div class="genre-grid">
+      <div class="genre-card" style="border-left:4px solid #4caf50;">
+        <h4>&#x1f496; 女频言情（1,647条 / 19部）</h4>
+        <div class="stat"><span>AI 提及率</span><span style="color:#2e7d32;font-weight:700;">29.7%</span></div>
+        <div class="stat"><span>正面率</span><span style="color:#2e7d32;font-weight:700;">45.7%</span></div>
+        <div class="stat"><span>负面率</span><span style="color:#2e7d32;font-weight:700;">14.1%</span></div>
+        <div class="stat"><span>正负比</span><span style="color:#2e7d32;font-weight:700;">3.2:1</span></div>
+        <div class="stat"><span>配音投诉</span><span>6.7%</span></div>
+      </div>
+      <div class="genre-card" style="border-left:4px solid #ef5350;">
+        <h4>&#x1f4a2; 女频打脸（638条 / 11部）</h4>
+        <div class="stat"><span>AI 提及率</span><span>31.5%</span></div>
+        <div class="stat"><span>正面率</span><span style="color:#c62828;font-weight:700;">22.3%</span></div>
+        <div class="stat"><span>负面率</span><span style="color:#c62828;font-weight:700;">25.9%</span></div>
+        <div class="stat"><span>正负比</span><span style="color:#c62828;font-weight:700;">0.9:1</span></div>
+        <div class="stat"><span>配音投诉</span><span style="color:#c62828;font-weight:700;">17.2%</span></div>
+      </div>
+      <div class="genre-card" style="border-left:4px solid #2196f3;">
+        <h4>&#x1f6e1; 男频（194条 / 6部）</h4>
+        <div class="stat"><span>AI 提及率</span><span>26.8%</span></div>
+        <div class="stat"><span>正面率</span><span>33.5%</span></div>
+        <div class="stat"><span>负面率</span><span>19.6%</span></div>
+        <div class="stat"><span>正负比</span><span>1.7:1</span></div>
+        <div class="stat"><span>广告投诉</span><span style="color:#e65100;font-weight:700;">7.7%</span></div>
+      </div>
+      <div class="genre-card" style="border-left:4px solid #9c27b0;">
+        <h4>&#x1f43a; 垂类（347条 / 3部）</h4>
+        <div class="stat"><span>AI 提及率</span><span>34.6%</span></div>
+        <div class="stat"><span>正面率</span><span>39.5%</span></div>
+        <div class="stat"><span>负面率</span><span>15.6%</span></div>
+        <div class="stat"><span>正负比</span><span>2.5:1</span></div>
+        <div class="stat"><span>广告投诉</span><span style="color:#e65100;font-weight:700;">6.9%</span></div>
+      </div>
+      <div class="genre-card" style="border-left:4px solid #ff9800;">
+        <h4>&#x1f9d2; YA（237条 / 4部）</h4>
+        <div class="stat"><span>AI 提及率</span><span>32.5%</span></div>
+        <div class="stat"><span>正面率</span><span>31.6%</span></div>
+        <div class="stat"><span>负面率</span><span>17.3%</span></div>
+        <div class="stat"><span>正负比</span><span>1.8:1</span></div>
+        <div class="stat"><span>配音投诉</span><span>11.8%</span></div>
+      </div>
+      <div class="genre-card" style="border-left:4px solid #607d8b;">
+        <h4>&#x2753; 未分类/新剧（532条 / 19部）</h4>
+        <div class="stat"><span>AI 提及率</span><span style="color:#2e7d32;font-weight:700;">20.1%</span></div>
+        <div class="stat"><span>正面率</span><span style="color:#2e7d32;font-weight:700;">41.9%</span></div>
+        <div class="stat"><span>负面率</span><span style="color:#2e7d32;font-weight:700;">10.5%</span></div>
+        <div class="stat"><span>正负比</span><span style="color:#2e7d32;font-weight:700;">4.0:1</span></div>
+        <div class="stat"><span>配音投诉</span><span>11.8%</span></div>
+      </div>
+    </div>
+
+    <div class="insight-box">
+      <h3>分类洞察</h3>
+      <p style="font-size:13px;color:#455a64;line-height:1.9;">
+        <strong>女频言情 vs 女频打脸差距显著</strong>：同为女频内容，言情类正负比 3.2:1，打脸类仅 0.9:1（负面&gt;正面）。打脸类的配音投诉高达 17.2%（言情仅 6.7%），说明打脸类对配音/对白质量要求更高——因为其核心情节依赖角色间的语言冲突。<br/>
+        <strong>未分类新剧表现亮眼</strong>：AI 提及率仅 20.1%、正负比 4.0:1，说明最新一批上线剧集的 AI 渲染质量有显著提升。<br/>
+        <strong>垂类（狼人/LGBT）两极分化</strong>：Fated（狼人）表现优秀（3.8:1），但 My Secret Agent（LGBT）AI 提及率高达 58%。
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 3: Sub-Category Analysis -->
+  <div class="section">
+    <h2><span class="num">3</span>二级分类维度分析</h2>
+    <div class="table-wrap">
+      <table class="trend-table">
+        <thead><tr><th>二级分类</th><th>评语量</th><th>AI提及率</th><th>正面率</th><th>负面率</th><th>正负比</th><th>判断</th></tr></thead>
+        <tbody>
+          <tr><td><strong>甜宠</strong></td><td>627</td><td class="better">29.5%</td><td class="better">48.2%</td><td class="better">12.3%</td><td class="better">3.9:1</td><td><span class="tag-green">最优赛道</span></td></tr>
+          <tr><td><strong>禁忌恋</strong></td><td>223</td><td>31.8%</td><td class="better">44.8%</td><td class="better">13.9%</td><td class="better">3.2:1</td><td><span class="tag-green">优质赛道</span></td></tr>
+          <tr><td><strong>先婚后爱</strong></td><td>776</td><td>28.7%</td><td class="better">43.9%</td><td>15.7%</td><td>2.8:1</td><td><span class="tag-green">稳健</span></td></tr>
+          <tr><td><strong>狼人</strong></td><td>297</td><td>31.0%</td><td class="better">43.4%</td><td class="better">11.4%</td><td class="better">3.8:1</td><td><span class="tag-green">优质赛道</span></td></tr>
+          <tr><td><strong>虐恋</strong></td><td>21</td><td class="worse">47.6%</td><td>42.9%</td><td>14.3%</td><td>3.0:1</td><td><span class="tag-blue">样本小</span></td></tr>
+          <tr><td><strong>爱情（YA）</strong></td><td>127</td><td>30.7%</td><td>37.0%</td><td>12.6%</td><td>2.9:1</td><td><span class="tag-blue">健康</span></td></tr>
+          <tr><td><strong>隐藏身份</strong></td><td>194</td><td>26.8%</td><td>33.5%</td><td>19.6%</td><td>1.7:1</td><td><span class="tag-orange">中等</span></td></tr>
+          <tr><td><strong>后悔流</strong></td><td>236</td><td>27.1%</td><td>25.8%</td><td class="worse">22.0%</td><td>1.2:1</td><td><span class="tag-orange">偏弱</span></td></tr>
+          <tr><td><strong>打脸</strong></td><td>110</td><td>34.5%</td><td>25.5%</td><td class="worse">22.7%</td><td>1.1:1</td><td><span class="tag-orange">偏弱</span></td></tr>
+          <tr><td><strong>打脸虐渣</strong></td><td>402</td><td>34.1%</td><td class="worse">20.1%</td><td class="worse">28.1%</td><td class="worse">0.7:1</td><td><span class="tag-red">高风险赛道</span></td></tr>
+          <tr><td><strong>LGBT</strong></td><td>33</td><td class="worse">57.6%</td><td>24.2%</td><td class="worse">30.3%</td><td class="worse">0.8:1</td><td><span class="tag-red">高风险</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="insight-box">
+      <h3>二级分类洞察</h3>
+      <p style="font-size:13px;color:#455a64;line-height:1.9;">
+        <strong>甜蜜感 &gt; 冲突感</strong>：甜宠（3.9:1）、禁忌恋（3.2:1）等"情感驱动型"赛道显著优于"冲突驱动型"的打脸虐渣（0.7:1）和打脸（1.1:1）。AI 渲染目前更擅长表达温馨/浪漫情境，对复杂冲突场景（争吵、扇巴掌等）的表现力不足。<br/>
+        <strong>打脸虐渣是唯一正负比低于 1 的主流赛道</strong>：28.1% 负面率，配音投诉率高达 17.2%——台词冲突是核心剧情，配音质量直接影响观感。
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 4: Sentiment Distribution -->
+  <div class="section">
+    <h2><span class="num">4</span>TOP 15 剧集情感分布</h2>
+    <p style="font-size:12px; color:#9e9e9e; margin-bottom:16px;"><span style="color:#4caf50;">&#9632;</span> 正面 <span style="color:#bdbdbd;">&#9632;</span> 中性 <span style="color:#ef5350;">&#9632;</span> 负面 &nbsp; | &nbsp; 分类标签已标注</p>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">Virgin Bride（373）<span class="tag-purple" style="font-size:10px;margin-left:4px;">先婚后爱</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:59%"></div><div class="neu" style="width:35%"></div><div class="neg" style="width:6%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">59%</span><span style="font-size:11px;color:#9e9e9e;">35%</span><span style="font-size:11px;color:#ef5350;">6%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">Fated to My Ruthless Alpha（297）<span class="tag-purple" style="font-size:10px;margin-left:4px;">狼人</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:43%"></div><div class="neu" style="width:46%"></div><div class="neg" style="width:11%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">43%</span><span style="font-size:11px;color:#9e9e9e;">46%</span><span style="font-size:11px;color:#ef5350;">11%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">No Escape Dragon King's Mate（236）<span class="tag-purple" style="font-size:10px;margin-left:4px;">甜宠</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:61%"></div><div class="neu" style="width:32%"></div><div class="neg" style="width:7%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">61%</span><span style="font-size:11px;color:#9e9e9e;">32%</span><span style="font-size:11px;color:#ef5350;">7%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">Breaking! Ex-Wife Billionaire（180）<span class="tag-orange" style="font-size:10px;margin-left:4px;">后悔流</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:27%"></div><div class="neu" style="width:49%"></div><div class="neg" style="width:24%"></div></div><span style="font-size:11px;color:#4caf50;">27%</span><span style="font-size:11px;color:#9e9e9e;">49%</span><span style="font-size:11px;color:#ef5350;font-weight:700;">24%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">30 Days Mafia King's Bride（170）<span class="tag-purple" style="font-size:10px;margin-left:4px;">先婚后爱</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:33%"></div><div class="neu" style="width:50%"></div><div class="neg" style="width:17%"></div></div><span style="font-size:11px;color:#4caf50;">33%</span><span style="font-size:11px;color:#9e9e9e;">50%</span><span style="font-size:11px;color:#ef5350;">17%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">Keeping His Baby（162）<span class="tag-purple" style="font-size:10px;margin-left:4px;">甜宠</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:38%"></div><div class="neu" style="width:43%"></div><div class="neg" style="width:19%"></div></div><span style="font-size:11px;color:#4caf50;">38%</span><span style="font-size:11px;color:#9e9e9e;">43%</span><span style="font-size:11px;color:#ef5350;">19%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">Move to Countryside（114）<span class="tag-purple" style="font-size:10px;margin-left:4px;">先婚后爱</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:24%"></div><div class="neu" style="width:38%"></div><div class="neg" style="width:38%"></div></div><span style="font-size:11px;color:#4caf50;">24%</span><span style="font-size:11px;color:#9e9e9e;">38%</span><span style="font-size:11px;color:#ef5350;font-weight:700;">38%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">Submitting to Bestie's Dad（111）<span class="tag-purple" style="font-size:10px;margin-left:4px;">禁忌恋</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:53%"></div><div class="neu" style="width:34%"></div><div class="neg" style="width:13%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">53%</span><span style="font-size:11px;color:#9e9e9e;">34%</span><span style="font-size:11px;color:#ef5350;">13%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">Silence! Boss Lady Speaks（110）<span class="tag-orange" style="font-size:10px;margin-left:4px;">打脸虐渣</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:23%"></div><div class="neu" style="width:54%"></div><div class="neg" style="width:23%"></div></div><span style="font-size:11px;color:#4caf50;">23%</span><span style="font-size:11px;color:#9e9e9e;">54%</span><span style="font-size:11px;color:#ef5350;">23%</span></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:330px;font-size:12px;font-weight:600;">My Substitute Groom（98）<span class="tag-purple" style="font-size:10px;margin-left:4px;">甜宠</span></span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:63%"></div><div class="neu" style="width:28%"></div><div class="neg" style="width:9%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">63%</span><span style="font-size:11px;color:#9e9e9e;">28%</span><span style="font-size:11px;color:#ef5350;">9%</span></div>
+  </div>
+
+  <!-- Section 5: Key Dramas -->
+  <div class="section">
+    <h2><span class="num">5</span>重点剧集解读</h2>
+    <div class="drama-card">
+      <h3><span class="tag-green">S 级</span> Virgin Bride Bound to the Dragon King <span class="tag-purple">女频言情/先婚后爱</span></h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">10%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">59%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">6%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">10.4:1</div><div class="l">正负比</div></div>
+        <div class="metric"><div class="v">373</div><div class="l">评语量</div></div>
+      </div>
+      <div class="summary">全平台表现最优：评语量第一（373条）、AI 提及率最低（10%）、正负比最高（10.4:1）。龙族/奇幻设定+言情剧情+成人向内容三重叠加，让用户完全沉浸于内容本身。18 条配音投诉和 18 条广告投诉是唯一痛点。</div>
+    </div>
+    <div class="drama-card">
+      <h3><span class="tag-green">S 级</span> No Escape as the Dragon King's Mate <span class="tag-purple">女频言情/甜宠</span></h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">15%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">61%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">7%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">8.9:1</div><div class="l">正负比</div></div>
+        <div class="metric"><div class="v">236</div><div class="l">评语量</div></div>
+      </div>
+      <div class="summary">与 Virgin Bride 同属"龙族"IP，表现同样出色。AI 提及率 15%，正面率 61%。再次验证：奇幻+甜宠是 AI 仿真人剧的"黄金组合"。配音投诉 23 条需关注。</div>
+    </div>
+    <div class="drama-card">
+      <h3><span class="tag-green">A 级</span> My Substitute Groom, The King Of Olympus <span class="tag-purple">女频言情/甜宠</span></h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">23%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">63%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">9%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">6.9:1</div><div class="l">正负比</div></div>
+        <div class="metric"><div class="v">98</div><div class="l">评语量</div></div>
+      </div>
+      <div class="summary">正面率最高（63%），奥林匹斯神话设定+甜宠剧情。用户称"truly a masterpiece, please create more AI dramas"。甜宠赛道持续验证其对 AI 形态的高包容度。</div>
+    </div>
+    <div class="drama-card">
+      <h3><span class="tag-green">A 级</span> Fated to My Ruthless Alpha <span class="tag-purple">垂类/狼人</span></h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">31%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">43%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">11%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">3.8:1</div><div class="l">正负比</div></div>
+        <div class="metric"><div class="v">297</div><div class="l">评语量</div></div>
+      </div>
+      <div class="summary">元老级剧集，评语量第二（297条），用户粘性极强。但广告投诉 24 条（全平台最高），已成为该剧的第一痛点。狼人题材对 AI 的包容度天然较高。</div>
+    </div>
+    <div class="drama-card">
+      <h3><span class="tag-red">D 级</span> Move to Countryside, Marry a Billionaire <span class="tag-purple">女频言情/先婚后爱</span></h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#c62828;">53%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">24%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">38%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">0.6:1</div><div class="l">正负比</div></div>
+        <div class="metric"><div class="v">114</div><div class="l">评语量</div></div>
+      </div>
+      <div class="summary">同属"先婚后爱"赛道但表现远差于 Virgin Bride（0.6:1 vs 10.4:1）。AI 渲染质量（画面闪烁）和配音（20条投诉）是核心差距。证明即使是好赛道，技术质量不过关一样失败。</div>
+    </div>
+    <div class="drama-card">
+      <h3><span class="tag-red">D 级</span> The Pregnant Top Heiress <span class="tag-orange">女频打脸/打脸虐渣</span></h3>
+      <div class="metrics">
+        <div class="metric"><div class="v">28%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">12%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">36%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">0.3:1</div><div class="l">正负比</div></div>
+        <div class="metric"><div class="v">58</div><div class="l">评语量</div></div>
+      </div>
+      <div class="summary">正负比仅 0.3:1（全平台主流剧最差），13 条配音投诉（占比 22%）。打脸虐渣赛道+配音质量差=双重负面叠加。</div>
+    </div>
+  </div>
+
+  <!-- Section 6: Conclusions -->
+  <div class="section">
+    <h2><span class="num">6</span>结论与战略建议</h2>
+    <div style="font-size:14px;line-height:2.2;margin-bottom:20px;">
+      <p><strong>1.</strong> <span class="hl-green">AI 脱敏已成趋势</span>：AI 提及率从首周 54% 降至最近一周 19%，正面率从 29% 升至 42%，负面率从 20% 降至 10%。用户正在系统性地"接受" AI 仿真人剧。</p>
+      <p><strong>2.</strong> <span class="hl-purple">一级分类决定基本盘</span>：女频言情（正负比 3.2:1）远优于女频打脸（0.9:1）。后者配音投诉率高达 17.2%，因为打脸类核心依赖台词冲突，AI 配音表现力不足。</p>
+      <p><strong>3.</strong> <span class="hl-purple">二级分类决定天花板</span>：甜宠（3.9:1）和禁忌恋（3.2:1）是黄金赛道；打脸虐渣（0.7:1）是目前应该回避的赛道。AI 更擅长"温馨浪漫"，尚不擅长"激烈冲突"。</p>
+      <p><strong>4.</strong> <span class="hl-orange">配音已取代 AI 提及成为新焦点</span>：6 月配音投诉率升至 12-13%，而 AI 提及率降至 19-24%。用户的关注重心已从"是不是 AI"转向"AI 做得好不好"。</p>
+      <p><strong>5.</strong> <span class="hl-blue">同赛道内质量差距巨大</span>：同为"先婚后爱"，Virgin Bride 正负比 10.4:1 vs Move to Countryside 0.6:1——赛道选对是基础，技术执行才是决胜因子。</p>
+    </div>
+    <ul class="action-list">
+      <li><strong>立项优先级：甜宠 &gt; 禁忌恋 &gt; 先婚后爱 &gt;&gt; 打脸虐渣</strong><span class="priority p1">P0 战略</span><br/>3,595 条数据验证的赛道排序。甜宠+奇幻/超自然设定是 AI 仿真人剧的最优解。打脸虐渣赛道建议暂停立项，待配音技术成熟后重启。</li>
+      <li><strong>配音质检体系升级</strong><span class="priority p1">P0</span><br/>配音投诉从 5 月的 5-7% 飙升至 6 月的 12-13%。建议：(1) 设立配音一致性评分标准；(2) 新剧上线前必须过配音质检门槛；(3) 打脸类剧集配音标准应高于甜宠类。</li>
+      <li><strong>广告体验分层</strong><span class="priority p2">P1</span><br/>Fated（24条）和 Virgin Bride（18条）广告投诉最多——越受欢迎的剧，深度用户广告痛感越强。建议推出免广告订阅或追剧深度用户降频方案。</li>
+      <li><strong>复制"龙族 IP"成功经验</strong><span class="priority p3">P2</span><br/>Virgin Bride 和 No Escape 两部龙族剧合计 609 条评语、正面率 60%+。奇幻世界观+甜宠/先婚后爱的组合已形成可复制的成功模式。</li>
+      <li><strong>打脸虐渣赛道回避或升级</strong><span class="priority p3">P2</span><br/>该赛道正负比 0.7:1，6 部剧中 4 部负面率超 30%。如需继续投入，必须优先解决配音质量——台词冲突场景对配音表现力要求极高。</li>
+    </ul>
+  </div>
+
+  <!-- Section 7: Full Drama Ranking -->
+  <div class="section">
+    <h2><span class="num">7</span>全量剧集排名（按正负比）</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>剧名</th><th>一级分类</th><th>二级分类</th><th>评语量</th><th>AI%</th><th>正面%</th><th>负面%</th><th>正负比</th><th>等级</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Virgin Bride Bound to the Dragon King</td><td>女频言情</td><td>先婚后爱</td><td>373</td><td style="color:#2e7d32;">10%</td><td style="color:#2e7d32;">59%</td><td style="color:#2e7d32;">6%</td><td style="color:#2e7d32;font-weight:700;">10.4:1</td><td><span class="tag-green">S</span></td></tr>
+          <tr><td>2</td><td>No Escape as the Dragon King's Mate</td><td>女频言情</td><td>甜宠</td><td>236</td><td style="color:#2e7d32;">15%</td><td style="color:#2e7d32;">61%</td><td style="color:#2e7d32;">7%</td><td style="color:#2e7d32;font-weight:700;">8.9:1</td><td><span class="tag-green">S</span></td></tr>
+          <tr><td>3</td><td>My Substitute Groom, King Of Olympus</td><td>女频言情</td><td>甜宠</td><td>98</td><td>23%</td><td style="color:#2e7d32;">63%</td><td>9%</td><td style="color:#2e7d32;font-weight:700;">6.9:1</td><td><span class="tag-green">S</span></td></tr>
+          <tr><td>4</td><td>1 Strike! Pharaoh King!</td><td>男频</td><td>隐藏身份</td><td>62</td><td style="color:#2e7d32;">8%</td><td>47%</td><td style="color:#2e7d32;">8%</td><td style="color:#2e7d32;font-weight:700;">5.8:1</td><td><span class="tag-green">A</span></td></tr>
+          <tr><td>5</td><td>My Husband is a Hidden Hero!</td><td>男频</td><td>隐藏身份</td><td>45</td><td>18%</td><td>40%</td><td>9%</td><td>4.5:1</td><td><span class="tag-green">A</span></td></tr>
+          <tr><td>6</td><td>Submitting to My Bestie's Dad</td><td>女频言情</td><td>禁忌恋</td><td>111</td><td>24%</td><td>53%</td><td>13%</td><td>4.2:1</td><td><span class="tag-green">A</span></td></tr>
+          <tr><td>7</td><td>Fated to My Ruthless Alpha</td><td>垂类</td><td>狼人</td><td>297</td><td>31%</td><td>43%</td><td>11%</td><td>3.8:1</td><td><span class="tag-green">A</span></td></tr>
+          <tr><td>8</td><td>Vampire Elite: The World Between Us</td><td>YA</td><td>爱情</td><td>92</td><td>22%</td><td>42%</td><td>12%</td><td>3.5:1</td><td><span class="tag-blue">B</span></td></tr>
+          <tr><td>9</td><td>Keeping His Baby and His Heart</td><td>女频言情</td><td>甜宠</td><td>162</td><td style="color:#e65100;">49%</td><td>38%</td><td>19%</td><td>2.0:1</td><td><span class="tag-blue">B</span></td></tr>
+          <tr><td>10</td><td>30 Days to be the Mafia King's Bride</td><td>女频言情</td><td>先婚后爱</td><td>170</td><td style="color:#e65100;">48%</td><td>33%</td><td>17%</td><td>1.9:1</td><td><span class="tag-blue">B</span></td></tr>
+          <tr><td>11</td><td>Caution! Heiress Coming Through</td><td>女频打脸</td><td>打脸虐渣</td><td>70</td><td>34%</td><td>33%</td><td>17%</td><td>1.9:1</td><td><span class="tag-blue">B</span></td></tr>
+          <tr><td>12</td><td>Crowned By Billion Dollar Baby</td><td>女频言情</td><td>甜宠</td><td>85</td><td>38%</td><td>29%</td><td>16%</td><td>1.8:1</td><td><span class="tag-blue">B</span></td></tr>
+          <tr><td>13</td><td>Breaking! Ex-Wife Billionaire Heiress</td><td>女频打脸</td><td>后悔流</td><td>180</td><td>28%</td><td>27%</td><td>24%</td><td>1.1:1</td><td><span class="tag-orange">C</span></td></tr>
+          <tr><td>14</td><td>Billionaire's Seduce Game For Love</td><td>女频言情</td><td>先婚后爱</td><td>95</td><td>34%</td><td>29%</td><td>27%</td><td>1.1:1</td><td><span class="tag-orange">C</span></td></tr>
+          <tr><td>15</td><td>Silence! Boss Lady Speaks</td><td>女频打脸</td><td>打脸虐渣</td><td>110</td><td>34%</td><td>23%</td><td>23%</td><td>1.0:1</td><td><span class="tag-orange">C</span></td></tr>
+          <tr><td>16</td><td>Move to Countryside</td><td>女频言情</td><td>先婚后爱</td><td>114</td><td style="color:#c62828;">53%</td><td>24%</td><td style="color:#c62828;">38%</td><td style="color:#c62828;">0.6:1</td><td><span class="tag-red">D</span></td></tr>
+          <tr><td>17</td><td>Too Late Divorce Papers</td><td>—</td><td>—</td><td>47</td><td>40%</td><td>21%</td><td style="color:#c62828;">47%</td><td style="color:#c62828;">0.5:1</td><td><span class="tag-red">D</span></td></tr>
+          <tr><td>18</td><td>Her Longlost Heiress is Found</td><td>女频打脸</td><td>打脸虐渣</td><td>59</td><td>37%</td><td>14%</td><td style="color:#c62828;">32%</td><td style="color:#c62828;">0.4:1</td><td><span class="tag-red">D</span></td></tr>
+          <tr><td>19</td><td>Doormat No More</td><td>女频打脸</td><td>打脸虐渣</td><td>42</td><td style="color:#c62828;">60%</td><td>14%</td><td style="color:#c62828;">38%</td><td style="color:#c62828;">0.4:1</td><td><span class="tag-red">D</span></td></tr>
+          <tr><td>20</td><td>The Pregnant Top Heiress</td><td>女频打脸</td><td>打脸虐渣</td><td>58</td><td>28%</td><td>12%</td><td style="color:#c62828;">36%</td><td style="color:#c62828;">0.3:1</td><td><span class="tag-red">D</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:12px;font-size:12px;color:#9e9e9e;">* 仅展示评语量 ≥ 40 条的剧集。S级=正负比≥5:1；A级=3~5:1；B级=1.5~3:1；C级=0.8~1.5:1；D级=<0.8:1。</p>
+  </div>
+
+</div>
+</body>
+</html>
