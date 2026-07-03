@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DramaBox 客诉工单周度趋势报告 - W26 (2026-06-26)</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f9fafb; color: #1f2937; line-height: 1.6; }
+
+.brand-bar { background: linear-gradient(135deg, #FF8A47, #FF2D6B); padding: 12px 32px; display: flex; align-items: center; gap: 12px; }
+.brand-bar .logo { font-size: 20px; font-weight: 700; color: white; letter-spacing: 1px; }
+.brand-bar .report-type { color: rgba(255,255,255,0.85); font-size: 13px; margin-left: auto; }
+
+.header { background: #1e293b; color: white; padding: 28px 32px; border-radius: 0 0 12px 12px; }
+.header h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+.header .subtitle { color: #94a3b8; font-size: 14px; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+
+.card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+.overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.platform-card { background: white; border-radius: 12px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid; }
+.platform-card.android { border-color: #34a853; }
+.platform-card.ios { border-color: #007aff; }
+.platform-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.platform-card.android .platform-label { color: #34a853; }
+.platform-card.ios .platform-label { color: #007aff; }
+.platform-total { font-size: 32px; font-weight: 700; color: #1f2937; }
+.platform-change { font-size: 14px; margin-top: 4px; }
+.change-up { color: #ef4444; }
+.change-down { color: #22c55e; }
+
+.insight-card { border-left: 4px solid #3b82f6; background: #eff6ff; padding: 16px 20px; border-radius: 8px; margin-bottom: 12px; }
+.insight-card p { color: #1e40af; font-size: 14px; }
+.alert-card { border-left: 4px solid #ef4444; background: #fef2f2; padding: 16px 20px; border-radius: 8px; margin-bottom: 12px; }
+.alert-card p { color: #991b1b; font-size: 14px; }
+.good-card { border-left: 4px solid #22c55e; background: #f0fdf4; padding: 16px 20px; border-radius: 8px; margin-bottom: 12px; }
+.good-card p { color: #166534; font-size: 14px; }
+.warn-card { border-left: 4px solid #eab308; background: #fefce8; padding: 16px 20px; border-radius: 8px; margin-bottom: 12px; }
+.warn-card p { color: #854d0e; font-size: 14px; }
+
+.dual-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 768px) { .dual-panel { grid-template-columns: 1fr; } .overview-grid { grid-template-columns: 1fr; } }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #f8fafc; padding: 10px 12px; text-align: left; font-weight: 600; color: #64748b; border-bottom: 2px solid #e2e8f0; font-size: 12px; }
+td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+tr:hover { background: #f8fafc; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.badge-red { background: #fef2f2; color: #dc2626; }
+.badge-orange { background: #fff7ed; color: #ea580c; }
+.badge-yellow { background: #fefce8; color: #ca8a04; }
+.badge-green { background: #f0fdf4; color: #16a34a; }
+.badge-gray { background: #f3f4f6; color: #6b7280; }
+
+.stacked-bar { display: flex; height: 28px; border-radius: 6px; overflow: hidden; margin: 8px 0 4px; }
+.stacked-segment { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: white; min-width: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; font-size: 12px; }
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+.comparison-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: #6b7280; }
+.comparison-row .label { width: 40px; font-weight: 500; }
+
+.footer { text-align: center; padding: 20px; color: #94a3b8; font-size: 12px; border-top: 1px solid #e2e8f0; margin-top: 32px; }
+</style>
+</head>
+<body>
+
+<div class="brand-bar">
+    <div class="logo">DramaBox</div>
+    <div class="report-type">客诉工单周度趋势报告</div>
+</div>
+
+<div class="header">
+    <h1>客诉工单变化趋势分析 — W26</h1>
+    <div class="subtitle">对比周期: 06-19 → 06-26 | 重点关注占比结构变化</div>
+</div>
+
+<div class="container">
+
+<!-- Platform Overview -->
+<div class="overview-grid">
+    <div class="platform-card android">
+        <div class="platform-label">Android</div>
+        <div class="platform-total">1,295 <span style="font-size:14px;font-weight:400;color:#6b7280;">单</span></div>
+        <div class="platform-change change-up">↑ 30.2% 环比上周 (995单)</div>
+    </div>
+    <div class="platform-card ios">
+        <div class="platform-label">iOS</div>
+        <div class="platform-total">897 <span style="font-size:14px;font-weight:400;color:#6b7280;">单</span></div>
+        <div class="platform-change change-up">↑ 14.3% 环比上周 (785单)</div>
+    </div>
+</div>
+
+<!-- Key Insights -->
+<div class="card">
+    <div class="card-title">关键发现</div>
+    <div class="alert-card">
+        <p><strong>P0：iOS 取消订阅/退款占比飙升至41%</strong> — 环比+8.7pp，绝对值+114单(+44.9%)，为近期最大单项占比跳升，需立即排查订阅策略变动。</p>
+    </div>
+    <div class="warn-card">
+        <p><strong>Android 广告问题占比跳升</strong> — 从4.9%升至7.3%(+2.3pp)，绝对值从49翻至94(+91.8%)，增速显著高于总量增速。</p>
+    </div>
+    <div class="insight-card">
+        <p><strong>双端总量同步放大但结构分化</strong> — Android增量分散在多个分类(广告、会员、界面)，iOS增量高度集中在"取消订阅/退款"一项(占增量的102%)。</p>
+    </div>
+    <div class="good-card">
+        <p><strong>iOS 会员权益异常占比大幅回落</strong> — 从24.7%降至14.7%(-10.0pp)，绝对值-62单，上周的集中投诉已消退。</p>
+    </div>
+</div>
+
+<!-- Level 1 Proportion Shift -->
+<div class="card">
+    <div class="card-title">一级分类占比变化</div>
+    <div class="dual-panel">
+        <div>
+            <h3 style="font-size:14px;color:#34a853;margin-bottom:12px;">Android</h3>
+            <div class="comparison-row"><span class="label">上周</span>
+                <div class="stacked-bar" style="flex:1;height:20px;margin:0;">
+                    <div class="stacked-segment" style="width:76.3%;background:#6366f1;font-size:9px;">76.3%</div>
+                    <div class="stacked-segment" style="width:9.8%;background:#f59e0b;"></div>
+                    <div class="stacked-segment" style="width:5.0%;background:#8b5cf6;"></div>
+                    <div class="stacked-segment" style="width:7.0%;background:#06b6d4;"></div>
+                    <div class="stacked-segment" style="width:1.8%;background:#94a3b8;"></div>
+                </div>
+            </div>
+            <div class="comparison-row"><span class="label">本周</span>
+                <div class="stacked-bar" style="flex:1;height:20px;margin:0;">
+                    <div class="stacked-segment" style="width:71.7%;background:#6366f1;font-size:9px;">71.7%</div>
+                    <div class="stacked-segment" style="width:13.7%;background:#f59e0b;"></div>
+                    <div class="stacked-segment" style="width:3.5%;background:#8b5cf6;"></div>
+                    <div class="stacked-segment" style="width:7.0%;background:#06b6d4;"></div>
+                    <div class="stacked-segment" style="width:4.1%;background:#94a3b8;"></div>
+                </div>
+            </div>
+            <table style="margin-top:12px;">
+                <thead><tr><th>一级分类</th><th>上周</th><th>本周</th><th>占比变化</th></tr></thead>
+                <tbody>
+                    <tr><td>订阅与付费</td><td>76.3%</td><td>71.7%</td><td><span class="badge badge-green">-4.6pp</span></td></tr>
+                    <tr><td>功能与体验</td><td>9.8%</td><td>13.7%</td><td><span class="badge badge-orange">+3.9pp</span></td></tr>
+                    <tr><td>内容相关</td><td>5.0%</td><td>3.5%</td><td><span class="badge badge-green">-1.6pp</span></td></tr>
+                    <tr><td>账号问题</td><td>7.0%</td><td>7.0%</td><td><span class="badge badge-gray">0pp</span></td></tr>
+                    <tr><td>其他</td><td>1.8%</td><td>4.1%</td><td><span class="badge badge-yellow">+2.3pp</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h3 style="font-size:14px;color:#007aff;margin-bottom:12px;">iOS</h3>
+            <div class="comparison-row"><span class="label">上周</span>
+                <div class="stacked-bar" style="flex:1;height:20px;margin:0;">
+                    <div class="stacked-segment" style="width:81.9%;background:#6366f1;font-size:9px;">81.9%</div>
+                    <div class="stacked-segment" style="width:7.5%;background:#f59e0b;"></div>
+                    <div class="stacked-segment" style="width:3.6%;background:#8b5cf6;"></div>
+                    <div class="stacked-segment" style="width:5.2%;background:#06b6d4;"></div>
+                    <div class="stacked-segment" style="width:1.8%;background:#94a3b8;"></div>
+                </div>
+            </div>
+            <div class="comparison-row"><span class="label">本周</span>
+                <div class="stacked-bar" style="flex:1;height:20px;margin:0;">
+                    <div class="stacked-segment" style="width:80.4%;background:#6366f1;font-size:9px;">80.4%</div>
+                    <div class="stacked-segment" style="width:8.9%;background:#f59e0b;"></div>
+                    <div class="stacked-segment" style="width:4.1%;background:#8b5cf6;"></div>
+                    <div class="stacked-segment" style="width:5.1%;background:#06b6d4;"></div>
+                    <div class="stacked-segment" style="width:1.4%;background:#94a3b8;"></div>
+                </div>
+            </div>
+            <table style="margin-top:12px;">
+                <thead><tr><th>一级分类</th><th>上周</th><th>本周</th><th>占比变化</th></tr></thead>
+                <tbody>
+                    <tr><td>订阅与付费</td><td>81.9%</td><td>80.4%</td><td><span class="badge badge-green">-1.5pp</span></td></tr>
+                    <tr><td>功能与体验</td><td>7.5%</td><td>8.9%</td><td><span class="badge badge-yellow">+1.4pp</span></td></tr>
+                    <tr><td>内容相关</td><td>3.6%</td><td>4.1%</td><td><span class="badge badge-gray">+0.6pp</span></td></tr>
+                    <tr><td>账号问题</td><td>5.2%</td><td>5.1%</td><td><span class="badge badge-gray">-0.1pp</span></td></tr>
+                    <tr><td>其他</td><td>1.8%</td><td>1.4%</td><td><span class="badge badge-gray">-0.3pp</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="legend" style="margin-top:16px;">
+        <div class="legend-item"><div class="legend-dot" style="background:#6366f1;"></div>订阅与付费</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;"></div>功能与体验</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6;"></div>内容相关</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#06b6d4;"></div>账号问题</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#94a3b8;"></div>其他</div>
+    </div>
+</div>
+
+<!-- Level 2 Detail -->
+<div class="card">
+    <div class="card-title">二级分类占比变化明细</div>
+    <div class="dual-panel">
+        <div>
+            <h3 style="font-size:14px;color:#34a853;margin-bottom:12px;">Android</h3>
+            <table>
+                <thead><tr><th>分类</th><th>上周</th><th>本周</th><th>占比变化</th><th>绝对值</th></tr></thead>
+                <tbody>
+                    <tr><td>广告问题</td><td>4.9%</td><td>7.3%</td><td><span class="badge badge-orange">+2.3pp</span></td><td>49→94 <span class="change-up">+91.8%</span></td></tr>
+                    <tr><td>无法归类</td><td>1.8%</td><td>4.1%</td><td><span class="badge badge-orange">+2.3pp</span></td><td>18→53 <span class="change-up">+194%</span></td></tr>
+                    <tr><td>界面/App异常</td><td>2.8%</td><td>3.8%</td><td><span class="badge badge-yellow">+1.0pp</span></td><td>28→49 <span class="change-up">+75%</span></td></tr>
+                    <tr><td>会员权益异常</td><td>19.2%</td><td>20.0%</td><td><span class="badge badge-yellow">+0.8pp</span></td><td>191→259 <span class="change-up">+35.6%</span></td></tr>
+                    <tr><td>视频播放故障</td><td>2.1%</td><td>2.7%</td><td><span class="badge badge-gray">+0.6pp</span></td><td>21→35 <span class="change-up">+66.7%</span></td></tr>
+                    <tr style="background:#f0fdf4;"><td>充值/金币未到账</td><td>22.4%</td><td>18.2%</td><td><span class="badge badge-green">-4.2pp</span></td><td>223→236 <span class="change-up">+5.8%</span></td></tr>
+                    <tr style="background:#f0fdf4;"><td>内容问题</td><td>5.0%</td><td>3.5%</td><td><span class="badge badge-green">-1.6pp</span></td><td>50→45 <span class="change-down">-10%</span></td></tr>
+                    <tr style="background:#f0fdf4;"><td>取消订阅/退款</td><td>24.7%</td><td>23.9%</td><td><span class="badge badge-green">-0.9pp</span></td><td>246→309 <span class="change-up">+25.6%</span></td></tr>
+                    <tr><td>重复扣款/多扣</td><td>9.9%</td><td>9.6%</td><td><span class="badge badge-gray">-0.4pp</span></td><td>99→124 <span class="change-up">+25.3%</span></td></tr>
+                    <tr><td>账号/设备权益丢失</td><td>7.0%</td><td>7.0%</td><td><span class="badge badge-gray">0pp</span></td><td>70→91 <span class="change-up">+30%</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h3 style="font-size:14px;color:#007aff;margin-bottom:12px;">iOS</h3>
+            <table>
+                <thead><tr><th>分类</th><th>上周</th><th>本周</th><th>占比变化</th><th>绝对值</th></tr></thead>
+                <tbody>
+                    <tr><td>取消订阅/退款</td><td>32.4%</td><td>41.0%</td><td><span class="badge badge-red">+8.7pp</span></td><td>254→368 <span class="change-up">+44.9%</span></td></tr>
+                    <tr><td>重复扣款/多扣</td><td>15.4%</td><td>17.8%</td><td><span class="badge badge-yellow">+2.4pp</span></td><td>121→160 <span class="change-up">+32.2%</span></td></tr>
+                    <tr><td>界面/App异常</td><td>2.3%</td><td>3.1%</td><td><span class="badge badge-yellow">+0.8pp</span></td><td>18→28 <span class="change-up">+55.6%</span></td></tr>
+                    <tr><td>内容问题</td><td>3.6%</td><td>4.1%</td><td><span class="badge badge-gray">+0.6pp</span></td><td>28→37 <span class="change-up">+32.1%</span></td></tr>
+                    <tr><td>视频播放故障</td><td>4.7%</td><td>5.0%</td><td><span class="badge badge-gray">+0.3pp</span></td><td>37→45 <span class="change-up">+21.6%</span></td></tr>
+                    <tr style="background:#f0fdf4;"><td>会员权益异常</td><td>24.7%</td><td>14.7%</td><td><span class="badge badge-green">-10.0pp</span></td><td>194→132 <span class="change-down">-32%</span></td></tr>
+                    <tr style="background:#f0fdf4;"><td>充值/金币未到账</td><td>9.4%</td><td>6.8%</td><td><span class="badge badge-green">-2.6pp</span></td><td>74→61 <span class="change-down">-17.6%</span></td></tr>
+                    <tr style="background:#f0fdf4;"><td>无法归类</td><td>1.8%</td><td>1.4%</td><td><span class="badge badge-gray">-0.3pp</span></td><td>14→13 <span class="change-down">-7.1%</span></td></tr>
+                    <tr><td>账号/设备权益丢失</td><td>5.2%</td><td>5.1%</td><td><span class="badge badge-gray">-0.1pp</span></td><td>41→46 <span class="change-up">+12.2%</span></td></tr>
+                    <tr><td>广告问题</td><td>0.5%</td><td>0.8%</td><td><span class="badge badge-gray">+0.3pp</span></td><td>4→7 <span class="change-up">+75%</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Cross-platform -->
+<div class="card">
+    <div class="card-title">双端结构差异（本周占比对比）</div>
+    <table>
+        <thead><tr><th>二级分类</th><th>Android</th><th>iOS</th><th>差异</th><th>解读</th></tr></thead>
+        <tbody>
+            <tr><td>取消订阅/退款</td><td>23.9%</td><td>41.0%</td><td><span class="badge badge-red">17.2pp</span></td><td>iOS Apple订阅退款流程复杂度更高</td></tr>
+            <tr><td>充值/金币未到账</td><td>18.2%</td><td>6.8%</td><td><span class="badge badge-orange">11.4pp</span></td><td>Android多支付渠道到账延迟更突出</td></tr>
+            <tr><td>重复扣款/多扣</td><td>9.6%</td><td>17.8%</td><td><span class="badge badge-orange">8.3pp</span></td><td>iOS自动续费+Apple扣费延迟致"多扣"感知</td></tr>
+            <tr><td>广告问题</td><td>7.3%</td><td>0.8%</td><td><span class="badge badge-orange">6.5pp</span></td><td>Android广告场景多、SDK兼容问题</td></tr>
+            <tr><td>会员权益异常</td><td>20.0%</td><td>14.7%</td><td><span class="badge badge-yellow">5.3pp</span></td><td>Android权益同步链路更长</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Action Items -->
+<div class="card">
+    <div class="card-title">Action Items</div>
+    <table>
+        <thead><tr><th>优先级</th><th>端</th><th>问题域</th><th>建议动作</th><th>依据</th></tr></thead>
+        <tbody>
+            <tr>
+                <td><span class="badge badge-red">P0</span></td>
+                <td><span style="color:#007aff;font-weight:600;">iOS</span></td>
+                <td>取消订阅/退款</td>
+                <td>排查近期订阅策略/定价调整；review Apple退款政策变更；检查订阅页引导清晰度</td>
+                <td>占比+8.7pp至41%，绝对值+114单</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-red">P0</span></td>
+                <td><span style="color:#34a853;font-weight:600;">Android</span></td>
+                <td>广告问题</td>
+                <td>排查新广告位/SDK版本异常；核实广告频次策略变更时间线</td>
+                <td>占比+2.3pp，绝对值+91.8%远超总量增速30%</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-orange">P1</span></td>
+                <td><span style="color:#007aff;font-weight:600;">iOS</span></td>
+                <td>重复扣款/多扣</td>
+                <td>检查IAP receipt验证逻辑；确认续费提醒充分性</td>
+                <td>占比+2.4pp，绝对值160单</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-orange">P1</span></td>
+                <td><span style="color:#34a853;font-weight:600;">Android</span></td>
+                <td>无法归类</td>
+                <td>抽检"无法归类"工单，优化分类提示词覆盖度</td>
+                <td>占比+2.3pp，可能是新问题类型未被分类体系覆盖</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-yellow">P2</span></td>
+                <td><span style="color:#34a853;font-weight:600;">Android</span></td>
+                <td>总量监控</td>
+                <td>确认总量+30%是否由活跃增长驱动，还是产品问题恶化</td>
+                <td>总量增幅显著，需区分增长因素</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="footer">
+    <p>数据来源: 客诉工单系统运营分类 | 对比周期: 06-19 vs 06-26 | 生成时间: 2026-07-03</p>
+    <p style="margin-top:4px;">注: 占比计算已排除"待补跑"工单；pp = percentage point（百分点）</p>
+</div>
+
+</div>
+</body>
+</html>
