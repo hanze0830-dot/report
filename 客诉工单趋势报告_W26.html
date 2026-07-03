@@ -8,11 +8,14 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f9fafb; color: #1f2937; line-height: 1.6; }
 
-.brand-bar { background: linear-gradient(135deg, #FF8A47, #FF2D6B); padding: 12px 32px; display: flex; align-items: center; gap: 12px; }
+.brand-bar { background: linear-gradient(135deg, #FF8A47, #FF2D6B); padding: 14px 32px; }
+.brand-bar-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 16px; }
 .brand-bar .logo { font-size: 20px; font-weight: 700; color: white; letter-spacing: 1px; }
-.brand-bar .report-type { color: rgba(255,255,255,0.85); font-size: 13px; margin-left: auto; }
+.brand-bar .separator { width: 1px; height: 20px; background: rgba(255,255,255,0.5); }
+.brand-bar .report-type { color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 500; }
 
 .header { background: #1e293b; color: white; padding: 28px 32px; border-radius: 0 0 12px 12px; }
+.header-inner { max-width: 1100px; margin: 0 auto; }
 .header h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
 .header .subtitle { color: #94a3b8; font-size: 14px; }
 
@@ -72,13 +75,18 @@ tr:hover { background: #f8fafc; }
 <body>
 
 <div class="brand-bar">
-    <div class="logo">DramaBox</div>
-    <div class="report-type">客诉工单周度趋势报告</div>
+    <div class="brand-bar-inner">
+        <div class="logo">DramaBox</div>
+        <div class="separator"></div>
+        <div class="report-type">客诉工单周度趋势报告</div>
+    </div>
 </div>
 
 <div class="header">
-    <h1>客诉工单变化趋势分析 — W26</h1>
-    <div class="subtitle">对比周期: 06-19 → 06-26 | 重点关注占比结构变化</div>
+    <div class="header-inner">
+        <h1>客诉工单变化趋势分析 — W26</h1>
+        <div class="subtitle">对比周期: 06-19 → 06-26 | 重点关注占比结构变化</div>
+    </div>
 </div>
 
 <div class="container">
