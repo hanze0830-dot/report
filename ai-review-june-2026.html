@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 仿真人剧手写评语分析报告（2026年6月）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif; background: #f0f2f5; color: #1a1a2e; line-height: 1.7; padding: 40px 20px; }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .header { background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #3949ab 100%); border-radius: 16px; padding: 48px 40px; color: #fff; margin-bottom: 32px; position: relative; overflow: hidden; }
+  .header::after { content:''; position:absolute; top:-40%; right:-15%; width:350px; height:350px; background:radial-gradient(circle,rgba(255,193,7,0.1) 0%,transparent 70%); border-radius:50%; }
+  .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .header .meta { font-size: 13px; opacity: 0.7; margin-bottom: 12px; }
+  .header .badge { display:inline-block; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:4px 14px; font-size:12px; margin-right:8px; }
+  .alert { border-radius:12px; padding:24px 28px; margin-bottom:32px; }
+  .alert-green { background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 100%); border-left:5px solid #4caf50; }
+  .alert-green h2 { color:#2e7d32; } .alert-green p { color:#33691e; }
+  .alert-orange { background:linear-gradient(135deg,#fff3e0 0%,#fff8e1 100%); border-left:5px solid #ff9800; }
+  .alert-orange h2 { color:#e65100; } .alert-orange p { color:#4e342e; }
+  .alert h2 { font-size:16px; margin-bottom:10px; } .alert p { font-size:14px; line-height:1.9; }
+  .hl-red { color:#c62828; font-weight:700; } .hl-orange { color:#e65100; font-weight:700; } .hl-green { color:#2e7d32; font-weight:700; } .hl-blue { color:#1565c0; font-weight:700; } .hl-purple { color:#6a1b9a; font-weight:700; }
+  .section { background:#fff; border-radius:14px; padding:32px; margin-bottom:28px; box-shadow:0 1px 8px rgba(0,0,0,0.04); }
+  .section h2 { font-size:18px; font-weight:700; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #f0f2f5; display:flex; align-items:center; gap:10px; }
+  .section h2 .num { background:#1a1a2e; color:#fff; width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; }
+  .section h3 { font-size:15px; font-weight:700; color:#37474f; margin:24px 0 12px; }
+  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:16px; margin-bottom:24px; }
+  .kpi-card { text-align:center; padding:20px 12px; background:#f8f9fc; border-radius:12px; border:1px solid #e8eaf0; }
+  .kpi-card .value { font-size:28px; font-weight:800; } .kpi-card .label { font-size:11px; color:#757575; margin-top:4px; } .kpi-card .trend { font-size:11px; margin-top:4px; font-weight:700; }
+  .kpi-card .trend.down { color:#2e7d32; } .kpi-card .trend.up { color:#c62828; } .kpi-card .trend.flat { color:#757575; }
+  .kpi-card.good .value { color:#2e7d32; } .kpi-card.warn .value { color:#e65100; } .kpi-card.info .value { color:#1565c0; } .kpi-card.danger .value { color:#c62828; }
+  .table-wrap { overflow-x:auto; } table { width:100%; border-collapse:collapse; font-size:13px; }
+  thead th { background:#f8f9fc; color:#5a5a7a; font-weight:600; padding:12px 14px; text-align:left; border-bottom:2px solid #e8eaf0; white-space:nowrap; }
+  tbody td { padding:12px 14px; border-bottom:1px solid #f0f2f5; } tbody tr:hover { background:#f8f9fc; }
+  .tag-green { display:inline-block; background:#e8f5e9; color:#2e7d32; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-red { display:inline-block; background:#ffebee; color:#c62828; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-orange { display:inline-block; background:#fff3e0; color:#e65100; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-blue { display:inline-block; background:#e3f2fd; color:#1565c0; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-purple { display:inline-block; background:#f3e5f5; color:#6a1b9a; font-weight:700; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .tag-gray { display:inline-block; background:#f5f5f5; color:#757575; font-weight:600; padding:2px 10px; border-radius:12px; font-size:12px; }
+  .trend-table td.better { color:#2e7d32; font-weight:700; } .trend-table td.worse { color:#c62828; font-weight:700; } .trend-table td.same { color:#757575; }
+  .compare-box { background:linear-gradient(135deg,#ede7f6 0%,#e8eaf6 100%); border:1px solid #d1c4e9; border-radius:12px; padding:20px 24px; margin-top:16px; }
+  .compare-box h3 { font-size:15px; color:#4527a0; margin-bottom:12px; font-weight:700; }
+  .insight-box { background:linear-gradient(135deg,#fff8e1 0%,#fff3e0 100%); border:1px solid #ffe0b2; border-radius:12px; padding:20px 24px; margin-top:16px; }
+  .insight-box h3 { font-size:15px; color:#e65100; margin-bottom:12px; font-weight:700; }
+  .sentiment-bar { display:flex; height:22px; border-radius:11px; overflow:hidden; }
+  .sentiment-bar .pos { background:#4caf50; } .sentiment-bar .neu { background:#e0e0e0; } .sentiment-bar .neg { background:#ef5350; }
+  .drama-card { background:#fff; border:1px solid #e8eaf0; border-radius:14px; padding:24px; margin-bottom:20px; }
+  .drama-card h3 { font-size:15px; font-weight:700; color:#1a1a2e; margin-bottom:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .drama-card .metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:10px; margin-bottom:14px; }
+  .drama-card .metric { background:#f8f9fc; border-radius:8px; padding:10px; text-align:center; }
+  .drama-card .metric .v { font-size:18px; font-weight:800; } .drama-card .metric .l { font-size:10px; color:#757575; }
+  .drama-card .summary { font-size:13px; color:#455a64; line-height:1.8; padding:12px 16px; background:#fafafa; border-radius:8px; }
+  .genre-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; margin-top:16px; }
+  .genre-card { background:#f8f9fc; border-radius:12px; padding:20px; border:1px solid #e8eaf0; }
+  .genre-card h4 { font-size:14px; font-weight:700; margin-bottom:12px; }
+  .genre-card .stat { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; border-bottom:1px solid #f0f2f5; }
+  .genre-card .stat:last-child { border-bottom:none; }
+  .quote-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; margin-top:16px; }
+  .quote-card { background:#f8f9fc; border-radius:10px; padding:14px 18px; border-left:4px solid #90a4ae; font-size:13px; font-style:italic; color:#455a64; line-height:1.6; }
+  .quote-card .source { font-style:normal; font-size:11px; color:#9e9e9e; margin-top:6px; }
+  .quote-card.positive { border-left-color:#4caf50; } .quote-card.negative { border-left-color:#ef5350; } .quote-card.mixed { border-left-color:#ff9800; }
+  .action-list { list-style:none; padding:0; }
+  .action-list li { padding:12px 16px; border-left:4px solid #1565c0; background:#f8f9fc; border-radius:0 8px 8px 0; margin-bottom:10px; font-size:13px; line-height:1.7; }
+  .action-list li .priority { display:inline-block; font-size:10px; font-weight:700; padding:1px 8px; border-radius:10px; margin-left:8px; }
+  .action-list li .p1 { background:#ffebee; color:#c62828; } .action-list li .p2 { background:#fff3e0; color:#e65100; } .action-list li .p3 { background:#e3f2fd; color:#1565c0; }
+  .issue-bar { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .issue-bar .bar-label { width:100px; font-size:12px; font-weight:600; text-align:right; }
+  .issue-bar .bar-track { flex:1; background:#f0f2f5; border-radius:6px; height:20px; overflow:hidden; position:relative; }
+  .issue-bar .bar-fill { height:100%; border-radius:6px; display:flex; align-items:center; padding-left:8px; font-size:10px; color:#fff; font-weight:700; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>AI 仿真人剧手写评语月度分析报告（6月）</h1>
+    <div class="meta">作者：韩泽 &nbsp;|&nbsp; 数据周期：2026-06-05 至 2026-07-02（4周）</div>
+    <div>
+      <span class="badge">3,430 条手写评语</span>
+      <span class="badge">76 部剧集</span>
+      <span class="badge">4 周完整月度数据</span>
+    </div>
+  </div>
+
+  <!-- Core Finding -->
+  <div class="alert alert-green">
+    <h2>&#9889; 核心发现 — AI 提及率加速下行至 21.3%，正面率升至 35.8%</h2>
+    <p>
+      6月共收集 <span class="hl-blue">3,430 条</span>手写评语，覆盖 <span class="hl-blue">76 部</span>在线剧集，评语量和剧集数均较5月大幅扩容。<br/>
+      AI 提及率月内四周加速下行（27.5%&rarr;26.1%&rarr;19.3%&rarr;15.7%），月均 <span class="hl-green">21.3%</span>，末周 <span class="hl-green">15.7%</span>，首次跌破 20%。<br/>
+      正面率从首周 33.0% <span class="hl-green">稳步升至末周 38.2%</span>，负面率从 15.9% <span class="hl-green">降至 9.2%</span>，正负比从 2:1 改善至 4:1。<br/>
+      <strong>奇幻题材优势进一步放大</strong>：AI 提及率 15.4% vs 现代言情 23.4%，正负比 5:1 vs 2:1。No Escape as the Dragon King's Mate（307条、48%正面）成为本月标杆。
+    </p>
+  </div>
+
+  <!-- Alert -->
+  <div class="alert alert-orange">
+    <h2>&#9888; 关注信号</h2>
+    <p>
+      尽管 AI 提及率整体向好，仍有 <span class="hl-red">6 部剧负面率超 15%</span>：Move to Countryside（33%）、Her Longlost Heiress（25%）、Fear Her Mom's Lady Boss（23%）、Billionaire's Seduce（21%）、Pregnant Top Heiress（21%）、Caution Heiress（19%）。其中 Move to Countryside 的 AI 提及率仍高达 44%，是全平台最高。<br/>
+      <strong>广告投诉从首周 2.0% 升至末周 4.1%</strong>，Don't Mess With Billionaire Sister（15%）成为广告重灾区，预示下月广告问题将进一步放大。
+    </p>
+  </div>
+
+
+  <!-- Section 1: KPIs -->
+  <div class="section">
+    <h2><span class="num">1</span>全局指标概览</h2>
+    <div class="kpi-row">
+      <div class="kpi-card info"><div class="value">3,430</div><div class="label">评语总量（4周）</div><div class="trend flat">周均 858 条</div></div>
+      <div class="kpi-card info"><div class="value">76</div><div class="label">覆盖剧集</div><div class="trend flat">周均 53 部</div></div>
+      <div class="kpi-card warn"><div class="value">21.3%</div><div class="label">AI 提及率</div><div class="trend down">末周降至 15.7%</div></div>
+      <div class="kpi-card good"><div class="value">35.8%</div><div class="label">正面率</div><div class="trend down">末周升至 38.2%</div></div>
+      <div class="kpi-card warn"><div class="value">11.3%</div><div class="label">负面率</div><div class="trend down">末周降至 9.2%</div></div>
+      <div class="kpi-card info"><div class="value">3.4%</div><div class="label">广告投诉</div><div class="trend up">末周升至 4.1%</div></div>
+      <div class="kpi-card info"><div class="value">3.4%</div><div class="label">付费/缺集</div><div class="trend flat">四周波动 2.7-4.0%</div></div>
+      <div class="kpi-card good"><div class="value">1.6%</div><div class="label">希望真人演员</div><div class="trend down">末周降至 1.2%</div></div>
+    </div>
+
+    <div class="compare-box">
+      <h3>6月四周趋势</h3>
+      <div class="table-wrap">
+        <table class="trend-table">
+          <thead>
+            <tr><th>指标</th><th>6.05-6.11</th><th>6.12-6.18</th><th>6.19-6.25</th><th>6.26-7.02</th><th>月均</th><th>趋势判断</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>评语总量</td><td>640</td><td>844</td><td>803</td><td>1,143</td><td>858</td><td><span class="tag-blue">持续放量</span></td></tr>
+            <tr><td>覆盖剧集</td><td>38</td><td>51</td><td>56</td><td>68</td><td>53</td><td><span class="tag-blue">稳步扩大</span></td></tr>
+            <tr><td>AI 提及率</td><td>27.5%</td><td>26.1%</td><td>19.3%</td><td class="better">15.7%</td><td>21.3%</td><td><span class="tag-green">加速下行</span></td></tr>
+            <tr><td>配音/口型</td><td>8.1%</td><td>6.8%</td><td>5.4%</td><td class="better">3.9%</td><td>5.7%</td><td><span class="tag-green">持续改善</span></td></tr>
+            <tr><td>广告投诉</td><td>2.0%</td><td>2.3%</td><td>4.7%</td><td class="worse">4.1%</td><td>3.4%</td><td><span class="tag-orange">逐周攀升</span></td></tr>
+            <tr><td>付费/缺集</td><td>3.9%</td><td>2.7%</td><td>4.0%</td><td>3.1%</td><td>3.4%</td><td><span class="tag-green">低位波动</span></td></tr>
+            <tr><td>希望真人</td><td>1.2%</td><td>2.1%</td><td>1.7%</td><td class="better">1.2%</td><td>1.6%</td><td><span class="tag-green">稳定低位</span></td></tr>
+            <tr><td>正面率</td><td>33.0%</td><td>35.4%</td><td>34.9%</td><td class="better">38.2%</td><td>35.8%</td><td><span class="tag-green">逐周上升</span></td></tr>
+            <tr><td>负面率</td><td>15.9%</td><td>12.2%</td><td>9.8%</td><td class="better">9.2%</td><td>11.3%</td><td><span class="tag-green">持续下降</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Issue Landscape -->
+  <div class="section">
+    <h2><span class="num">2</span>问题图谱 — 用户关注焦点分布</h2>
+    <p style="font-size:13px;color:#757575;margin-bottom:20px;">基于关键词匹配的一级分类，同一条评语可能命中多个维度</p>
+
+    <div class="issue-bar"><div class="bar-label">剧情/剧本</div><div class="bar-track"><div class="bar-fill" style="width:60.4%;background:#3b82f6;">30.2%（1,035条）</div></div></div>
+    <div class="issue-bar"><div class="bar-label">AI 形态</div><div class="bar-track"><div class="bar-fill" style="width:42.6%;background:#8b5cf6;">21.3%（730条）</div></div></div>
+    <div class="issue-bar"><div class="bar-label">配音/口型</div><div class="bar-track"><div class="bar-fill" style="width:11.4%;background:#0ea5e9;">5.7%（197条）</div></div></div>
+    <div class="issue-bar"><div class="bar-label">表演自然度</div><div class="bar-track"><div class="bar-fill" style="width:9%;background:#14b8a6;">4.5%（155条）</div></div></div>
+    <div class="issue-bar"><div class="bar-label">视觉质量</div><div class="bar-track"><div class="bar-fill" style="width:7.2%;background:#6366f1;">3.6%（122条）</div></div></div>
+    <div class="issue-bar"><div class="bar-label">广告干扰</div><div class="bar-track"><div class="bar-fill" style="width:6.8%;background:#f97316;">3.4%（117条）</div></div></div>
+    <div class="issue-bar"><div class="bar-label">付费/缺集</div><div class="bar-track"><div class="bar-fill" style="width:6.8%;background:#ef4444;">3.4%（115条）</div></div></div>
+    <div class="issue-bar"><div class="bar-label">希望真人</div><div class="bar-track"><div class="bar-fill" style="width:3.2%;background:#a1a1aa;">1.6%（54条）</div></div></div>
+    <div class="issue-bar"><div class="bar-label">字幕问题</div><div class="bar-track"><div class="bar-fill" style="width:2%;background:#64748b;">1.0%（34条）</div></div></div>
+
+    <div class="insight-box">
+      <h3>6月特征</h3>
+      <p style="font-size:13px;line-height:1.9;">
+        <strong>AI 形态仍是第二大讨论维度</strong>（21.3%），但已从5月的 40%+ 区间大幅下降，且月内呈加速下行趋势（末周 15.7%）。<br/>
+        <strong>剧情/剧本讨论占比（30.2%）开始接近 AI 形态讨论</strong>，说明用户注意力正在从"是否 AI"向"内容好不好"迁移。<br/>
+        <strong>广告投诉（3.4%）虽绝对值不高，但呈倍增趋势</strong>（首周 2.0% → 末周 4.1%），随着追剧深度增加将持续放大。
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 3: Genre -->
+  <div class="section">
+    <h2><span class="num">3</span>题材效应 — 奇幻 vs 现代言情</h2>
+    <div class="genre-grid">
+      <div class="genre-card">
+        <h4>&#128142; 奇幻/超自然题材（1,283 条 | 37%）</h4>
+        <div class="stat"><span>AI 提及率</span><span class="hl-green">15.4%</span></div>
+        <div class="stat"><span>正面率</span><span class="hl-green">40.4%</span></div>
+        <div class="stat"><span>负面率</span><span class="hl-green">8.4%</span></div>
+        <div class="stat"><span>代表剧</span><span>No Escape Dragon King's Mate, Vampire Elite</span></div>
+        <p style="font-size:12px;color:#616161;margin-top:10px;">正负比接近 5:1，龙族/狼人/吸血鬼题材持续验证 AI 友好假说。AI 提及率 15.4% 虽仍高于7月的 7.7%，但下行趋势明确。</p>
+      </div>
+      <div class="genre-card">
+        <h4>&#128161; 现代言情/都市题材（1,211 条 | 35%）</h4>
+        <div class="stat"><span>AI 提及率</span><span class="hl-orange">23.4%</span></div>
+        <div class="stat"><span>正面率</span><span>31.5%</span></div>
+        <div class="stat"><span>负面率</span><span class="hl-red">14.3%</span></div>
+        <div class="stat"><span>代表剧</span><span>Breaking Ex-Wife, Silence Boss Lady, Guess Who</span></div>
+        <p style="font-size:12px;color:#616161;margin-top:10px;">AI 提及率比奇幻高 8pp，负面率高近一倍。现代场景的"AI 假感"更容易被感知，是 AI 仿真人剧的高难度赛道。</p>
+      </div>
+    </div>
+    <p style="margin-top:16px;font-size:12px;color:#9e9e9e;">* 题材分类基于剧名关键词匹配，剩余 28% 为混合/其他题材</p>
+  </div>
+
+  <!-- Section 4: Sentiment TOP 12 -->
+  <div class="section">
+    <h2><span class="num">4</span>情感分布 — TOP 12 高评论量剧集</h2>
+    <p style="font-size:12px; color:#9e9e9e; margin-bottom:16px;"><span style="color:#4caf50;">&#9632;</span> 正面 <span style="color:#bdbdbd;">&#9632;</span> 中性 <span style="color:#ef5350;">&#9632;</span> 负面 &nbsp;|&nbsp; 括号内为评语条数</p>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">No Escape as the Dragon King's Mate（307）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:48%"></div><div class="neu" style="width:46%"></div><div class="neg" style="width:6%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">48%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">46%</span><span style="font-size:11px;color:#ef5350;">6%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Submitting to My Bestie's Dad（201）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:38%"></div><div class="neu" style="width:56%"></div><div class="neg" style="width:6%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">38%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">56%</span><span style="font-size:11px;color:#ef5350;">6%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Breaking! Your Ex-Wife Is a Billionaire Heiress（195）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:29%"></div><div class="neu" style="width:54%"></div><div class="neg" style="width:17%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">29%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">54%</span><span style="font-size:11px;color:#ef5350;font-weight:700;">17%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">From Unwanted Wife to Lycan Princess（155）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:28%"></div><div class="neu" style="width:57%"></div><div class="neg" style="width:15%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">28%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">57%</span><span style="font-size:11px;color:#ef5350;font-weight:700;">15%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Silence! Boss Lady Speaks（130）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:28%"></div><div class="neu" style="width:55%"></div><div class="neg" style="width:17%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">28%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">55%</span><span style="font-size:11px;color:#ef5350;font-weight:700;">17%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Guess Who They Miss Now（122）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:29%"></div><div class="neu" style="width:53%"></div><div class="neg" style="width:18%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">29%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">53%</span><span style="font-size:11px;color:#ef5350;font-weight:700;">18%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Don't Mess With The Billionaire Sister（112）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:31%"></div><div class="neu" style="width:64%"></div><div class="neg" style="width:5%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">31%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">64%</span><span style="font-size:11px;color:#ef5350;">5%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Tempest: The Last Mecha（112）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:40%"></div><div class="neu" style="width:56%"></div><div class="neg" style="width:4%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">40%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">56%</span><span style="font-size:11px;color:#ef5350;">4%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Vampire Elite: The World Between Us（110）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:47%"></div><div class="neu" style="width:46%"></div><div class="neg" style="width:7%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">47%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">46%</span><span style="font-size:11px;color:#ef5350;">7%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Caution! Heiress Coming Through（100）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:26%"></div><div class="neu" style="width:55%"></div><div class="neg" style="width:19%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">26%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">55%</span><span style="font-size:11px;color:#ef5350;font-weight:700;">19%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Billionaire Daddy's Sugar Baby（100）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:45%"></div><div class="neu" style="width:45%"></div><div class="neg" style="width:10%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">45%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">45%</span><span style="font-size:11px;color:#ef5350;">10%</span></div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><span style="width:340px;font-size:12px;font-weight:600;">Step Back! I'm the Hidden King（95）</span><div class="sentiment-bar" style="flex:1;"><div class="pos" style="width:21%"></div><div class="neu" style="width:68%"></div><div class="neg" style="width:11%"></div></div><span style="font-size:11px;color:#4caf50;font-weight:700;">21%</span><span style="font-size:11px;color:#9e9e9e;margin:0 4px;">68%</span><span style="font-size:11px;color:#ef5350;">11%</span></div>
+  </div>
+
+
+  <!-- Section 5: Drama Cards -->
+  <div class="section">
+    <h2><span class="num">5</span>重点剧集详解</h2>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">月度标杆</span> No Escape as the Dragon King's Mate（307条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#1565c0;">307</div><div class="l">评语量（第1）</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">48%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">6%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">14%</div><div class="l">AI提及率</div></div>
+      </div>
+      <div class="summary">6月评语量最高、口碑最佳。正负比 8:1，AI 提及率从首周 17% 降至第三周 8%。龙族题材+强剧情吸引力的组合持续验证有效。"This one was damn near flawless" 是典型评价。</div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">稳健</span> Vampire Elite: The World Between Us（110条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">47%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">7%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">22%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">9%</div><div class="l">配音投诉</div></div>
+      </div>
+      <div class="summary">AI 提及率 22% 偏高但不影响正面评价——用户评价为"great drama, great ending, great graphics"。配音投诉 9% 是主要技术短板。吸血鬼题材的超自然氛围帮助用户接受 AI 渲染。</div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-green">稳健</span> Submitting to My Bestie's Dad（201条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">38%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">6%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">19%</div><div class="l">AI提及率</div></div>
+      </div>
+      <div class="summary">AI 提及率从首周 25% 逐周下降至末周 13%，正面率从 55% 回落至 39%——追剧后段正常衰减。负面率始终低于 10%，整体健康。</div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-blue">新品类突破</span> Tempest: The Last Mecha（112条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#2e7d32;">40%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">4%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">6%</div><div class="l">AI提及率</div></div>
+      </div>
+      <div class="summary">末周上线即爆发（110/112条来自最后一周）。AI 提及率仅 6%，正负比 10:1，是本月 AI 脱敏最彻底的剧集。机甲/科幻题材证明 AI 仿真人剧的品类空间远不止言情。"Please make a sequel. This one was awesome."</div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-orange">AI 高敏感</span> Caution! Heiress Coming Through（100条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#c62828;">33%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v">26%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">19%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">16%</div><div class="l">配音投诉</div></div>
+      </div>
+      <div class="summary">AI 提及率 33% 且四周无下降趋势（31%→35%→36%），配音投诉 16% 为全平台最高。"The voice dubbing was terrible. Mispronunciation was rife." 用户直指配音质量差是出戏的主因。</div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-red">高风险</span> Move to Countryside, Marry a Billionaire（52条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#c62828;">44%</div><div class="l">AI提及率（第1）</div></div>
+        <div class="metric"><div class="v">27%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">33%</div><div class="l">负面率（第1）</div></div>
+      </div>
+      <div class="summary">连续多月高风险，AI 提及率 44% 为全平台最高，负面率 33% 同为最高。"AI is terrible, awful, disgusting — please stop this AI stuff or I'll cancel my subscription." 用户已处于流失边缘。</div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-red">高风险</span> Breaking! Your Ex-Wife Is a Billionaire Heiress（195条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#c62828;">27%</div><div class="l">AI提及率</div></div>
+        <div class="metric"><div class="v">29%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#c62828;">17%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#e65100;">7%</div><div class="l">配音投诉</div></div>
+      </div>
+      <div class="summary">评语量大（195条）但口碑偏差。首周负面率 18%，末周（仅7条）飙至 43%。"The absolute worst AI crap I've ever watched" 和 "continuity is important" 是高频反馈——AI 品质和连贯性是两大问题。</div>
+    </div>
+
+    <div class="drama-card">
+      <h3><span class="tag-orange">广告预警</span> Don't Mess With The Billionaire Sister（112条）</h3>
+      <div class="metrics">
+        <div class="metric"><div class="v" style="color:#c62828;">15%</div><div class="l">广告投诉</div></div>
+        <div class="metric"><div class="v">31%</div><div class="l">正面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">5%</div><div class="l">负面率</div></div>
+        <div class="metric"><div class="v" style="color:#2e7d32;">13%</div><div class="l">AI提及率</div></div>
+      </div>
+      <div class="summary">AI 问题不大（13%且末周降至 4%），但广告投诉 15% 远超平台均值。内容口碑健康（正负比 6:1），广告体验是唯一拖累。这是"好内容被广告拖垮"的典型案例。</div>
+    </div>
+
+    <p style="margin-top:16px;font-size:13px;color:#9e9e9e;">* 其余剧集：Mafia Single Daddy's Stolen Bride（84条，43%正面/4%负面）、Billionaire Daddy's Sugar Baby（100条，45%正面/10%负面）、My Dirty Secret With The Wrong Stepbrother（64条）。</p>
+  </div>
+
+
+  <!-- Section 6: Quotes -->
+  <div class="section">
+    <h2><span class="num">6</span>用户原声精选</h2>
+    <h3>正面评价</h3>
+    <div class="quote-grid">
+      <div class="quote-card positive">"This one was very very good. Some of the others are really badly done but this one was damn near flawless."<div class="source">&mdash; No Escape as the Dragon King's Mate</div></div>
+      <div class="quote-card positive">"This was a really good drama. It was dramatic, romantic and the graphics were great."<div class="source">&mdash; Vampire Elite: The World Between Us</div></div>
+      <div class="quote-card positive">"Please make a sequel. This one was awesome."<div class="source">&mdash; Tempest: The Last Mecha</div></div>
+      <div class="quote-card positive">"I've seen this story before, but this AI version wasn't too bad."<div class="source">&mdash; Fated to My Ruthless Alpha（AI 接受度转正信号）</div></div>
+    </div>
+    <h3>AI 相关负面</h3>
+    <div class="quote-grid">
+      <div class="quote-card negative">"The AI is always horrible but the story lines are good."<div class="source">&mdash; No Escape as the Dragon King's Mate（剧情兜底但 AI 仍出戏）</div></div>
+      <div class="quote-card negative">"The absolute worst AI crap I've ever watched."<div class="source">&mdash; Breaking! Your Ex-Wife Is a Billionaire Heiress</div></div>
+      <div class="quote-card negative">"Poor story ending and stop using AI."<div class="source">&mdash; Twin Trap</div></div>
+    </div>
+    <h3>广告 / 付费痛点</h3>
+    <p style="font-size:12px;color:#9e9e9e;margin-bottom:12px;">6月广告投诉尚处低位（3.4%），但已呈倍增趋势</p>
+    <div class="quote-grid">
+      <div class="quote-card mixed">"Had to watch too many ads."<div class="source">&mdash; Move to Countryside, Marry a Billionaire</div></div>
+      <div class="quote-card mixed">"Too much ad when am enjoying the series."<div class="source">&mdash; Drift King: Back for the 10th Crown</div></div>
+      <div class="quote-card mixed">"The AI characters makes the movie quality standards low. Which means the price of the subscription should be lower."<div class="source">&mdash; Move to Countryside（AI品质→付费预期联动）</div></div>
+    </div>
+    <h3>配音/技术</h3>
+    <div class="quote-grid">
+      <div class="quote-card negative">"The voice dubbing was terrible. Mispronunciation was rife. Great AI otherwise."<div class="source">&mdash; Caution! Heiress Coming Through</div></div>
+      <div class="quote-card mixed">"AI, dubbing is mediocre at best. Words do not match and mostly pronounced incorrectly."<div class="source">&mdash; Her Longlost Heiress is Found</div></div>
+      <div class="quote-card positive">"Wow, DAMN Cael, his voice… steamy with the kisses. The graphics were cool, the music was great."<div class="source">&mdash; Secret Maiden To The Immortal Dragon King（配音正面标杆）</div></div>
+    </div>
+  </div>
+
+
+  <!-- Section 7: Conclusions -->
+  <div class="section">
+    <h2><span class="num">7</span>结论与行动建议</h2>
+    <div style="font-size:14px;line-height:2.2;margin-bottom:24px;">
+      <p><strong>1.</strong> <span class="hl-green">AI 提及率加速下行</span>：月均 21.3%（末周 15.7%），正面率升至 35.8%，负面率降至 11.3%。用户对 AI 形态的关注度正在系统性消退。</p>
+      <p><strong>2.</strong> <span class="hl-green">题材效应持续验证</span>：奇幻题材 AI 提及率 15.4%、正负比 5:1；现代言情 AI 提及率 23.4%、正负比 2:1。Tempest（机甲）以 6% AI 提及率 + 10:1 正负比开辟了新品类空间。</p>
+      <p><strong>3.</strong> <span class="hl-orange">配音仍是最大技术短板</span>：5.7% 整体投诉率，Caution Heiress（16%）和 Vampire Elite（9%）最严重。口音切换、发音错误、口型不同步是三大高频问题。</p>
+      <p><strong>4.</strong> <span class="hl-red">Move to Countryside 持续恶化</span>：44% AI 提及率 + 33% 负面率，已连续多月为全平台最高风险剧集。</p>
+      <p><strong>5.</strong> <span class="hl-orange">广告投诉呈倍增信号</span>：从首周 2.0% 升至末周 4.1%，Billionaire Sister（15%）成为广告重灾区先兆。</p>
+    </div>
+    <ul class="action-list">
+      <li><strong>持续扩大奇幻/超自然题材占比</strong><span class="priority p1">P0</span><br/>No Escape（48%正面/6%负面）、Vampire Elite（47%正面/7%负面）、Tempest（40%正面/4%负面）反复验证奇幻+科幻题材是 AI 仿真人剧的最优赛道。</li>
+      <li><strong>重点修复配音一致性</strong><span class="priority p1">P0</span><br/>Caution Heiress（16%配音投诉）和 Breaking Ex-Wife（7%配音投诉）暴露口音切换和发音错误问题。建议对在线剧集做全量配音质检。</li>
+      <li><strong>评估 Move to Countryside 处置方案</strong><span class="priority p2">P1</span><br/>连续多月 AI 提及率 40%+ 且负面率 30%+，用户已出现退订威胁。建议下架或重制。</li>
+      <li><strong>关注 Breaking Ex-Wife 连贯性问题</strong><span class="priority p2">P1</span><br/>195条评语中大量提及"场景不连贯""衣服/伤口前后矛盾"，这是 AI 渲染的系统性缺陷，需从制作流程层面解决。</li>
+      <li><strong>提前准备广告体验优化方案</strong><span class="priority p3">P2</span><br/>广告投诉从 2.0% 倍增至 4.1%，Billionaire Sister 已达 15%。追剧用户的广告容忍度随深度递减，7月将进一步恶化。</li>
+    </ul>
+  </div>
+
+
+  <!-- Footer -->
+  <div style="background:#fafafa; border-radius:12px; padding:20px 28px; font-size:12px; color:#9e9e9e; margin-top:16px;">
+    <strong>数据口径说明</strong><br/>
+    数据源：手写评语明细（评语原文），共 3,430 条，覆盖 2026-06-05 至 2026-07-02。<br/>
+    情感分类：基于正/负面关键词加权匹配，非 NLP 模型标注，存在 &plusmn;5% 误差。<br/>
+    问题分类：基于关键词正则匹配，同一条评语可命中多个维度，占比之和 >100%。<br/>
+    题材分类：基于剧名关键词自动分类，约 28% 剧集未被归入奇幻或现代言情。<br/>
+    生成时间：2026-08-03
+  </div>
+
+</div>
+</body>
+</html>
